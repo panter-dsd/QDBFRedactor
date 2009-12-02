@@ -1,0 +1,9 @@
+build*
+qtcreator-build*
+bin*
+Makefile*
+*.pro.user
+object_script.*.*
+*~
+CMakeLists.txt.user
+todo.txt
