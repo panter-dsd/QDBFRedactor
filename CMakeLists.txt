@@ -1,4 +1,4 @@
-project(QDBFCreator)
+project(QDBFRedactor)
 cmake_minimum_required( VERSION 2.6 )
 
 #SET (CMAKE_BUILD_TYPE Release)
@@ -20,11 +20,13 @@ src
 set (src_SRC
 src/main.cpp
 src/dbfredactor.cpp
+src/dbfredactormodel.cpp
 src/dbfredactormainwindow.cpp
 )
 
 set (src_HEADERS
 src/dbfredactor.h
+src/dbfredactormodel.h
 src/dbfredactormainwindow.h
 )
 
@@ -44,9 +46,9 @@ set( RESOURCES resource.qrc )
 
 qt4_add_resources( QRC_SOURCES ${RESOURCES} )
 
-#add_executable( QDBFCreator WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
-add_executable( QDBFCreator ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+#add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+add_executable( QDBFRedactor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
 
-target_link_libraries( QDBFCreator ${QT_LIBRARIES} )
+target_link_libraries( QDBFRedactor ${QT_LIBRARIES} )
 
 
