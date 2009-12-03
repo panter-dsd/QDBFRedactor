@@ -87,3 +87,9 @@ int DBFRedactorModel::columnCount(const QModelIndex &parent) const
 {
 	return redactor->columnsCount();
 }
+
+void DBFRedactorModel::refresh()
+{
+	redactor->refresh();
+	reset();
+}

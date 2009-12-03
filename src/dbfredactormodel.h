@@ -32,6 +32,8 @@ public:
 	{return m_showDeleted;}
 	void setShowDeleted(bool isShow)
 	{m_showDeleted = isShow;}
+
+	void refresh();
 };
 
 #endif //DBFREDACTORMODEL_H

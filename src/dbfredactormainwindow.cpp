@@ -28,31 +28,54 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	mainLayout->addWidget(view);
 	centralWidget->setLayout(mainLayout);
 	setCentralWidget(centralWidget);
-
-	actionOpen = new QAction(tr("&Open"), this);
+//Actions
+	actionOpen = new QAction(QIcon(":/share/images/open.png"), tr("&Open"), this);
 	actionOpen->setShortcut(QKeySequence::Open);
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
 	addAction(actionOpen);
 
+	actionExit = new QAction(QIcon(":/share/images/exit.png"), tr("E&xit"), this);
+	actionExit->setShortcut(Qt::ALT + Qt::Key_X);
+	connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
+	addAction(actionExit);
+
+	actionClose = new QAction(QIcon(":/share/images/close.png"), tr("&Close"), this);
+	actionClose->setShortcut(Qt::ALT + Qt::Key_X);
+	connect(actionClose, SIGNAL(triggered()), this, SLOT(closeCurrentTab()));
+	addAction(actionClose);
+
+	actionRefresh = new QAction(QIcon(":/share/images/refresh.png"), tr("&Refresh"), this);
+	actionRefresh->setShortcut(Qt::CTRL + Qt::Key_R);
+	connect(actionRefresh, SIGNAL(triggered()), this, SLOT(refreshModel()));
+	addAction(actionRefresh);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
 
 	QMenu *fileMenu = new QMenu(tr("File"), menuBar);
 	fileMenu->addAction(actionOpen);
+	fileMenu->addAction(actionClose);
+	fileMenu->addSeparator();
+	fileMenu->addAction(actionExit);
 
 	menuBar->addMenu(fileMenu);
 //ToolBars
 	QToolBar *fileToolBar = new QToolBar(this);
 	fileToolBar->addAction(actionOpen);
+	fileToolBar->addAction(actionClose);
+	fileToolBar->addSeparator();
+	fileToolBar->addAction(actionExit);
 	addToolBar(fileToolBar);
 
 	loadSettings();
+	updateActions();
 }
 
 DBFRedactorMainWindow::~DBFRedactorMainWindow()
 {
 	saveSettings();
+	while(tabBar->count() > 0)
+		closeTab(0);
 }
 
 void DBFRedactorMainWindow::loadSettings()
@@ -113,6 +136,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
 	view->setVisible(true);
+	updateActions();
 }
 
 void DBFRedactorMainWindow::tabChanged(int index)
@@ -122,9 +146,30 @@ void DBFRedactorMainWindow::tabChanged(int index)
 
 void DBFRedactorMainWindow::closeTab(int index)
 {
-	delete models.value(tabBar->tabData(index).toString());
+	DBFRedactorModel *model = models.value(tabBar->tabData(index).toString());
+	if (!model)
+		return;
+	delete model;
 	models.remove(tabBar->tabData(index).toString());
 	tabBar->removeTab(index);
 	if (tabBar->count() <= 0)
 		view->setVisible(false);
+	updateActions();
+}
+
+void DBFRedactorMainWindow::closeCurrentTab()
+{
+	closeTab(tabBar->currentIndex());
+}
+
+void DBFRedactorMainWindow::updateActions()
+{
+	actionClose->setEnabled(tabBar->count() > 0);
+}
+
+void DBFRedactorMainWindow::refreshModel()
+{
+	DBFRedactorModel *model = models.value(tabBar->tabData(tabBar->currentIndex()).toString());
+	if (model)
+		model->refresh();
 }

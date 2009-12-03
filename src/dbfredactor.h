@@ -56,6 +56,7 @@ class DBFRedactor
 {
 public:
 	enum DBFOpenModeFlag {
+		No,
 		Read,
 		Write
 	};
@@ -70,6 +71,7 @@ private:
 	QTextCodec	 *m_codec;
 	QString m_tableName;
 	int lastRecord;
+	DBFOpenMode m_openMode;
 
 public:
 	DBFRedactor();
@@ -93,6 +95,8 @@ public:
 	static bool compareRecord(Record *first, Record *second);
 	bool isOpen();
 	int deletedCount();
+
+	void refresh();
 
 private:
 	QByteArray revert(const QByteArray& array);

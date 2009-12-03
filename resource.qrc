@@ -1,4 +1,11 @@
 <RCC>
-    <qresource prefix="/" >
+    <qresource prefix="/">
+        <file>share/images/about.png</file>
+        <file>share/images/aboutQt.png</file>
+        <file>share/images/exit.png</file>
+        <file>share/images/open.png</file>
+        <file>share/images/preferences.png</file>
+        <file>share/images/print.png</file>
+        <file>share/images/close.png</file>
     </qresource>
 </RCC>

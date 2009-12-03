@@ -2,9 +2,9 @@
 #define MAX_BUFFER_SIZE 10000
 
 DBFRedactor::DBFRedactor()
+	:m_fileName(0), m_openMode(No)
 {
 	header.recordsCount = -1;
-	m_fileName = "";
 }
 
 DBFRedactor::DBFRedactor(const QString& fileName)
@@ -38,6 +38,7 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	if (m_fileName.isEmpty())
 		return false;
 
+	m_openMode = OpenMode;
 	m_tableName = QFileInfo(m_fileName).baseName();
 	m_file.setFileName(m_fileName);
 
@@ -245,4 +246,10 @@ int DBFRedactor::rowsCount()
 		return header.recordsCount;
 	else
 		return 0;
+}
+
+void DBFRedactor::refresh()
+{
+	close();
+	open(m_openMode);
 }

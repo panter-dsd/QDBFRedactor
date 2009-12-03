@@ -22,6 +22,9 @@ private:
 	QMap<QString, DBFRedactorModel*> models;
 
 	QAction *actionOpen;
+	QAction *actionExit;
+	QAction *actionClose;
+	QAction *actionRefresh;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -31,6 +34,7 @@ public:
 private:
 	void loadSettings();
 	void saveSettings();
+	void updateActions();
 
 protected:
 
@@ -38,6 +42,8 @@ private Q_SLOTS:
 	void open();
 	void tabChanged(int index);
 	void closeTab(int index);
+	void closeCurrentTab();
+	void refreshModel();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H
