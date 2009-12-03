@@ -44,6 +44,13 @@ int main(int argc, char ** argv)
 
 	DBFRedactorMainWindow win;
 	win.setWindowTitle(app.applicationName()+" "+app.applicationVersion());
+
+	if (app.arguments().count() > 1) {
+		QStringList fileList;
+		for (int i = 1; i < app.arguments().size(); i++)
+			fileList << app.arguments().at(i);
+		win.openFiles(fileList);
+	}
 	win.show();
 
 	return app.exec();

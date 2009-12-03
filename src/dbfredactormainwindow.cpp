@@ -14,9 +14,12 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 		: QMainWindow(parent, f)
 {
 	tabBar = new QTabBar(this);
+	tabBar->setTabsClosable(true);
 	connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+	connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
 	view = new QTableView(this);
+	view->setVisible(false);
 
 	QWidget *centralWidget = new QWidget(this);
 
@@ -43,11 +46,43 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	QToolBar *fileToolBar = new QToolBar(this);
 	fileToolBar->addAction(actionOpen);
 	addToolBar(fileToolBar);
+
+	loadSettings();
 }
 
 DBFRedactorMainWindow::~DBFRedactorMainWindow()
 {
+	saveSettings();
+}
 
+void DBFRedactorMainWindow::loadSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("MainWindow");
+	move(settings.value("pos", QPoint(0, 0)).toPoint());
+	resize(settings.value("size", QSize(640, 480)).toSize());
+	bool isMaximized = settings.value("IsMaximized", false).toBool();
+	if (isMaximized)
+		setWindowState(Qt::WindowMaximized);
+	restoreState(settings.value("State", "").toByteArray());
+	settings.endGroup();
+}
+
+void DBFRedactorMainWindow::saveSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("MainWindow");
+	if (windowState() != Qt::WindowMaximized) {
+		settings.setValue("pos", pos());
+		settings.setValue("size", size());
+		settings.setValue("IsMaximized", false);
+	} else
+		settings.setValue("IsMaximized", true);
+	settings.setValue("State", saveState());
+
+	settings.sync();
 }
 
 void DBFRedactorMainWindow::open()
@@ -77,9 +112,19 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 	}
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
+	view->setVisible(true);
 }
 
 void DBFRedactorMainWindow::tabChanged(int index)
 {
 	view->setModel(models.value(tabBar->tabData(index).toString()));
+}
+
+void DBFRedactorMainWindow::closeTab(int index)
+{
+	delete models.value(tabBar->tabData(index).toString());
+	models.remove(tabBar->tabData(index).toString());
+	tabBar->removeTab(index);
+	if (tabBar->count() <= 0)
+		view->setVisible(false);
 }
