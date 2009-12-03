@@ -72,6 +72,7 @@ private:
 	QString m_tableName;
 	int lastRecord;
 	DBFOpenMode m_openMode;
+	bool m_buffering;
 
 public:
 	DBFRedactor();
@@ -97,6 +98,15 @@ public:
 	int deletedCount();
 
 	void refresh();
+
+	bool buffering()
+	{return m_buffering;}
+	void setBuffering(bool b)
+	{
+		m_buffering = b;
+		if (!b)
+			m_hash.clear();
+	}
 
 private:
 	QByteArray revert(const QByteArray& array);

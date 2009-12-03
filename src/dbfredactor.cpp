@@ -2,7 +2,7 @@
 #define MAX_BUFFER_SIZE 10000
 
 DBFRedactor::DBFRedactor()
-	:m_fileName(0), m_openMode(No)
+	:m_fileName(0), m_openMode(No), m_buffering(true)
 {
 	header.recordsCount = -1;
 }
@@ -129,7 +129,7 @@ QByteArray DBFRedactor::strRecord(int number)
 {
 	if ((number >= header.recordsCount) || (!m_file.isOpen()))
 		return QByteArray();
-	if (m_hash.contains(number)) {
+	if (m_buffering && m_hash.contains(number)) {
 		m_buf = m_hash.value(number);
 	} else {
 		if (lastRecord != number - 1)
@@ -148,7 +148,7 @@ Record DBFRedactor::record(int number)
 	if (number < 0 || number >= header.recordsCount || !m_file.isOpen())
 		return Record();
 
-	if (m_hash.contains(number)) {
+	if (m_buffering && m_hash.contains(number)) {
 		m_buf = m_hash.value(number);
 	} else {
 		if (lastRecord != number - 1)
@@ -159,6 +159,7 @@ Record DBFRedactor::record(int number)
 		if (m_hash.size() > MAX_BUFFER_SIZE)
 			m_hash.erase(m_hash.begin());
 	}
+	Q_ASSERT(m_buf.size() == header.recordLenght);
 
 	Record record;
 	QString recordString = m_codec->toUnicode(m_buf);
@@ -199,8 +200,6 @@ Record DBFRedactor::record(int number)
 		}
 	}
 	record.isDeleted = m_buf.at(0) == 0x2A;
-	lastRecord = number;
-	m_buf.clear();
 	return record;
 }
 
