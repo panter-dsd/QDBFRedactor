@@ -8,7 +8,6 @@ class DBFRedactorPage;
 class QLabel;
 class QItemSelection;
 
-
 #include <QtCore/QMap>
 
 #include <QtGui/QMainWindow>
@@ -29,6 +28,7 @@ private:
 	QAction *actionExit;
 	QAction *actionClose;
 	QAction *actionRefresh;
+	QAction *actionCopy;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -49,6 +49,7 @@ private Q_SLOTS:
 	void closeCurrentTab();
 	void refreshModel();
 	void selectionChanged();
+	void copyToClipboard();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

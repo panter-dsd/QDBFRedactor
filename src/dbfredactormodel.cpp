@@ -72,6 +72,9 @@ QVariant DBFRedactorModel::headerData(int section, Qt::Orientation orientation, 
 			return section + 1;
 		}
 	}
+	if(role == Qt::TextAlignmentRole) {
+		return Qt::AlignCenter;
+	}
 	return QVariant();
 }
 

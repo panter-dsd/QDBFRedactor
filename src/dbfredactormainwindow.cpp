@@ -10,6 +10,9 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QLabel>
 #include <QtGui/QScrollBar>
+#include <QtGui/QHeaderView>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
 
 #include "dbfredactormainwindow.h"
 #include "dbfredactorpage.h"
@@ -25,6 +28,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	view = new QTableView(this);
 	view->setVisible(false);
+	view->setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	setStatusBar(new QStatusBar(this));
 
@@ -55,7 +59,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	addAction(actionExit);
 
-	actionClose = new QAction(QIcon(":/share/images/close.png"), tr("&Close"), this);
+	actionClose = new QAction(QIcon(":/share/images/close.png"), tr("C&lose"), this);
 	actionClose->setToolTip(tr("Close current file"));
 	actionClose->setShortcut(Qt::CTRL + Qt::Key_W);
 	connect(actionClose, SIGNAL(triggered()), this, SLOT(closeCurrentTab()));
@@ -68,6 +72,13 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionRefresh, SIGNAL(triggered()), this, SLOT(refreshModel()));
 	addAction(actionRefresh);
 	tabBar->addAction(actionRefresh);
+
+	actionCopy = new QAction(QIcon(":/share/images/copy.png"), tr("&Copy"), this);
+	actionCopy->setToolTip(tr("Copy current cell to clipboard"));
+	actionCopy->setShortcut(Qt::CTRL + Qt::Key_C);
+	connect(actionCopy, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
+	addAction(actionCopy);
+	view->addAction(actionCopy);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -244,4 +255,18 @@ void DBFRedactorMainWindow::selectionChanged()
 			sum += value;
 	}
 	sumLabel->setText(tr("Sum") + " = " + QString::number(sum, 'f', 2));
+}
+
+void DBFRedactorMainWindow::copyToClipboard()
+{
+	QMap<int, QString> text;
+	foreach(const QModelIndex& index, view->selectionModel()->selection().indexes()) {
+		if (!text.contains(index.row()))
+			text.insert(index.row(), QString());
+		if (text.value(index.row()).isEmpty())
+			text[index.row()] += index.data(Qt::DisplayRole).toString();
+		else
+			text[index.row()] += "\t" + index.data(Qt::DisplayRole).toString();
+	}
+	QApplication::clipboard()->setText(QStringList(text.values()).join("\n"));
 }
