@@ -6,6 +6,8 @@ class QTabBar;
 class QAction;
 class DBFRedactorModel;
 class QLabel;
+class QItemSelection;
+
 
 #include <QtCore/QMap>
 
@@ -22,6 +24,7 @@ private:
 	QTabBar *tabBar;
 	QMap<QString, DBFRedactorModel*> models;
 	QLabel *currentFile;
+	QLabel *sumLabel;
 
 	QAction *actionOpen;
 	QAction *actionExit;
@@ -46,6 +49,7 @@ private Q_SLOTS:
 	void closeTab(int index);
 	void closeCurrentTab();
 	void refreshModel();
+	void selectionChanged();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

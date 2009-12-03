@@ -17,6 +17,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 {
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
+	tabBar->setContextMenuPolicy(Qt::ActionsContextMenu);
 	connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
@@ -27,6 +28,9 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	currentFile = new QLabel(this);
 	statusBar()->insertWidget(0, currentFile);
+
+	sumLabel = new QLabel(this);
+	statusBar()->insertWidget(1, sumLabel);
 
 	QWidget *centralWidget = new QWidget(this);
 
@@ -53,12 +57,14 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionClose->setShortcut(Qt::CTRL + Qt::Key_W);
 	connect(actionClose, SIGNAL(triggered()), this, SLOT(closeCurrentTab()));
 	addAction(actionClose);
+	tabBar->addAction(actionClose);
 
 	actionRefresh = new QAction(QIcon(":/share/images/refresh.png"), tr("&Refresh"), this);
 	actionRefresh->setToolTip(tr("Refresh current file"));
 	actionRefresh->setShortcut(Qt::CTRL + Qt::Key_R);
 	connect(actionRefresh, SIGNAL(triggered()), this, SLOT(refreshModel()));
 	addAction(actionRefresh);
+	tabBar->addAction(actionRefresh);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -154,7 +160,11 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 void DBFRedactorMainWindow::tabChanged(int index)
 {
 	view->setModel(models.value(tabBar->tabData(index).toString()));
+	connect(view->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+			this, SLOT(selectionChanged()));
+
 	currentFile->setText(tabBar->tabToolTip(index));
+	selectionChanged();
 }
 
 void DBFRedactorMainWindow::closeTab(int index)
@@ -181,6 +191,7 @@ void DBFRedactorMainWindow::updateActions()
 {
 	actionClose->setEnabled(tabBar->count() > 0);
 	currentFile->setVisible(!currentFile->text().isEmpty());
+	sumLabel->setVisible(!currentFile->text().isEmpty());
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -188,4 +199,17 @@ void DBFRedactorMainWindow::refreshModel()
 	DBFRedactorModel *model = models.value(tabBar->tabData(tabBar->currentIndex()).toString());
 	if (model)
 		model->refresh();
+}
+
+void DBFRedactorMainWindow::selectionChanged()
+{
+	const QModelIndexList& l = view->selectionModel()->selection().indexes();
+	double sum = 0.0;
+	foreach(const QModelIndex& index, l) {
+		bool ok = false;
+		double value = index.data(Qt::DisplayRole).toDouble(&ok);
+		if (ok)
+			sum += value;
+	}
+	sumLabel->setText(tr("Sum") + " = " + QString::number(sum, 'f', 2));
 }

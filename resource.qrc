@@ -7,5 +7,6 @@
         <file>share/images/preferences.png</file>
         <file>share/images/print.png</file>
         <file>share/images/close.png</file>
+        <file>share/images/refresh.png</file>
     </qresource>
 </RCC>
