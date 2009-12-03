@@ -144,6 +144,15 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 {
 	int index = 0;
 	foreach(const QString& fileName, fileList) {
+		if (models.contains(fileName)) {
+			for (int i = 0; i < tabBar->count(); i++) {
+				if (tabBar->tabData(i).toString() == fileName) {
+					index = i;
+					break;
+				}
+			}
+			continue;
+		}
 		DBFRedactorModel *model = new DBFRedactorModel(fileName, this);
 
 		models.insert(fileName, model);
