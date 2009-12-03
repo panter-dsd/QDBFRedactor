@@ -1,9 +1,10 @@
 #ifndef DBFREDACTORMODEL_H
 #define DBFREDACTORMODEL_H
 
-class DBFRedactor;
-
 #include <QtCore/QAbstractItemModel>
+#include <QtCore/QMap>
+
+#include "dbfredactor.h"
 
 class DBFRedactorModel : public QAbstractItemModel
 {
@@ -13,6 +14,7 @@ private:
 	QString m_fileName;
 	bool m_showDeleted;
 	DBFRedactor *redactor;
+	mutable QMap<int, Record> records;
 
 public:
 	DBFRedactorModel(const QString& fileName, QObject * parent = 0);

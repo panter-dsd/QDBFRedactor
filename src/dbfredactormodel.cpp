@@ -1,13 +1,13 @@
 #include <QtCore/QDebug>
 
 #include "dbfredactormodel.h"
-#include "dbfredactor.h"
 
 DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
 	:QAbstractItemModel(parent), m_fileName(fileName), m_showDeleted(true)
 {
 	redactor = new DBFRedactor(fileName);
 	redactor->open(DBFRedactor::Read);
+	redactor->setBuffering(false);
 }
 
 DBFRedactorModel::~DBFRedactorModel()
@@ -21,9 +21,17 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
+	Record record;
+	if (records.contains(index.row())) {
+		record = records.value(index.row());
+	} else {
+		record = redactor->record(index.row());
+		records.insert(index.row(), record);
+	}
+
 	switch (role) {
 		case Qt::DisplayRole:
-			return redactor->record(index.row()).value.at(index.column());
+			return record.value.at(index.column());
 			break;
 		case Qt::TextAlignmentRole:
 			if ((redactor->field(index.column()).type == TYPE_NUMERIC)
@@ -42,7 +50,7 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 			return Qt::black;
 			break;
 		case Qt::BackgroundRole:
-			if (redactor->record(index.row()).isDeleted)
+			if (record.isDeleted)
 				return Qt::lightGray;
 			break;
 		}
