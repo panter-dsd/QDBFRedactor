@@ -7,6 +7,8 @@
 #include <QtGui/QMenuBar>
 #include <QtGui/QToolBar>
 #include <QtGui/QFileDialog>
+#include <QtGui/QStatusBar>
+#include <QtGui/QLabel>
 
 #include "dbfredactormainwindow.h"
 
@@ -21,6 +23,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	view = new QTableView(this);
 	view->setVisible(false);
 
+	setStatusBar(new QStatusBar(this));
+
+	currentFile = new QLabel(this);
+	statusBar()->insertWidget(0, currentFile);
+
 	QWidget *centralWidget = new QWidget(this);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -30,21 +37,25 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	setCentralWidget(centralWidget);
 //Actions
 	actionOpen = new QAction(QIcon(":/share/images/open.png"), tr("&Open"), this);
+	actionOpen->setToolTip(tr("Open file"));
 	actionOpen->setShortcut(QKeySequence::Open);
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
 	addAction(actionOpen);
 
 	actionExit = new QAction(QIcon(":/share/images/exit.png"), tr("E&xit"), this);
+	actionExit->setToolTip(tr("Exit from program"));
 	actionExit->setShortcut(Qt::ALT + Qt::Key_X);
 	connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	addAction(actionExit);
 
 	actionClose = new QAction(QIcon(":/share/images/close.png"), tr("&Close"), this);
-	actionClose->setShortcut(Qt::ALT + Qt::Key_X);
+	actionClose->setToolTip(tr("Close current file"));
+	actionClose->setShortcut(Qt::CTRL + Qt::Key_W);
 	connect(actionClose, SIGNAL(triggered()), this, SLOT(closeCurrentTab()));
 	addAction(actionClose);
 
 	actionRefresh = new QAction(QIcon(":/share/images/refresh.png"), tr("&Refresh"), this);
+	actionRefresh->setToolTip(tr("Refresh current file"));
 	actionRefresh->setShortcut(Qt::CTRL + Qt::Key_R);
 	connect(actionRefresh, SIGNAL(triggered()), this, SLOT(refreshModel()));
 	addAction(actionRefresh);
@@ -132,6 +143,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 		models.insert(fileName, model);
 		index = tabBar->addTab(QFileInfo(fileName).fileName());
 		tabBar->setTabData(index, fileName);
+		tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
 	}
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
@@ -142,6 +154,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 void DBFRedactorMainWindow::tabChanged(int index)
 {
 	view->setModel(models.value(tabBar->tabData(index).toString()));
+	currentFile->setText(tabBar->tabToolTip(index));
 }
 
 void DBFRedactorMainWindow::closeTab(int index)
@@ -152,8 +165,10 @@ void DBFRedactorMainWindow::closeTab(int index)
 	delete model;
 	models.remove(tabBar->tabData(index).toString());
 	tabBar->removeTab(index);
-	if (tabBar->count() <= 0)
+	if (tabBar->count() <= 0) {
 		view->setVisible(false);
+		currentFile->setText("");
+	}
 	updateActions();
 }
 
@@ -165,6 +180,7 @@ void DBFRedactorMainWindow::closeCurrentTab()
 void DBFRedactorMainWindow::updateActions()
 {
 	actionClose->setEnabled(tabBar->count() > 0);
+	currentFile->setVisible(!currentFile->text().isEmpty());
 }
 
 void DBFRedactorMainWindow::refreshModel()

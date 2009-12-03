@@ -5,6 +5,7 @@ class QTableView;
 class QTabBar;
 class QAction;
 class DBFRedactorModel;
+class QLabel;
 
 #include <QtCore/QMap>
 
@@ -20,6 +21,7 @@ private:
 	QTableView *view;
 	QTabBar *tabBar;
 	QMap<QString, DBFRedactorModel*> models;
+	QLabel *currentFile;
 
 	QAction *actionOpen;
 	QAction *actionExit;
