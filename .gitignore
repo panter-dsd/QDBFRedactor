@@ -1,9 +1,15 @@
 build*
-qtcreator-build*
 bin*
+qtc-gdbmacros*
+release*
+debug*
 Makefile*
 *.pro.user
 object_script.*.*
 *~
+qtcreator-build*
 CMakeLists.txt.user
-todo.txt
+qdevelop-settings.db
+archives/*
+updates/*
+*.qm
