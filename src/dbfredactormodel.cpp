@@ -101,6 +101,7 @@ int DBFRedactorModel::columnCount(const QModelIndex &parent) const
 
 void DBFRedactorModel::refresh()
 {
+	records.clear();
 	redactor->refresh();
 	reset();
 }
