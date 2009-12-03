@@ -41,6 +41,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	mainLayout->addWidget(view);
 	centralWidget->setLayout(mainLayout);
 	setCentralWidget(centralWidget);
+
 //Actions
 	actionOpen = new QAction(QIcon(":/share/images/open.png"), tr("&Open"), this);
 	actionOpen->setToolTip(tr("Open file"));
@@ -80,6 +81,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	menuBar->addMenu(fileMenu);
 //ToolBars
 	QToolBar *fileToolBar = new QToolBar(this);
+	fileToolBar->setObjectName("file_toolbar");
 	fileToolBar->addAction(actionOpen);
 	fileToolBar->addAction(actionClose);
 	fileToolBar->addSeparator();
@@ -233,11 +235,11 @@ void DBFRedactorMainWindow::refreshModel()
 
 void DBFRedactorMainWindow::selectionChanged()
 {
-	const QModelIndexList& l = view->selectionModel()->selection().indexes();
-	double sum = 0.0;
-	foreach(const QModelIndex& index, l) {
-		bool ok = false;
-		double value = index.data(Qt::DisplayRole).toDouble(&ok);
+	double sum = 0.0, value = 0.0;
+	bool ok = false;
+
+	foreach(const QModelIndex& index, view->selectionModel()->selection().indexes()) {
+		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
 			sum += value;
 	}
