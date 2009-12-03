@@ -270,3 +270,22 @@ void DBFRedactorMainWindow::copyToClipboard()
 	}
 	QApplication::clipboard()->setText(QStringList(text.values()).join("\n"));
 }
+
+QStringList DBFRedactorMainWindow::prepareHtml()
+{
+	QStringList html;
+	html << "<TABLE BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4 CELLSPACING=0 align=left>";
+	html << "<TR VALIGN=TOP>";
+	for (int i = 0; i < view->model()->columnCount(); i++)
+		html << "<TD align=center> " + view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "</TD>";
+	html << "</TR>";
+
+	for (int i = 0; i < view->model()->rowCount(); i++) {
+		html << "<TR>";
+		for (int j = 0; j < view->model()->columnCount(); j++)
+			html << "<TD align=center> " + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "</TD>";
+		html << "</TR>";
+	}
+	html << "</TABLE>";
+	return html;
+}

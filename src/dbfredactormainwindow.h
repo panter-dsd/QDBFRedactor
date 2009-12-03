@@ -39,6 +39,7 @@ private:
 	void loadSettings();
 	void saveSettings();
 	void updateActions();
+	QStringList prepareHtml();
 
 protected:
 
