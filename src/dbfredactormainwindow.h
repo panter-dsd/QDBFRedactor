@@ -4,6 +4,9 @@
 class QTableView;
 class QTabBar;
 class QAction;
+class DBFRedactorModel;
+
+#include <QtCore/QMap>
 
 #include <QtGui/QMainWindow>
 
@@ -16,6 +19,7 @@ class DBFRedactorMainWindow : public QMainWindow
 private:
 	QTableView *view;
 	QTabBar *tabBar;
+	QMap<QString, DBFRedactorModel*> models;
 
 	QAction *actionOpen;
 
@@ -24,11 +28,13 @@ public:
 	~DBFRedactorMainWindow();
 
 private:
+	void openFiles(const QStringList& fileList);
 
 protected:
 
 private Q_SLOTS:
 	void open();
+	void tabChanged(int index);
 };
 
 #endif // DBFREDACTORMAINWINDOW_H
