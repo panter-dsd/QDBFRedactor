@@ -29,6 +29,7 @@ private:
 	QAction *actionClose;
 	QAction *actionRefresh;
 	QAction *actionCopy;
+	QAction* acionExportToHtml;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -51,6 +52,7 @@ private Q_SLOTS:
 	void refreshModel();
 	void selectionChanged();
 	void copyToClipboard();
+	void exportToHtml();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

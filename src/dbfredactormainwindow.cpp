@@ -1,4 +1,6 @@
 #include <QtCore/QSettings>
+#include <QtCore/QTextStream>
+#include <QtCore/QCoreApplication>
 
 #include <QtGui/QTabBar>
 #include <QtGui/QTableView>
@@ -13,6 +15,8 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
+#include <QtGui/QProgressBar>
+#include <QtGui/QMessageBox>
 
 #include "dbfredactormainwindow.h"
 #include "dbfredactorpage.h"
@@ -79,17 +83,28 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionCopy, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
 	addAction(actionCopy);
 	view->addAction(actionCopy);
+
+	acionExportToHtml = new QAction(QIcon(":/share/images/exportToHtml.png"), tr("&Export to html"), this);
+	acionExportToHtml->setToolTip(tr("Export to html"));
+	connect(acionExportToHtml, SIGNAL(triggered()), this, SLOT(exportToHtml()));
+	addAction(acionExportToHtml);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
 
-	QMenu *fileMenu = new QMenu(tr("File"), menuBar);
+	QMenu *fileMenu = new QMenu(tr("&File"), menuBar);
 	fileMenu->addAction(actionOpen);
 	fileMenu->addAction(actionClose);
 	fileMenu->addSeparator();
 	fileMenu->addAction(actionExit);
 
 	menuBar->addMenu(fileMenu);
+
+	QMenu *exportMenu = new QMenu(tr("&Export"), menuBar);
+	exportMenu->addAction(acionExportToHtml);
+
+	menuBar->addMenu(exportMenu);
+
 //ToolBars
 	QToolBar *fileToolBar = new QToolBar(this);
 	fileToolBar->setObjectName("file_toolbar");
@@ -274,18 +289,70 @@ void DBFRedactorMainWindow::copyToClipboard()
 QStringList DBFRedactorMainWindow::prepareHtml()
 {
 	QStringList html;
+	html << "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /></head><body>";
 	html << "<TABLE BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4 CELLSPACING=0 align=left>";
 	html << "<TR VALIGN=TOP>";
 	for (int i = 0; i < view->model()->columnCount(); i++)
 		html << "<TD align=center> " + view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "</TD>";
 	html << "</TR>";
-
+	QProgressBar *bar = new QProgressBar(this);
+	bar->setFormat(tr("Preparing. %p% to finish."));
+	bar->setRange(0, view->model()->rowCount());
+	bar->setValue(0);
+	bar->resize(statusBar()->size());
+	bar->move(statusBar()->pos());
+	bar->show();
 	for (int i = 0; i < view->model()->rowCount(); i++) {
+		bar->setValue(i);
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		html << "<TR>";
 		for (int j = 0; j < view->model()->columnCount(); j++)
-			html << "<TD align=center> " + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "</TD>";
+			html << "<TD align=left> " + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "</TD>";
 		html << "</TR>";
 	}
-	html << "</TABLE>";
+	html << "</TABLE></body></html>";
+	delete bar;
 	return html;
+}
+
+void DBFRedactorMainWindow::exportToHtml()
+{
+	QSettings settings;
+	const QString& fileName = QFileDialog::getSaveFileName(this,
+														   tr("Save"),
+														   settings.value("Global/ExportPath", "'").toString(),
+														   tr("HTML files (*.html)"));
+	if (fileName.isEmpty())
+		return;
+
+	settings.setValue("Global/ExportPath", fileName);
+
+	const QStringList& l(prepareHtml());
+
+	QProgressBar *bar = new QProgressBar(this);
+	bar->setFormat(tr("Saving. %p% to finish."));
+	bar->setRange(0, l.size());
+	bar->setValue(0);
+	bar->resize(statusBar()->size());
+	bar->move(statusBar()->pos());
+	bar->show();
+
+	QFile file(fileName);
+	file.open(QIODevice::WriteOnly);
+
+
+	QTextStream stream(&file);
+	stream.setCodec("UTF-8");
+
+	for (int i = 0; i < l.size(); i++) {
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		stream << l.at(i) << endl;
+		bar->setValue(i);
+	}
+	file.close();
+	delete bar;
+
+	QMessageBox::information(this, "", tr("Export finished"));
 }
