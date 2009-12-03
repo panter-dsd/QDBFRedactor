@@ -27,6 +27,7 @@ src/dbfredactormainwindow.cpp
 set (src_HEADERS
 src/dbfredactor.h
 src/dbfredactormodel.h
+src/dbfredactorpage.h
 src/dbfredactormainwindow.h
 )
 

@@ -9,11 +9,13 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QStatusBar>
 #include <QtGui/QLabel>
+#include <QtGui/QScrollBar>
 
 #include "dbfredactormainwindow.h"
+#include "dbfredactorpage.h"
 
 DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
-		: QMainWindow(parent, f)
+		: QMainWindow(parent, f), currentPage(0)
 {
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
@@ -144,7 +146,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 {
 	int index = 0;
 	foreach(const QString& fileName, fileList) {
-		if (models.contains(fileName)) {
+		if (pages.contains(fileName)) {
 			for (int i = 0; i < tabBar->count(); i++) {
 				if (tabBar->tabData(i).toString() == fileName) {
 					index = i;
@@ -153,9 +155,9 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 			}
 			continue;
 		}
-		DBFRedactorModel *model = new DBFRedactorModel(fileName, this);
+		DBFRedactorPage *page = new DBFRedactorPage(fileName, this);
 
-		models.insert(fileName, model);
+		pages.insert(fileName, page);
 		index = tabBar->addTab(QFileInfo(fileName).fileName());
 		tabBar->setTabData(index, fileName);
 		tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
@@ -168,21 +170,40 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 
 void DBFRedactorMainWindow::tabChanged(int index)
 {
-	view->setModel(models.value(tabBar->tabData(index).toString()));
-	connect(view->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+	if (currentPage) {
+		disconnect(currentPage->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+				this, SLOT(selectionChanged()));
+		currentPage->setPos(view->horizontalScrollBar()->value(),
+							view->verticalScrollBar()->value());
+		currentPage = 0;
+	}
+
+	DBFRedactorPage *page = pages.value(tabBar->tabData(index).toString());
+	if (!page) {
+		view->setModel(0);
+		return;
+	}
+	view->setModel(page->model());
+	view->setSelectionModel(page->selectionModel());
+	view->horizontalScrollBar()->setValue(page->pos().x());
+	view->verticalScrollBar()->setValue(page->pos().y());
+
+	connect(page->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
 			this, SLOT(selectionChanged()));
 
+	currentPage = page;
 	currentFile->setText(tabBar->tabToolTip(index));
 	selectionChanged();
 }
 
 void DBFRedactorMainWindow::closeTab(int index)
 {
-	DBFRedactorModel *model = models.value(tabBar->tabData(index).toString());
-	if (!model)
+	DBFRedactorPage *page = pages.value(tabBar->tabData(index).toString());
+	if (!page)
 		return;
-	delete model;
-	models.remove(tabBar->tabData(index).toString());
+	delete page;
+	pages.remove(tabBar->tabData(index).toString());
+	currentPage = 0;
 	tabBar->removeTab(index);
 	if (tabBar->count() <= 0) {
 		view->setVisible(false);
@@ -205,9 +226,9 @@ void DBFRedactorMainWindow::updateActions()
 
 void DBFRedactorMainWindow::refreshModel()
 {
-	DBFRedactorModel *model = models.value(tabBar->tabData(tabBar->currentIndex()).toString());
-	if (model)
-		model->refresh();
+	DBFRedactorPage *page = pages.value(tabBar->tabData(tabBar->currentIndex()).toString());
+	if (page)
+		page->model()->refresh();
 }
 
 void DBFRedactorMainWindow::selectionChanged()

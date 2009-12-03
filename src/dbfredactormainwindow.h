@@ -4,7 +4,7 @@
 class QTableView;
 class QTabBar;
 class QAction;
-class DBFRedactorModel;
+class DBFRedactorPage;
 class QLabel;
 class QItemSelection;
 
@@ -13,8 +13,6 @@ class QItemSelection;
 
 #include <QtGui/QMainWindow>
 
-#include "dbfredactormodel.h"
-
 class DBFRedactorMainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -22,7 +20,8 @@ class DBFRedactorMainWindow : public QMainWindow
 private:
 	QTableView *view;
 	QTabBar *tabBar;
-	QMap<QString, DBFRedactorModel*> models;
+	QMap<QString, DBFRedactorPage*> pages;
+	DBFRedactorPage *currentPage;
 	QLabel *currentFile;
 	QLabel *sumLabel;
 
