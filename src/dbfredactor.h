@@ -37,11 +37,11 @@ struct Field
 
 struct Header
 {
-	int type;
+	int fileType;
 	QDate lastUpdated;
-	long count;
-	int pos;
-	int lenghtRecord;
+	long recordsCount;
+	int firstRecordPos;
+	int recordLenght;
 	bool isIndex;
 	QList<Field> fieldsList;
 };

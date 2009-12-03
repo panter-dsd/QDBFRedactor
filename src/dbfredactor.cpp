@@ -3,7 +3,7 @@
 
 DBFRedactor::DBFRedactor()
 {
-	header.count = -1;
+	header.recordsCount = -1;
 	m_fileName = "";
 }
 
@@ -55,10 +55,10 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	m_buf = m_file.read(32);
 	bool ok = false;
 #warning "Type is not true."
-	header.type = m_buf.at(0);
-	header.count = revert(m_buf.mid(4,4)).toHex().toLong(&ok,16);
-	header.pos = revert(m_buf.mid(8,2)).toHex().toInt(&ok,16);
-	header.lenghtRecord = revert(m_buf.mid(10,2)).toHex().toInt(&ok,16);
+	header.fileType = m_buf.at(0);
+	header.recordsCount = revert(m_buf.mid(4,4)).toHex().toLong(&ok,16);
+	header.firstRecordPos = revert(m_buf.mid(8,2)).toHex().toInt(&ok,16);
+	header.recordLenght = revert(m_buf.mid(10,2)).toHex().toInt(&ok,16);
 	header.isIndex = (m_buf.at(28) == 1);
 
 	if (m_buf.at(29) == -55)
@@ -103,7 +103,7 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 		header.fieldsList << field;
 		m_buf = m_file.read(32);
 	} while (m_buf.at(0) != 13);
-	m_file.seek(header.pos);
+	m_file.seek(header.firstRecordPos);
 	m_buf.clear();
 	return true;
 }
@@ -126,14 +126,14 @@ Field DBFRedactor::field(int number)
 
 QByteArray DBFRedactor::strRecord(int number)
 {
-	if ((number >= header.count) || (!m_file.isOpen()))
+	if ((number >= header.recordsCount) || (!m_file.isOpen()))
 		return QByteArray();
 	if (m_hash.contains(number)) {
 		m_buf = m_hash.value(number);
 	} else {
 		if (lastRecord != number - 1)
-			m_file.seek(header.pos + header.lenghtRecord * number);
-		m_buf = m_file.read(header.lenghtRecord);
+			m_file.seek(header.firstRecordPos + header.recordLenght * number);
+		m_buf = m_file.read(header.recordLenght);
 		lastRecord = number;
 		m_hash.insert(number, m_buf);
 		if (m_hash.size() > MAX_BUFFER_SIZE)
@@ -144,15 +144,15 @@ QByteArray DBFRedactor::strRecord(int number)
 
 Record DBFRedactor::record(int number)
 {
-	if ((number >= header.count) || (!m_file.isOpen()))
+	if (number < 0 || number >= header.recordsCount || !m_file.isOpen())
 		return Record();
 
 	if (m_hash.contains(number)) {
 		m_buf = m_hash.value(number);
 	} else {
 		if (lastRecord != number - 1)
-			m_file.seek(header.pos + header.lenghtRecord * number);
-		m_buf = m_file.read(header.lenghtRecord);
+			m_file.seek(header.firstRecordPos + header.recordLenght * number);
+		m_buf = m_file.read(header.recordLenght);
 		lastRecord = number;
 		m_hash.insert(number, m_buf);
 		if (m_hash.size() > MAX_BUFFER_SIZE)
@@ -225,22 +225,24 @@ bool DBFRedactor::isOpen()
 int DBFRedactor::deletedCount()
 {
 	qint64 pos = m_file.pos();
-	m_file.seek(header.pos);
-	int delCount = 0;
-	for (int i = 0; i < header.count; i++)
+	m_file.seek(header.firstRecordPos);
+
+	long deletedCount = 0;
+	for (int i = 0; i < header.recordsCount; i++)
 	{
-		m_buf = m_file.read(header.lenghtRecord);
+		m_buf = m_file.read(1);
 		if (m_buf.at(0) == 0x2A)
-			delCount++;
+			deletedCount++;
+		m_file.seek(header.firstRecordPos + header.recordLenght * (i + 1));
 	}
 	m_file.seek(pos);
-	return delCount;
+	return deletedCount;
 }
 
 int DBFRedactor::rowsCount()
 {
 	if (m_file.isOpen())
-		return header.count;
+		return header.recordsCount;
 	else
 		return 0;
 }

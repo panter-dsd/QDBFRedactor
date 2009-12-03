@@ -4,7 +4,7 @@
 #include "dbfredactor.h"
 
 DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
-	:QAbstractItemModel(parent), m_fileName(fileName)
+	:QAbstractItemModel(parent), m_fileName(fileName), m_showDeleted(true)
 {
 	redactor = new DBFRedactor(fileName);
 	redactor->open(DBFRedactor::Read);
@@ -41,7 +41,11 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 				return Qt::darkGreen;
 			return Qt::black;
 			break;
-	}
+		case Qt::BackgroundRole:
+			if (redactor->record(index.row()).isDeleted)
+				return Qt::lightGray;
+			break;
+		}
 
 	return QVariant();
 }

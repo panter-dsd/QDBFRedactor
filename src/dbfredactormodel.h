@@ -11,6 +11,7 @@ class DBFRedactorModel : public QAbstractItemModel
 
 private:
 	QString m_fileName;
+	bool m_showDeleted;
 	DBFRedactor *redactor;
 
 public:
@@ -26,6 +27,11 @@ public:
 	QModelIndex parent(const QModelIndex &index) const;
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+	bool showDeleted()
+	{return m_showDeleted;}
+	void setShowDeleted(bool isShow)
+	{m_showDeleted = isShow;}
 };
 
 #endif //DBFREDACTORMODEL_H
