@@ -1,243 +1,246 @@
 #include "dbfredactor.h"
 #define MAX_BUFFER_SIZE 10000
-//
+
 DBFRedactor::DBFRedactor()
 {
-	header.count=-1;
-	qsFileName="";
+	header.count = -1;
+	m_fileName = "";
 }
-//
+
 DBFRedactor::DBFRedactor(const QString& fileName)
+	: m_fileName(fileName)
 {
-	qsFileName=fileName;
-	qsTableName=QFileInfo(qsFileName).baseName();
+	m_tableName = QFileInfo(m_fileName).baseName();
 }
-//
+
 DBFRedactor::~DBFRedactor()
 {
 	close();
 }
-//
+
 void DBFRedactor::close()
 {
 	header.fieldsList.clear();
-	qfFile.close();
-	qhBuffer.clear();
+	m_file.close();
+	m_hash.clear();
 }
-//
+
 bool DBFRedactor::open(DBFOpenMode OpenMode)
 {
-	if (qsFileName.isEmpty())
-		return false;
-	return open(OpenMode, qsFileName);
+	return open(OpenMode, m_fileName);
 }
-//
+
 bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 {
 	if (!fileName.isEmpty())
-		qsFileName=fileName;
-	if (qsFileName.isEmpty())
+		m_fileName = fileName;
+
+	if (m_fileName.isEmpty())
 		return false;
-	qsTableName=QFileInfo(qsFileName).baseName();
-	qfFile.setFileName(qsFileName);
+
+	m_tableName = QFileInfo(m_fileName).baseName();
+	m_file.setFileName(m_fileName);
+
 	QIODevice::OpenMode openMode;
 	if (OpenMode == DBFRedactor::Read)
 		openMode = QIODevice::ReadOnly;
 	if (OpenMode == DBFRedactor::Write)
 		openMode = QIODevice::Append;
 
-	if (!qfFile.open(openMode))
-	{
+	if (!m_file.open(openMode)) {
 		qDebug("Error open file");
 		return false;
 	}
-	buf=qfFile.read(32);
-	bool ok;
-#warning "Type is not true."
-	header.type=buf.at(0);
-	header.count=revert(buf.mid(4,4)).toHex().toLong(&ok,16);
-	header.pos=revert(buf.mid(8,2)).toHex().toInt(&ok,16);
-	header.lenghtRecord=revert(buf.mid(10,2)).toHex().toInt(&ok,16);
-	header.isIndex=(buf.at(28)==1);
 
-	if (buf.at(29)==-55)
-		codec=QTextCodec::codecForName("CP1251");
+	m_buf = m_file.read(32);
+	bool ok = false;
+#warning "Type is not true."
+	header.type = m_buf.at(0);
+	header.count = revert(m_buf.mid(4,4)).toHex().toLong(&ok,16);
+	header.pos = revert(m_buf.mid(8,2)).toHex().toInt(&ok,16);
+	header.lenghtRecord = revert(m_buf.mid(10,2)).toHex().toInt(&ok,16);
+	header.isIndex = (m_buf.at(28) == 1);
+
+	if (m_buf.at(29) == -55)
+		m_codec = QTextCodec::codecForName("CP1251");
 	else
-		codec=QTextCodec::codecForName("IBM866");
-	buf=qfFile.read(32);
-	do
-	{
-		SField field;
-		field.qsName=codec->toUnicode(buf.left(10));
-		field.qsName.remove(field.qsName.indexOf(QChar(0)),10);
-		switch (buf.at(11))
-		{
-			case 'C':{field.type=TYPE_CHAR; break;}
-			case 'N':{field.type=TYPE_NUMERIC; break;}
-			case 'L':{field.type=TYPE_LOGICAL; break;}
-			case 'M':{field.type=TYPE_MEMO; break;}
-			case 'D':{field.type=TYPE_DATE; break;}
-			case 'F':{field.type=TYPE_FLOAT; break;}
-			case 'P':{field.type=TYPE_P; break;}
+		m_codec = QTextCodec::codecForName("IBM866");
+
+	m_buf = m_file.read(32);
+	do {
+		Field field;
+		field.name = m_codec->toUnicode(m_buf.left(10));
+		field.name.remove(field.name.indexOf(QChar(0)), 10);
+		switch (m_buf.at(11)) {
+			case 'C':
+				field.type = TYPE_CHAR;
+				break;
+			case 'N':
+				field.type = TYPE_NUMERIC;
+				break;
+			case 'L':
+				field.type = TYPE_LOGICAL;
+				break;
+			case 'M':
+				field.type = TYPE_MEMO;
+				break;
+			case 'D':
+				field.type = TYPE_DATE;
+				break;
+			case 'F':
+				field.type = TYPE_FLOAT;
+				break;
+			case 'P':
+				field.type = TYPE_P;
+				break;
 		}
-		field.pos=revert(buf.mid(12,4)).toHex().toLong(&ok,16);
-		field.firstLenght=buf.mid(16,1).toHex().toInt(&ok,16);
-		field.secondLenght=buf.mid(17,1).toHex().toInt(&ok,16);
-		if ((field.type==TYPE_NUMERIC) && (field.firstLenght>18))
-		{
+		field.pos = revert(m_buf.mid(12, 4)).toHex().toLong(&ok, 16);
+		field.firstLenght = m_buf.mid(16, 1).toHex().toInt(&ok, 16);
+		field.secondLenght = m_buf.mid(17, 1).toHex().toInt(&ok, 16);
+		if ((field.type == TYPE_NUMERIC) && (field.firstLenght > 18))
 			field.type=TYPE_FLOAT;
-		}
+
 		header.fieldsList << field;
-		buf=qfFile.read(32);
-	}
-	while (buf.at(0)!=13);
-	qfFile.seek(header.pos);
-	buf.clear();
+		m_buf = m_file.read(32);
+	} while (m_buf.at(0) != 13);
+	m_file.seek(header.pos);
+	m_buf.clear();
 	return true;
 }
-//
+
 QByteArray DBFRedactor::revert(const QByteArray& array)
 {
-	QByteArray qbaArray;
-	for (int i=array.length()-1; i>=0; i--)
-	{
-		qbaArray.append(array.at(i));
-	}
-	return qbaArray;
+	QByteArray newArray;
+	for (int i = array.length() - 1; i >= 0; i--)
+		newArray.append(array.at(i));
+	return newArray;
 }
-//
-SField DBFRedactor::field(int number)
+
+Field DBFRedactor::field(int number)
 {
-	if (number<header.fieldsList.count())
+	if (number < header.fieldsList.count())
 		return header.fieldsList.at(number);
 	else
-		return SField();
+		return Field();
 }
-//
+
 QByteArray DBFRedactor::strRecord(int number)
 {
-	if ((number>=header.count) || (!qfFile.isOpen()))
+	if ((number >= header.count) || (!m_file.isOpen()))
 		return QByteArray();
-	if (qhBuffer.contains(number))
-		buf=qhBuffer.value(number);
-	else
-	{
-		if (lastRecord!=number-1)
-		{
-			qfFile.seek(header.pos+header.lenghtRecord*number);
-		}
-		buf=qfFile.read(header.lenghtRecord);
-		lastRecord=number;
-		qhBuffer.insert(number,buf);
-		if (qhBuffer.size()>MAX_BUFFER_SIZE)
-			qhBuffer.erase(qhBuffer.begin());
+	if (m_hash.contains(number)) {
+		m_buf = m_hash.value(number);
+	} else {
+		if (lastRecord != number - 1)
+			m_file.seek(header.pos + header.lenghtRecord * number);
+		m_buf = m_file.read(header.lenghtRecord);
+		lastRecord = number;
+		m_hash.insert(number, m_buf);
+		if (m_hash.size() > MAX_BUFFER_SIZE)
+			m_hash.erase(m_hash.begin());
 	}
-	return buf;
+	return m_buf;
 }
-//
-SRecord* DBFRedactor::record(int number)
+
+Record DBFRedactor::record(int number)
 {
-	if ((number>=header.count) || (!qfFile.isOpen()))
-		return 0;
-	if (qhBuffer.contains(number))
-	{
-		buf=qhBuffer.value(number);
-	}
-	else
-	{
-		if (lastRecord!=number-1)
-		{
-			qfFile.seek(header.pos+header.lenghtRecord*number);
-		}
-		buf=qfFile.read(header.lenghtRecord);
-		lastRecord=number;
-		qhBuffer.insert(number,buf);
-		if (qhBuffer.size()>MAX_BUFFER_SIZE)
-			qhBuffer.erase(qhBuffer.begin());
+	if ((number >= header.count) || (!m_file.isOpen()))
+		return Record();
+
+	if (m_hash.contains(number)) {
+		m_buf = m_hash.value(number);
+	} else {
+		if (lastRecord != number - 1)
+			m_file.seek(header.pos + header.lenghtRecord * number);
+		m_buf = m_file.read(header.lenghtRecord);
+		lastRecord = number;
+		m_hash.insert(number, m_buf);
+		if (m_hash.size() > MAX_BUFFER_SIZE)
+			m_hash.erase(m_hash.begin());
 	}
 
-	SRecord* szRecord=new SRecord();
-	QString recordString=codec->toUnicode(buf);
-	QString qstemp;
-	int pos=1;
-	for (int i=0; i<header.fieldsList.count();i++)
-	{
-		qstemp=recordString.mid(pos,header.fieldsList.at(i).firstLenght);
-		pos+=header.fieldsList.at(i).firstLenght;
+	Record record;
+	QString recordString = m_codec->toUnicode(m_buf);
+	QString tempString;
+	int pos = 1;
+	for (int i = 0; i < header.fieldsList.count(); i++) {
+		tempString = recordString.mid(pos, header.fieldsList.at(i).firstLenght);
+		pos += header.fieldsList.at(i).firstLenght;
 		//Delete last spaces
-		if (!qstemp.isEmpty())
-		{
-			int i=qstemp.length();
-			while ((--i>=0) && qstemp[i].isSpace())	 {;}
-			qstemp.remove(i+1,qstemp.length());
+		if (!tempString.isEmpty()) {
+			int i = tempString.length();
+			while ((--i >= 0) && tempString[i].isSpace()) {;}
+			tempString.remove(i + 1,tempString.length());
 		}
-		//
-		switch (header.fieldsList.at(i).type)
-		{
-			case TYPE_CHAR: {szRecord->value.append(QVariant(qstemp));break;}
-			case TYPE_NUMERIC: {szRecord->value.append(QVariant(qstemp.toDouble()));break;}
-			case TYPE_LOGICAL:
-			{
-				if (qstemp.toInt()==0)
-					szRecord->value.append("FALSE");
-				else
-					szRecord->value.append("TRUE");
+
+		switch (header.fieldsList.at(i).type) {
+			case TYPE_CHAR:
+				record.value.append(QVariant(tempString));
 				break;
-			}
-			case TYPE_DATE: {szRecord->value.append(QVariant(QDate::fromString(qstemp,"yyyyMMdd")));break;}
-			case TYPE_FLOAT: {szRecord->value.append(QVariant(qstemp.toDouble()));break;}
-			case TYPE_MEMO: {szRecord->value.append(QVariant());break;}
+			case TYPE_NUMERIC:
+				record.value.append(QVariant(tempString.toDouble()));
+				break;
+			case TYPE_LOGICAL:
+				if (tempString.toInt() == 0)
+					record.value.append("FALSE");
+				else
+					record.value.append("TRUE");
+				break;
+			case TYPE_DATE:
+				record.value.append(QVariant(QDate::fromString(tempString,"yyyyMMdd")));
+				break;
+			case TYPE_FLOAT:
+				record.value.append(QVariant(tempString.toDouble()));
+				break;
+			case TYPE_MEMO:
+				record.value.append(QVariant());
+				break;
 		}
 	}
-	if (buf.at(0)==0x2A)
-		szRecord->isDeleted=true;
-	else
-		szRecord->isDeleted=false;
-	lastRecord=number;
-	buf.clear();
-	return szRecord;
+	record.isDeleted = m_buf.at(0) == 0x2A;
+	lastRecord = number;
+	m_buf.clear();
+	return record;
 }
-//
-bool DBFRedactor::compareRecord(SRecord* qzFirst,SRecord* qzSecond)
+
+bool DBFRedactor::compareRecord(Record* first,Record* second)
 {
-	if (qzFirst->isDeleted!=qzSecond->isDeleted)
+	if (first->isDeleted != second->isDeleted)
 		return false;
-	if (qzFirst->value.count()!=qzSecond->value.count())
+
+	if (first->value.count() != second->value.count())
 		return false;
-	for (int i=0; i<qzFirst->value.count(); i++)
-	{
-		if (qzFirst->value.at(i)!=qzSecond->value.at(i))
+
+	for (int i = 0; i < first->value.count(); i++)
+		if (first->value.at(i) != second->value.at(i))
 			return false;
-	}
 	return true;
 }
-//
+
 bool DBFRedactor::isOpen()
 {
-	return qfFile.isOpen();
+	return m_file.isOpen();
 }
-//
+
 int DBFRedactor::deletedCount()
 {
-	qint64 pos=qfFile.pos();
-	qfFile.seek(header.pos);
-	int delCount=0;
-	for (int i=0; i<header.count; i++)
+	qint64 pos = m_file.pos();
+	m_file.seek(header.pos);
+	int delCount = 0;
+	for (int i = 0; i < header.count; i++)
 	{
-		buf=qfFile.read(header.lenghtRecord);
-		if (buf.at(0)==0x2A)
+		m_buf = m_file.read(header.lenghtRecord);
+		if (m_buf.at(0) == 0x2A)
 			delCount++;
 	}
-	qfFile.seek(pos);
+	m_file.seek(pos);
 	return delCount;
 }
-//
-int DBFRedactor::recordsCount()
+
+int DBFRedactor::rowsCount()
 {
-	if (qfFile.isOpen())
+	if (m_file.isOpen())
 		return header.count;
 	else
 		return 0;
 }
-//
-
