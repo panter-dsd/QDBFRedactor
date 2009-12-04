@@ -10,51 +10,51 @@
 #include <QtCore/QVariant>
 #include <QtCore/QHash>
 
-enum FieldType{
-	TYPE_CHAR = 0,
-	TYPE_NUMERIC,
-	TYPE_LOGICAL,
-	TYPE_MEMO,
-	TYPE_DATE,
-	TYPE_FLOAT,
-	TYPE_P};
-
-enum FileType{
-	Fox3,
-	Fox3M,
-	Fox4,
-	Fox,
-	Dbase4};
-
-struct Field
-{
-	QString name;
-	int type;
-	long pos;
-	int firstLenght;
-	int secondLenght;
-};
-
-struct Header
-{
-	int fileType;
-	QDate lastUpdated;
-	long recordsCount;
-	int firstRecordPos;
-	int recordLenght;
-	bool isIndex;
-	QList<Field> fieldsList;
-};
-
-struct Record
-{
-	bool isDeleted;
-	QList<QVariant> value;
-};
-
 class DBFRedactor
 {
 public:
+	enum FieldType{
+		TYPE_CHAR = 0,
+		TYPE_NUMERIC,
+		TYPE_LOGICAL,
+		TYPE_MEMO,
+		TYPE_DATE,
+		TYPE_FLOAT,
+		TYPE_P};
+
+	enum FileType{
+		Fox3,
+		Fox3M,
+		Fox4,
+		Fox,
+		Dbase4};
+
+	struct Field
+	{
+		QString name;
+		int type;
+		long pos;
+		int firstLenght;
+		int secondLenght;
+	};
+
+	struct Header
+	{
+		int fileType;
+		QDate lastUpdated;
+		long recordsCount;
+		int firstRecordPos;
+		int recordLenght;
+		bool isIndex;
+		QList<Field> fieldsList;
+	};
+
+	struct Record
+	{
+		bool isDeleted;
+		QList<QVariant> value;
+	};
+
 	enum DBFOpenModeFlag {
 		No,
 		Read,
@@ -83,13 +83,15 @@ public:
 	bool open(DBFOpenMode OpenMode);
 	void close();
 
-	Field field(int number);
+	DBFRedactor::Field field(int number);
 	QByteArray strRecord(int number);
-	Record record(int number);
+	DBFRedactor::Record record(int number);
+
 	int columnsCount()
 	{return header.fieldsList.count();}
 
 	int rowsCount();
+
 	QString tableName()
 	{return m_tableName;}
 

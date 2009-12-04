@@ -117,7 +117,7 @@ QByteArray DBFRedactor::revert(const QByteArray& array)
 	return newArray;
 }
 
-Field DBFRedactor::field(int number)
+DBFRedactor::Field DBFRedactor::field(int number)
 {
 	if (number < header.fieldsList.count())
 		return header.fieldsList.at(number);
@@ -143,7 +143,7 @@ QByteArray DBFRedactor::strRecord(int number)
 	return m_buf;
 }
 
-Record DBFRedactor::record(int number)
+DBFRedactor::Record DBFRedactor::record(int number)
 {
 	if (number < 0 || number >= header.recordsCount || !m_file.isOpen())
 		return Record();
@@ -189,7 +189,7 @@ Record DBFRedactor::record(int number)
 					record.value.append("TRUE");
 				break;
 			case TYPE_DATE:
-				record.value.append(QVariant(QDate::fromString(tempString,"yyyyMMdd")));
+				record.value.append(QVariant(QDate::fromString(tempString, "yyyyMMdd")));
 				break;
 			case TYPE_FLOAT:
 				record.value.append(QVariant(tempString.toDouble()));

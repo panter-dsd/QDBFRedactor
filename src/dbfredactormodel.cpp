@@ -21,7 +21,7 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	Record record;
+	DBFRedactor::Record record;
 	if (records.contains(index.row())) {
 		record = records.value(index.row());
 	} else {
@@ -34,18 +34,18 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 			return record.value.at(index.column());
 			break;
 		case Qt::TextAlignmentRole:
-			if ((redactor->field(index.column()).type == TYPE_NUMERIC)
-				|| (redactor->field(index.column()).type == TYPE_FLOAT))
+			if ((redactor->field(index.column()).type == DBFRedactor::TYPE_NUMERIC)
+				|| (redactor->field(index.column()).type == DBFRedactor::TYPE_FLOAT))
 				return Qt::AlignRight;
-			if (redactor->field(index.column()).type == TYPE_DATE)
+			if (redactor->field(index.column()).type == DBFRedactor::TYPE_DATE)
 				return Qt::AlignHCenter;
 			return Qt::AlignLeft;
 			break;
 		case Qt::ForegroundRole:
-			if ((redactor->field(index.column()).type == TYPE_NUMERIC)
-				|| (redactor->field(index.column()).type == TYPE_FLOAT))
+			if ((redactor->field(index.column()).type == DBFRedactor::TYPE_NUMERIC)
+				|| (redactor->field(index.column()).type == DBFRedactor::TYPE_FLOAT))
 				return Qt::darkBlue;
-			if (redactor->field(index.column()).type == TYPE_DATE)
+			if (redactor->field(index.column()).type == DBFRedactor::TYPE_DATE)
 				return Qt::darkGreen;
 			return Qt::black;
 			break;

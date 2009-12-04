@@ -491,13 +491,13 @@ void DBFRedactorMainWindow::exportToCsv()
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			switch (currentPage->model()->dbfRedactor()->field(j).type) {
-				case TYPE_NUMERIC: case TYPE_FLOAT:
+				case DBFRedactor::TYPE_NUMERIC: case DBFRedactor::TYPE_FLOAT:
 					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
 					break;
-				case TYPE_DATE:
+				case DBFRedactor::TYPE_DATE:
 					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
 					break;
-				case TYPE_CHAR: default:
+				case DBFRedactor::TYPE_CHAR: default:
 					tempStringList << "\"" + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "\"";
 			}
 		}
