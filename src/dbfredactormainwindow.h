@@ -33,6 +33,7 @@ private:
 	QAction *actionCopy;
 	QAction* acionExportToHtml;
 	QAction* acionExportToXml;
+	QAction* acionExportToCsv;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -58,6 +59,7 @@ private Q_SLOTS:
 	void copyToClipboard();
 	void exportToHtml();
 	void exportToXml();
+	void exportToCsv();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

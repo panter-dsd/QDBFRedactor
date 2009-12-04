@@ -36,6 +36,9 @@ public:
 	{m_showDeleted = isShow;}
 
 	void refresh();
+
+	DBFRedactor* dbfRedactor()
+	{return redactor;}
 };
 
 #endif //DBFREDACTORMODEL_H

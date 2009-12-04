@@ -95,6 +95,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	acionExportToXml->setToolTip(tr("Export to xml"));
 	connect(acionExportToXml, SIGNAL(triggered()), this, SLOT(exportToXml()));
 	addAction(acionExportToXml);
+
+	acionExportToCsv = new QAction(QIcon(":/share/images/exportToCsv.png"), tr("&Export to csv"), this);
+	acionExportToCsv->setToolTip(tr("Export to csv"));
+	connect(acionExportToCsv, SIGNAL(triggered()), this, SLOT(exportToCsv()));
+	addAction(acionExportToCsv);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -110,6 +115,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	QMenu *exportMenu = new QMenu(tr("&Export"), menuBar);
 	exportMenu->addAction(acionExportToHtml);
 	exportMenu->addAction(acionExportToXml);
+	exportMenu->addAction(acionExportToCsv);
 
 	menuBar->addMenu(exportMenu);
 
@@ -434,6 +440,68 @@ void DBFRedactorMainWindow::exportToXml()
 
 	stream.writeEndElement();
 	stream.writeEndDocument();
+	file.close();
+	delete progressBar;
+	progressBar = 0;
+
+	QMessageBox::information(this, "", tr("Export finished"));
+}
+
+void DBFRedactorMainWindow::exportToCsv()
+{
+	QSettings settings;
+	const QString& fileName = QFileDialog::getSaveFileName(this,
+														   tr("Save"),
+														   settings.value("Global/ExportPath", "'").toString(),
+														   tr("CSV files (*.csv)"));
+	if (fileName.isEmpty())
+		return;
+
+	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
+
+	Q_ASSERT (progressBar == 0);
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Saving. %p% to finish."));
+	progressBar->setRange(0, view->model()->rowCount());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
+
+	QFile file(fileName);
+	file.open(QIODevice::WriteOnly);
+
+	QTextStream stream(&file);
+	stream.setCodec("UTF-8");
+
+
+	QStringList tempStringList;
+	for (int j = 0; j < view->model()->columnCount(); j++)
+		tempStringList << "\"" + view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString() + "\"";
+
+	stream << tempStringList.join("|") << endl;
+	tempStringList.clear();
+
+	for (int i = 0; i < view->model()->rowCount(); i++) {
+		progressBar->setValue(i);
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		for (int j = 0; j < view->model()->columnCount(); j++) {
+			switch (currentPage->model()->dbfRedactor()->field(j).type) {
+				case TYPE_NUMERIC: case TYPE_FLOAT:
+					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
+					break;
+				case TYPE_DATE:
+					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
+					break;
+				case TYPE_CHAR: default:
+					tempStringList << "\"" + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "\"";
+			}
+		}
+		stream << tempStringList.join("|") << endl;
+		tempStringList.clear();
+	}
+
 	file.close();
 	delete progressBar;
 	progressBar = 0;
