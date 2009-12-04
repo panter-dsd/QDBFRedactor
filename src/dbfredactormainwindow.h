@@ -7,6 +7,7 @@ class QAction;
 class DBFRedactorPage;
 class QLabel;
 class QItemSelection;
+class QProgressBar;
 
 #include <QtCore/QMap>
 
@@ -23,6 +24,7 @@ private:
 	DBFRedactorPage *currentPage;
 	QLabel *currentFile;
 	QLabel *sumLabel;
+	QProgressBar *progressBar;
 
 	QAction *actionOpen;
 	QAction *actionExit;
@@ -30,6 +32,7 @@ private:
 	QAction *actionRefresh;
 	QAction *actionCopy;
 	QAction* acionExportToHtml;
+	QAction* acionExportToXml;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -43,6 +46,7 @@ private:
 	QStringList prepareHtml();
 
 protected:
+	bool event(QEvent *ev);
 
 private Q_SLOTS:
 	void open();
@@ -53,6 +57,7 @@ private Q_SLOTS:
 	void selectionChanged();
 	void copyToClipboard();
 	void exportToHtml();
+	void exportToXml();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

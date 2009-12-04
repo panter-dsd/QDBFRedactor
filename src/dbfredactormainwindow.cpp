@@ -18,11 +18,13 @@
 #include <QtGui/QProgressBar>
 #include <QtGui/QMessageBox>
 
+#include <QtXml/QXmlStreamWriter>
+
 #include "dbfredactormainwindow.h"
 #include "dbfredactorpage.h"
 
 DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
-		: QMainWindow(parent, f), currentPage(0)
+		: QMainWindow(parent, f), currentPage(0), progressBar(0)
 {
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
@@ -88,6 +90,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	acionExportToHtml->setToolTip(tr("Export to html"));
 	connect(acionExportToHtml, SIGNAL(triggered()), this, SLOT(exportToHtml()));
 	addAction(acionExportToHtml);
+
+	acionExportToXml = new QAction(QIcon(":/share/images/exportToXml.png"), tr("&Export to xml"), this);
+	acionExportToXml->setToolTip(tr("Export to xml"));
+	connect(acionExportToXml, SIGNAL(triggered()), this, SLOT(exportToXml()));
+	addAction(acionExportToXml);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -102,6 +109,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	QMenu *exportMenu = new QMenu(tr("&Export"), menuBar);
 	exportMenu->addAction(acionExportToHtml);
+	exportMenu->addAction(acionExportToXml);
 
 	menuBar->addMenu(exportMenu);
 
@@ -299,28 +307,32 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 	for (int i = 0; i < view->model()->columnCount(); i++)
 		html << "<TD ALIGN=CENTER> " + view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "</TD>";
 	html << "</TR>";
-	QProgressBar *bar = new QProgressBar(this);
-	bar->setFormat(tr("Preparing. %p% to finish."));
-	bar->setRange(0, view->model()->rowCount());
-	bar->setValue(0);
-	bar->resize(statusBar()->size());
-	bar->move(statusBar()->pos());
-	bar->show();
+	Q_ASSERT (progressBar == 0);
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Preparing. %p% to finish."));
+	progressBar->setRange(0, view->model()->rowCount());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
 	for (int i = 0; i < view->model()->rowCount(); i++) {
-		bar->setValue(i);
+		QString tempStrting;
+		progressBar->setValue(i);
 		if (i / 100 * 100 == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-		html << "<TR ALIGN=LEFT>";
+		tempStrting += "<TR ALIGN=LEFT>";
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
 			if (value.isEmpty())
 				value = "<BR>";
-			html << "<TD><P>" + value + "</P></TD>";
+			tempStrting += "\n<TD><P>" + value + "</P></TD>";
 		}
-		html << "</TR>";
+		tempStrting += "\n</TR>";
+		html << tempStrting;
 	}
 	html << "</TBODY></TABLE></BODY></HTML>";
-	delete bar;
+	delete progressBar;
+	progressBar = 0;
 	return html;
 }
 
@@ -334,17 +346,18 @@ void DBFRedactorMainWindow::exportToHtml()
 	if (fileName.isEmpty())
 		return;
 
-	settings.setValue("Global/ExportPath", fileName);
+	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
 
 	const QStringList& l(prepareHtml());
 
-	QProgressBar *bar = new QProgressBar(this);
-	bar->setFormat(tr("Saving. %p% to finish."));
-	bar->setRange(0, l.size());
-	bar->setValue(0);
-	bar->resize(statusBar()->size());
-	bar->move(statusBar()->pos());
-	bar->show();
+	Q_ASSERT (progressBar == 0);
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Saving. %p% to finish."));
+	progressBar->setRange(0, l.size());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
 
 	QFile file(fileName);
 	file.open(QIODevice::WriteOnly);
@@ -357,10 +370,73 @@ void DBFRedactorMainWindow::exportToHtml()
 		if (i / 100 * 100 == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		stream << l.at(i) << endl;
-		bar->setValue(i);
+		progressBar->setValue(i);
 	}
 	file.close();
-	delete bar;
+	delete progressBar;
+	progressBar = 0;
+
+	QMessageBox::information(this, "", tr("Export finished"));
+}
+
+bool DBFRedactorMainWindow::event(QEvent *ev)
+{
+	if (ev->type() == QEvent::Resize || ev->type() == QEvent::Move) {
+		if (progressBar) {
+			progressBar->resize(statusBar()->size());
+			progressBar->move(statusBar()->pos());
+		}
+	}
+	return QMainWindow::event(ev);
+}
+
+void DBFRedactorMainWindow::exportToXml()
+{
+	QSettings settings;
+	const QString& fileName = QFileDialog::getSaveFileName(this,
+														   tr("Save"),
+														   settings.value("Global/ExportPath", "'").toString(),
+														   tr("XML files (*.xml)"));
+	if (fileName.isEmpty())
+		return;
+
+	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
+
+	Q_ASSERT (progressBar == 0);
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Saving. %p% to finish."));
+	progressBar->setRange(0, view->model()->rowCount());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
+
+	QFile file(fileName);
+	file.open(QIODevice::WriteOnly);
+
+	QXmlStreamWriter stream(&file);
+	stream.setAutoFormatting(true);
+	stream.writeStartDocument();
+	stream.writeStartElement("ROWDATA");
+
+	for (int i = 0; i < view->model()->rowCount(); i++) {
+		stream.writeStartElement("ROW");
+		progressBar->setValue(i);
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		for (int j = 0; j < view->model()->columnCount(); j++) {
+			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
+			stream.writeTextElement(view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString(),
+									value);
+		}
+		stream.writeEndElement();
+	}
+
+	stream.writeEndElement();
+	stream.writeEndDocument();
+	file.close();
+	delete progressBar;
+	progressBar = 0;
 
 	QMessageBox::information(this, "", tr("Export finished"));
 }

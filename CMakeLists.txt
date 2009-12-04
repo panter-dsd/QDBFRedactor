@@ -6,6 +6,7 @@ SET (CMAKE_BUILD_TYPE Debug)
 
 INCLUDE(FindQt4)
 find_package( Qt4 REQUIRED )
+SET(QT_USE_QTXML 1)
 include( ${QT_USE_FILE})
 add_definitions(-DUNICODE)
 
