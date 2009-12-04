@@ -289,11 +289,15 @@ void DBFRedactorMainWindow::copyToClipboard()
 QStringList DBFRedactorMainWindow::prepareHtml()
 {
 	QStringList html;
-	html << "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /></head><body>";
-	html << "<TABLE BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4 CELLSPACING=0 align=left>";
+	html << "<HTML><HEAD><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /></HEAD>\n<BODY>";
+	html << "<TABLE BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4  CELLSPACING=0 WIDTH=\"100%\" ALIGN=LEFT>";
+	html << "<COLGROUP>";
+	for (int i = 0; i < view->model()->columnCount(); i++)
+		html << QString("<COL WIDTH=%1%>").arg(100 / view->model()->columnCount());
+	html << "<TBODY>";
 	html << "<TR VALIGN=TOP>";
 	for (int i = 0; i < view->model()->columnCount(); i++)
-		html << "<TD align=center> " + view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "</TD>";
+		html << "<TD ALIGN=CENTER> " + view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "</TD>";
 	html << "</TR>";
 	QProgressBar *bar = new QProgressBar(this);
 	bar->setFormat(tr("Preparing. %p% to finish."));
@@ -306,12 +310,16 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 		bar->setValue(i);
 		if (i / 100 * 100 == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-		html << "<TR>";
-		for (int j = 0; j < view->model()->columnCount(); j++)
-			html << "<TD align=left> " + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "</TD>";
+		html << "<TR ALIGN=LEFT>";
+		for (int j = 0; j < view->model()->columnCount(); j++) {
+			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
+			if (value.isEmpty())
+				value = "<BR>";
+			html << "<TD><P>" + value + "</P></TD>";
+		}
 		html << "</TR>";
 	}
-	html << "</TABLE></body></html>";
+	html << "</TBODY></TABLE></BODY></HTML>";
 	delete bar;
 	return html;
 }
