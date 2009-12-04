@@ -262,8 +262,11 @@ void DBFRedactorMainWindow::closeCurrentTab()
 void DBFRedactorMainWindow::updateActions()
 {
 	actionClose->setEnabled(tabBar->count() > 0);
-	currentFile->setVisible(!currentFile->text().isEmpty());
-	sumLabel->setVisible(!currentFile->text().isEmpty());
+	currentFile->setVisible(currentPage);
+	sumLabel->setVisible(currentPage);
+	acionExportToHtml->setEnabled(currentPage);
+	acionExportToXml->setEnabled(currentPage);
+	acionExportToCsv->setEnabled(currentPage);
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -347,7 +350,7 @@ void DBFRedactorMainWindow::exportToHtml()
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString(),
+														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->model()->dbfRedactor()->tableName(),
 														   tr("HTML files (*.html)"));
 	if (fileName.isEmpty())
 		return;
@@ -401,7 +404,7 @@ void DBFRedactorMainWindow::exportToXml()
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString(),
+														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->model()->dbfRedactor()->tableName(),
 														   tr("XML files (*.xml)"));
 	if (fileName.isEmpty())
 		return;
@@ -452,7 +455,7 @@ void DBFRedactorMainWindow::exportToCsv()
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString(),
+														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->model()->dbfRedactor()->tableName(),
 														   tr("CSV files (*.csv)"));
 	if (fileName.isEmpty())
 		return;
