@@ -24,6 +24,8 @@
 #include "dbfredactormainwindow.h"
 #include "dbfredactorpage.h"
 
+#define ProcessEventsPeriod 500
+
 DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 		: QMainWindow(parent, f), currentPage(0), progressBar(0)
 {
@@ -46,13 +48,14 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	functionComboBox->addItems(QStringList() << tr("Sum")
 							   << tr("Count")
 							   << tr("Minimum")
-							   << tr("Maximum"));
+							   << tr("Maximum")
+							   << tr("Clear"));
+	functionComboBox->setCurrentIndex(-1);
 	connect(functionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectionChanged()));
 	statusBar()->insertWidget(1, functionComboBox);
 
 	informationLabel = new QLabel(this);
 	statusBar()->insertWidget(2, informationLabel);
-
 
 	QWidget *centralWidget = new QWidget(this);
 
@@ -219,12 +222,10 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 		progressBar->setFormat(tr("Loading. %p% to finish."));
 		progressBar->setRange(0, page->model()->rowCount());
 		progressBar->setValue(0);
-		progressBar->resize(statusBar()->size());
-		progressBar->move(statusBar()->pos());
-		progressBar->show();
+		statusBar()->addWidget(progressBar, 1);
 		for (int i = 0; i < page->model()->rowCount(); i++) {
 			progressBar->setValue(i);
-			if (i / 100 * 100 == i)
+			if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 				QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 			page->model()->index(i, 0).data(Qt::DisplayRole);
 		}
@@ -294,6 +295,7 @@ void DBFRedactorMainWindow::updateActions()
 	acionExportToHtml->setEnabled(currentPage);
 	acionExportToXml->setEnabled(currentPage);
 	acionExportToCsv->setEnabled(currentPage);
+	functionComboBox->setVisible(currentPage);
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -318,6 +320,9 @@ void DBFRedactorMainWindow::selectionChanged()
 		case 3:
 			informationLabel->setText(functionComboBox->currentText() + QString(" = %1").arg(max(), 0, 'f', 2));
 			break;
+		default:
+			functionComboBox->setCurrentIndex(-1);
+			informationLabel->clear();
 	}
 }
 
@@ -329,9 +334,7 @@ double DBFRedactorMainWindow::sum()
 	progressBar->setFormat(tr("Calculating. %p% to finish."));
 	progressBar->setRange(0, indexes.size());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
 
 	double sum = 0.0, value = 0.0;
 	bool ok = false;
@@ -339,7 +342,7 @@ double DBFRedactorMainWindow::sum()
 
 	foreach(const QModelIndex& index, indexes) {
 		progressBar->setValue(++i);
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
@@ -366,9 +369,7 @@ double DBFRedactorMainWindow::min()
 	progressBar->setFormat(tr("Calculating. %p% to finish."));
 	progressBar->setRange(0, indexes.size());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
 
 	double min = indexes.first().data(Qt::DisplayRole).toDouble(), value = 0.0;
 	bool ok = false;
@@ -376,7 +377,7 @@ double DBFRedactorMainWindow::min()
 
 	foreach(const QModelIndex& index, indexes) {
 		progressBar->setValue(++i);
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
@@ -397,9 +398,7 @@ double DBFRedactorMainWindow::max()
 	progressBar->setFormat(tr("Calculating. %p% to finish."));
 	progressBar->setRange(0, indexes.size());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
 
 	double max = indexes.first().data(Qt::DisplayRole).toDouble(), value = 0.0;
 	bool ok = false;
@@ -407,7 +406,7 @@ double DBFRedactorMainWindow::max()
 
 	foreach(const QModelIndex& index, indexes) {
 		progressBar->setValue(++i);
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
@@ -452,13 +451,12 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 	progressBar->setFormat(tr("Preparing. %p% to finish."));
 	progressBar->setRange(0, view->model()->rowCount());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
+
 	for (int i = 0; i < view->model()->rowCount(); i++) {
 		QString tempStrting;
 		progressBar->setValue(i);
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		tempStrting += "<TR ALIGN=LEFT>";
 		for (int j = 0; j < view->model()->columnCount(); j++) {
@@ -495,9 +493,7 @@ void DBFRedactorMainWindow::exportToHtml()
 	progressBar->setFormat(tr("Saving. %p% to finish."));
 	progressBar->setRange(0, l.size());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
 
 	QFile file(fileName);
 	file.open(QIODevice::WriteOnly);
@@ -507,7 +503,7 @@ void DBFRedactorMainWindow::exportToHtml()
 	stream.setCodec("UTF-8");
 
 	for (int i = 0; i < l.size(); i++) {
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		stream << l.at(i) << endl;
 		progressBar->setValue(i);
@@ -521,12 +517,12 @@ void DBFRedactorMainWindow::exportToHtml()
 
 bool DBFRedactorMainWindow::event(QEvent *ev)
 {
-	if (ev->type() == QEvent::Resize || ev->type() == QEvent::Move) {
-		if (progressBar) {
-			progressBar->resize(statusBar()->size());
-			progressBar->move(statusBar()->pos());
-		}
-	}
+//	if (ev->type() == QEvent::Resize || ev->type() == QEvent::Move) {
+//		if (progressBar) {
+//			progressBar->resize(statusBar()->size());
+//			progressBar->move(statusBar()->pos());
+//		}
+//	}
 	return QMainWindow::event(ev);
 }
 
@@ -547,9 +543,7 @@ void DBFRedactorMainWindow::exportToXml()
 	progressBar->setFormat(tr("Saving. %p% to finish."));
 	progressBar->setRange(0, view->model()->rowCount());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
 
 	QFile file(fileName);
 	file.open(QIODevice::WriteOnly);
@@ -562,7 +556,7 @@ void DBFRedactorMainWindow::exportToXml()
 	for (int i = 0; i < view->model()->rowCount(); i++) {
 		stream.writeStartElement("ROW");
 		progressBar->setValue(i);
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
@@ -598,9 +592,7 @@ void DBFRedactorMainWindow::exportToCsv()
 	progressBar->setFormat(tr("Saving. %p% to finish."));
 	progressBar->setRange(0, view->model()->rowCount());
 	progressBar->setValue(0);
-	progressBar->resize(statusBar()->size());
-	progressBar->move(statusBar()->pos());
-	progressBar->show();
+	statusBar()->addWidget(progressBar, 1);
 
 	QFile file(fileName);
 	file.open(QIODevice::WriteOnly);
@@ -618,7 +610,7 @@ void DBFRedactorMainWindow::exportToCsv()
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
 		progressBar->setValue(i);
-		if (i / 100 * 100 == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			switch (currentPage->model()->dbfRedactor()->field(j).type) {
