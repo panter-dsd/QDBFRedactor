@@ -8,6 +8,7 @@ class DBFRedactorPage;
 class QLabel;
 class QItemSelection;
 class QProgressBar;
+class QComboBox;
 
 #include <QtCore/QMap>
 
@@ -23,8 +24,9 @@ private:
 	QMap<QString, DBFRedactorPage*> pages;
 	DBFRedactorPage *currentPage;
 	QLabel *currentFile;
-	QLabel *sumLabel;
+	QLabel *informationLabel;
 	QProgressBar *progressBar;
+	QComboBox *functionComboBox;
 
 	QAction *actionOpen;
 	QAction *actionExit;
@@ -45,6 +47,10 @@ private:
 	void saveSettings();
 	void updateActions();
 	QStringList prepareHtml();
+	double sum();
+	double count();
+	double min();
+	double max();
 
 protected:
 	bool event(QEvent *ev);

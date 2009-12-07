@@ -17,6 +17,7 @@
 #include <QtGui/QClipboard>
 #include <QtGui/QProgressBar>
 #include <QtGui/QMessageBox>
+#include <QtGui/QComboBox>
 
 #include <QtXml/QXmlStreamWriter>
 
@@ -41,8 +42,17 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	currentFile = new QLabel(this);
 	statusBar()->insertWidget(0, currentFile);
 
-	sumLabel = new QLabel(this);
-	statusBar()->insertWidget(1, sumLabel);
+	functionComboBox = new QComboBox(this);
+	functionComboBox->addItems(QStringList() << tr("Sum")
+							   << tr("Count")
+							   << tr("Minimum")
+							   << tr("Maximum"));
+	connect(functionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectionChanged()));
+	statusBar()->insertWidget(1, functionComboBox);
+
+	informationLabel = new QLabel(this);
+	statusBar()->insertWidget(2, informationLabel);
+
 
 	QWidget *centralWidget = new QWidget(this);
 
@@ -280,7 +290,7 @@ void DBFRedactorMainWindow::updateActions()
 {
 	actionClose->setEnabled(tabBar->count() > 0);
 	currentFile->setVisible(currentPage);
-	sumLabel->setVisible(currentPage);
+	informationLabel->setVisible(currentPage);
 	acionExportToHtml->setEnabled(currentPage);
 	acionExportToXml->setEnabled(currentPage);
 	acionExportToCsv->setEnabled(currentPage);
@@ -295,15 +305,119 @@ void DBFRedactorMainWindow::refreshModel()
 
 void DBFRedactorMainWindow::selectionChanged()
 {
+	switch (functionComboBox->currentIndex()) {
+		case 0:
+			informationLabel->setText(functionComboBox->currentText() + QString(" = %1").arg(sum(), 0, 'f', 2));
+			break;
+		case 1:
+			informationLabel->setText(functionComboBox->currentText() + QString(" = %1").arg(count(), 0, 'f', 2));
+			break;
+		case 2:
+			informationLabel->setText(functionComboBox->currentText() + QString(" = %1").arg(min(), 0, 'f', 2));
+			break;
+		case 3:
+			informationLabel->setText(functionComboBox->currentText() + QString(" = %1").arg(max(), 0, 'f', 2));
+			break;
+	}
+}
+
+double DBFRedactorMainWindow::sum()
+{
+	const QModelIndexList& indexes = view->selectionModel()->selection().indexes();
+
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Calculating. %p% to finish."));
+	progressBar->setRange(0, indexes.size());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
+
 	double sum = 0.0, value = 0.0;
 	bool ok = false;
+	int i = 0;
 
-	foreach(const QModelIndex& index, view->selectionModel()->selection().indexes()) {
+	foreach(const QModelIndex& index, indexes) {
+		progressBar->setValue(++i);
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
 			sum += value;
 	}
-	sumLabel->setText(tr("Sum") + " = " + QString::number(sum, 'f', 2));
+	delete progressBar;
+	progressBar = 0;
+
+	return sum;
+}
+
+double DBFRedactorMainWindow::count()
+{
+	const QModelIndexList& indexes = view->selectionModel()->selection().indexes();
+
+	return indexes.size();
+}
+
+double DBFRedactorMainWindow::min()
+{
+	const QModelIndexList& indexes = view->selectionModel()->selection().indexes();
+
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Calculating. %p% to finish."));
+	progressBar->setRange(0, indexes.size());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
+
+	double min = indexes.first().data(Qt::DisplayRole).toDouble(), value = 0.0;
+	bool ok = false;
+	int i = 0;
+
+	foreach(const QModelIndex& index, indexes) {
+		progressBar->setValue(++i);
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		value = index.data(Qt::DisplayRole).toDouble(&ok);
+		if (ok)
+			if (min > value)
+				min = value;
+	}
+	delete progressBar;
+	progressBar = 0;
+
+	return min;
+}
+
+double DBFRedactorMainWindow::max()
+{
+	const QModelIndexList& indexes = view->selectionModel()->selection().indexes();
+
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Calculating. %p% to finish."));
+	progressBar->setRange(0, indexes.size());
+	progressBar->setValue(0);
+	progressBar->resize(statusBar()->size());
+	progressBar->move(statusBar()->pos());
+	progressBar->show();
+
+	double max = indexes.first().data(Qt::DisplayRole).toDouble(), value = 0.0;
+	bool ok = false;
+	int i = 0;
+
+	foreach(const QModelIndex& index, indexes) {
+		progressBar->setValue(++i);
+		if (i / 100 * 100 == i)
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		value = index.data(Qt::DisplayRole).toDouble(&ok);
+		if (ok)
+			if (max < value)
+				max = value;
+	}
+	delete progressBar;
+	progressBar = 0;
+
+	return max;
 }
 
 void DBFRedactorMainWindow::copyToClipboard()
