@@ -203,6 +203,23 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 		index = tabBar->addTab(QFileInfo(fileName).fileName());
 		tabBar->setTabData(index, fileName);
 		tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
+
+		//Load data
+		progressBar = new QProgressBar(this);
+		progressBar->setFormat(tr("Loading. %p% to finish."));
+		progressBar->setRange(0, page->model()->rowCount());
+		progressBar->setValue(0);
+		progressBar->resize(statusBar()->size());
+		progressBar->move(statusBar()->pos());
+		progressBar->show();
+		for (int i = 0; i < page->model()->rowCount(); i++) {
+			progressBar->setValue(i);
+			if (i / 100 * 100 == i)
+				QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+			page->model()->index(i, 0).data(Qt::DisplayRole);
+		}
+		delete progressBar;
+		progressBar = 0;
 	}
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);

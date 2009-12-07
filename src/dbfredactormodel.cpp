@@ -7,7 +7,6 @@ DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
 {
 	redactor = new DBFRedactor(fileName);
 	redactor->open(DBFRedactor::Read);
-	redactor->setBuffering(false);
 }
 
 DBFRedactorModel::~DBFRedactorModel()
@@ -21,17 +20,11 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	DBFRedactor::Record record;
-	if (records.contains(index.row())) {
-		record = records.value(index.row());
-	} else {
-		record = redactor->record(index.row());
-		records.insert(index.row(), record);
-	}
+	QVariant value(redactor->data(index.row(), index.column()));
 
 	switch (role) {
 		case Qt::DisplayRole:
-			return record.value.at(index.column());
+			return value;
 			break;
 		case Qt::TextAlignmentRole:
 			if ((redactor->field(index.column()).type == DBFRedactor::TYPE_NUMERIC)
@@ -50,7 +43,7 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 			return Qt::black;
 			break;
 		case Qt::BackgroundRole:
-			if (record.isDeleted)
+			if (redactor->isDeleted(index.row()))
 				return Qt::lightGray;
 			break;
 		}
@@ -101,7 +94,6 @@ int DBFRedactorModel::columnCount(const QModelIndex &parent) const
 
 void DBFRedactorModel::refresh()
 {
-	records.clear();
 	redactor->refresh();
 	reset();
 }

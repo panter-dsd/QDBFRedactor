@@ -8,7 +8,7 @@ DBFRedactor::DBFRedactor()
 }
 
 DBFRedactor::DBFRedactor(const QString& fileName)
-	: m_fileName(fileName)
+	: m_fileName(fileName), m_openMode(No), m_buffering(true)
 {
 	m_tableName = QFileInfo(m_fileName).baseName();
 }
@@ -122,22 +122,75 @@ DBFRedactor::Field DBFRedactor::field(int number)
 	return number < header.fieldsList.count() ? header.fieldsList.at(number) : Field();
 }
 
-QByteArray DBFRedactor::strRecord(int number)
+QByteArray DBFRedactor::strRecord(int row)
 {
-	if ((number >= header.recordsCount) || (!m_file.isOpen()))
-		return QByteArray();
-	if (m_buffering && m_hash.contains(number)) {
-		m_buf = m_hash.value(number);
+	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
+		return false;
+
+	if (m_buffering && m_hash.contains(row)) {
+		m_buf = qUncompress(m_hash.value(row));
 	} else {
-		if (lastRecord != number - 1)
-			m_file.seek(header.firstRecordPos + header.recordLenght * number);
+		if (lastRecord != row - 1)
+			m_file.seek(header.firstRecordPos + header.recordLenght * row);
 		m_buf = m_file.read(header.recordLenght);
-		lastRecord = number;
-		m_hash.insert(number, m_buf);
-		if (m_hash.size() > MAX_BUFFER_SIZE)
-			m_hash.erase(m_hash.begin());
+		lastRecord = row;
+		if (m_buffering) {
+			m_hash.insert(row, qCompress(m_buf, 1));
+		}
 	}
+	Q_ASSERT(m_buf.size() == header.recordLenght);
+
 	return m_buf;
+}
+
+QVariant DBFRedactor::data(int row, int column)
+{
+	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
+		return QVariant();
+
+	if (column < 0 || column >= header.fieldsList.size() || !m_file.isOpen())
+		return QVariant();
+
+	QString tempString = m_codec->toUnicode(strRecord(row)).mid(header.fieldsList.at(column).pos, header.fieldsList.at(column).firstLenght);
+		//Delete last spaces
+	if (!tempString.isEmpty()) {
+		int i = tempString.length();
+		while ((--i >= 0) && tempString[i].isSpace()) {;}
+		tempString.remove(i + 1, tempString.length());
+	}
+
+	switch (header.fieldsList.at(column).type) {
+		case TYPE_CHAR:
+			return QVariant(tempString);
+			break;
+		case TYPE_NUMERIC:
+			return QVariant(tempString.toDouble());
+			break;
+		case TYPE_LOGICAL:
+			if (tempString.toInt() == 0)
+				return QVariant("FALSE");
+			else
+				return QVariant("TRUE");
+			break;
+		case TYPE_DATE:
+			return QVariant(QDate::fromString(tempString, "yyyyMMdd"));
+			break;
+		case TYPE_FLOAT:
+			return QVariant(tempString.toDouble());
+			break;
+		case TYPE_MEMO:
+			return QVariant();
+			break;
+	}
+	return QVariant();
+}
+
+bool DBFRedactor::isDeleted(int row)
+{
+	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
+		return false;
+
+	return strRecord(row).at(0) == 0x2A;
 }
 
 DBFRedactor::Record DBFRedactor::record(int number)
@@ -145,28 +198,11 @@ DBFRedactor::Record DBFRedactor::record(int number)
 	if (number < 0 || number >= header.recordsCount || !m_file.isOpen())
 		return Record();
 
-	if (m_buffering && m_hash.contains(number)) {
-		m_buf = m_hash.value(number);
-	} else {
-		if (lastRecord != number - 1)
-			m_file.seek(header.firstRecordPos + header.recordLenght * number);
-		m_buf = m_file.read(header.recordLenght);
-		lastRecord = number;
-		if (m_buffering) {
-			m_hash.insert(number, m_buf);
-			if (m_hash.size() > MAX_BUFFER_SIZE)
-				m_hash.erase(m_hash.begin());
-		}
-	}
-	Q_ASSERT(m_buf.size() == header.recordLenght);
-
 	Record record;
-	QString recordString = m_codec->toUnicode(m_buf);
+	QString recordString = m_codec->toUnicode(strRecord(number));
 	QString tempString;
-	int pos = 1;
 	for (int i = 0; i < header.fieldsList.count(); i++) {
-		tempString = recordString.mid(pos, header.fieldsList.at(i).firstLenght);
-		pos += header.fieldsList.at(i).firstLenght;
+		tempString = recordString.mid(header.fieldsList.at(i).pos, header.fieldsList.at(i).firstLenght);
 		//Delete last spaces
 		if (!tempString.isEmpty()) {
 			int i = tempString.length();

@@ -8,7 +8,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QFileInfo>
 #include <QtCore/QVariant>
-#include <QtCore/QHash>
+#include <QtCore/QMap>
 
 class DBFRedactor
 {
@@ -67,7 +67,7 @@ private:
 	QString m_fileName;
 	QFile m_file;
 	QByteArray m_buf;
-	QHash<int, QByteArray> m_hash;
+	QMap<int, QByteArray> m_hash;
 	QTextCodec	 *m_codec;
 	QString m_tableName;
 	int lastRecord;
@@ -84,7 +84,7 @@ public:
 	void close();
 
 	DBFRedactor::Field field(int number);
-	QByteArray strRecord(int number);
+	QByteArray strRecord(int row);
 	DBFRedactor::Record record(int number);
 
 	int columnsCount()
@@ -109,6 +109,10 @@ public:
 		if (!b)
 			m_hash.clear();
 	}
+
+	QVariant data(int row, int column);
+
+	bool isDeleted(int row);
 
 private:
 	QByteArray revert(const QByteArray& array);

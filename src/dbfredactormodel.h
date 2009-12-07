@@ -14,7 +14,6 @@ private:
 	QString m_fileName;
 	bool m_showDeleted;
 	DBFRedactor *redactor;
-	mutable QMap<int, DBFRedactor::Record> records;
 
 public:
 	DBFRedactorModel(const QString& fileName, QObject * parent = 0);
