@@ -57,9 +57,9 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	bool ok = false;
 #warning "Type is not true."
 	header.fileType = m_buf.at(0);
-	header.recordsCount = revert(m_buf.mid(4,4)).toHex().toLong(&ok,16);
-	header.firstRecordPos = revert(m_buf.mid(8,2)).toHex().toInt(&ok,16);
-	header.recordLenght = revert(m_buf.mid(10,2)).toHex().toInt(&ok,16);
+	header.recordsCount = revert(m_buf.mid(4, 4)).toHex().toLong(&ok, 16);
+	header.firstRecordPos = revert(m_buf.mid(8, 2)).toHex().toInt(&ok, 16);
+	header.recordLenght = revert(m_buf.mid(10, 2)).toHex().toInt(&ok, 16);
 	header.isIndex = (m_buf.at(28) == 1);
 
 	if (m_buf.at(29) == -55)
@@ -119,10 +119,7 @@ QByteArray DBFRedactor::revert(const QByteArray& array)
 
 DBFRedactor::Field DBFRedactor::field(int number)
 {
-	if (number < header.fieldsList.count())
-		return header.fieldsList.at(number);
-	else
-		return Field();
+	return number < header.fieldsList.count() ? header.fieldsList.at(number) : Field();
 }
 
 QByteArray DBFRedactor::strRecord(int number)
@@ -155,9 +152,11 @@ DBFRedactor::Record DBFRedactor::record(int number)
 			m_file.seek(header.firstRecordPos + header.recordLenght * number);
 		m_buf = m_file.read(header.recordLenght);
 		lastRecord = number;
-		m_hash.insert(number, m_buf);
-		if (m_hash.size() > MAX_BUFFER_SIZE)
-			m_hash.erase(m_hash.begin());
+		if (m_buffering) {
+			m_hash.insert(number, m_buf);
+			if (m_hash.size() > MAX_BUFFER_SIZE)
+				m_hash.erase(m_hash.begin());
+		}
 	}
 	Q_ASSERT(m_buf.size() == header.recordLenght);
 
@@ -172,15 +171,15 @@ DBFRedactor::Record DBFRedactor::record(int number)
 		if (!tempString.isEmpty()) {
 			int i = tempString.length();
 			while ((--i >= 0) && tempString[i].isSpace()) {;}
-			tempString.remove(i + 1,tempString.length());
+			tempString.remove(i + 1, tempString.length());
 		}
 
 		switch (header.fieldsList.at(i).type) {
 			case TYPE_CHAR:
-				record.value.append(QVariant(tempString));
+				record.value.append(tempString);
 				break;
 			case TYPE_NUMERIC:
-				record.value.append(QVariant(tempString.toDouble()));
+				record.value.append(tempString.toDouble());
 				break;
 			case TYPE_LOGICAL:
 				if (tempString.toInt() == 0)
@@ -189,10 +188,10 @@ DBFRedactor::Record DBFRedactor::record(int number)
 					record.value.append("TRUE");
 				break;
 			case TYPE_DATE:
-				record.value.append(QVariant(QDate::fromString(tempString, "yyyyMMdd")));
+				record.value.append(QDate::fromString(tempString, "yyyyMMdd"));
 				break;
 			case TYPE_FLOAT:
-				record.value.append(QVariant(tempString.toDouble()));
+				record.value.append(tempString.toDouble());
 				break;
 			case TYPE_MEMO:
 				record.value.append(QVariant());
