@@ -96,6 +96,12 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 				break;
 		}
 		field.pos = revert(m_buf.mid(12, 4)).toHex().toLong(&ok, 16);
+		if (!field.pos) {
+			field.pos = 1;
+			foreach(Field f, header.fieldsList)
+				field.pos += f.firstLenght;
+		}
+
 		field.firstLenght = m_buf.mid(16, 1).toHex().toInt(&ok, 16);
 		field.secondLenght = m_buf.mid(17, 1).toHex().toInt(&ok, 16);
 		if ((field.type == TYPE_NUMERIC) && (field.firstLenght > 18))
