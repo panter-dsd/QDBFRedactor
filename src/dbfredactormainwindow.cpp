@@ -38,6 +38,12 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	view = new QTableView(this);
 	view->setVisible(false);
 	view->setContextMenuPolicy(Qt::ActionsContextMenu);
+	view->setSortingEnabled(true);
+
+#ifndef Q_CC_MSVC
+	#warning "+ 10 is harcod"
+#endif
+	view->verticalHeader()->setDefaultSectionSize(view->fontMetrics().width("W") + 10);
 
 	setStatusBar(new QStatusBar(this));
 
@@ -216,21 +222,6 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 		index = tabBar->addTab(QFileInfo(fileName).fileName());
 		tabBar->setTabData(index, fileName);
 		tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
-
-		//Load data
-		progressBar = new QProgressBar(this);
-		progressBar->setFormat(tr("Loading. %p% to finish."));
-		progressBar->setRange(0, page->model()->rowCount());
-		progressBar->setValue(0);
-		statusBar()->addWidget(progressBar, 1);
-		for (int i = 0; i < page->model()->rowCount(); i++) {
-			progressBar->setValue(i);
-			if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
-				QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-			page->model()->index(i, 0).data(Qt::DisplayRole);
-		}
-		delete progressBar;
-		progressBar = 0;
 	}
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
@@ -255,6 +246,7 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	}
 	view->setModel(page->model());
 	view->setSelectionModel(page->selectionModel());
+	//view->sortByColumn(page->model()->sortColumn());
 	view->horizontalScrollBar()->setValue(page->pos().x());
 	view->verticalScrollBar()->setValue(page->pos().y());
 
@@ -302,7 +294,7 @@ void DBFRedactorMainWindow::refreshModel()
 {
 	DBFRedactorPage *page = pages.value(tabBar->tabData(tabBar->currentIndex()).toString());
 	if (page)
-		page->model()->refresh();
+		page->refresh();
 }
 
 void DBFRedactorMainWindow::selectionChanged()
@@ -479,7 +471,7 @@ void DBFRedactorMainWindow::exportToHtml()
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->model()->dbfRedactor()->tableName(),
+														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
 														   tr("HTML files (*.html)"));
 	if (fileName.isEmpty())
 		return;
@@ -531,7 +523,7 @@ void DBFRedactorMainWindow::exportToXml()
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->model()->dbfRedactor()->tableName(),
+														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
 														   tr("XML files (*.xml)"));
 	if (fileName.isEmpty())
 		return;
@@ -580,7 +572,7 @@ void DBFRedactorMainWindow::exportToCsv()
 	QSettings settings;
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->model()->dbfRedactor()->tableName(),
+														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
 														   tr("CSV files (*.csv)"));
 	if (fileName.isEmpty())
 		return;
@@ -613,7 +605,7 @@ void DBFRedactorMainWindow::exportToCsv()
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		for (int j = 0; j < view->model()->columnCount(); j++) {
-			switch (currentPage->model()->dbfRedactor()->field(j).type) {
+			switch (currentPage->redactor()->field(j).type) {
 				case DBFRedactor::TYPE_NUMERIC: case DBFRedactor::TYPE_FLOAT:
 					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
 					break;

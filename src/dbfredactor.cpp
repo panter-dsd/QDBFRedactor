@@ -1,5 +1,8 @@
+#include <QtCore/QDebug>
+
 #include "dbfredactor.h"
 #define MAX_BUFFER_SIZE 10000
+#define READING_RECORDS_COUNT 40960
 
 DBFRedactor::DBFRedactor()
 	:m_fileName(0), m_openMode(No), m_buffering(true)
@@ -111,7 +114,20 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 		m_buf = m_file.read(32);
 	} while (m_buf.at(0) != 13);
 	m_file.seek(header.firstRecordPos);
+
+	lastRecord = 0;
+	while (!m_file.atEnd()) {
+		m_buf = m_file.read(READING_RECORDS_COUNT * header.recordLenght);
+		int pos = 0;
+		while (m_buf.size() - pos >= header.recordLenght) {
+			m_hash.insert(lastRecord++, m_buf.mid(pos, header.recordLenght));
+			pos += header.recordLenght;
+		}
+	}
+
 	m_buf.clear();
+	m_file.seek(header.firstRecordPos);
+	lastRecord = 0;
 	return true;
 }
 
@@ -133,17 +149,7 @@ QByteArray DBFRedactor::strRecord(int row)
 	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
 		return false;
 
-	if (m_buffering && m_hash.contains(row)) {
-		m_buf = qUncompress(m_hash.value(row));
-	} else {
-		if (lastRecord != row - 1)
-			m_file.seek(header.firstRecordPos + header.recordLenght * row);
-		m_buf = m_file.read(header.recordLenght);
-		lastRecord = row;
-		if (m_buffering) {
-			m_hash.insert(row, qCompress(m_buf, 1));
-		}
-	}
+	m_buf = m_hash.value(row);
 	Q_ASSERT(m_buf.size() == header.recordLenght);
 
 	return m_buf;
