@@ -38,6 +38,9 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	view = new QTableView(this);
 	view->setVisible(false);
 	view->setContextMenuPolicy(Qt::ActionsContextMenu);
+	view->verticalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
+	view->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
+
 	view->setSortingEnabled(true);
 
 #ifndef Q_CC_MSVC
@@ -119,6 +122,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	acionExportToCsv->setToolTip(tr("Export to csv"));
 	connect(acionExportToCsv, SIGNAL(triggered()), this, SLOT(exportToCsv()));
 	addAction(acionExportToCsv);
+
+	actionResizeColumnsToContents = new QAction(tr("Resize columns to contents"), this);
+	actionResizeColumnsToContents->setToolTip(tr("Resize columns to contents"));
+	connect(actionResizeColumnsToContents, SIGNAL(triggered()), view, SLOT(resizeColumnsToContents()));
+	view->horizontalHeader()->addAction(actionResizeColumnsToContents);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -236,6 +244,10 @@ void DBFRedactorMainWindow::tabChanged(int index)
 				this, SLOT(selectionChanged()));
 		currentPage->setPos(view->horizontalScrollBar()->value(),
 							view->verticalScrollBar()->value());
+		QList<int> columnSizes;
+		for (int i = 0; i < view->model()->columnCount(); i++)
+			columnSizes << view->columnWidth(i);
+		currentPage->setColumnSizes(columnSizes);
 		currentPage = 0;
 	}
 
@@ -249,6 +261,12 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	//view->sortByColumn(page->model()->sortColumn());
 	view->horizontalScrollBar()->setValue(page->pos().x());
 	view->verticalScrollBar()->setValue(page->pos().y());
+
+	{
+		int i = 0;
+		foreach(int size, page->columnSizes())
+			view->setColumnWidth(i++, size);
+	}
 
 	connect(page->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
 			this, SLOT(selectionChanged()));

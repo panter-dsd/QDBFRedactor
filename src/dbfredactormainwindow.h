@@ -33,9 +33,10 @@ private:
 	QAction *actionClose;
 	QAction *actionRefresh;
 	QAction *actionCopy;
-	QAction* acionExportToHtml;
-	QAction* acionExportToXml;
-	QAction* acionExportToCsv;
+	QAction *acionExportToHtml;
+	QAction *acionExportToXml;
+	QAction *acionExportToCsv;
+	QAction *actionResizeColumnsToContents;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);

@@ -22,6 +22,7 @@ private:
 	QSortFilterProxyModel *m_sorModel;
 	QString m_fileName;
 	QPoint m_pos;
+	QList<int> m_columnSizes;
 
 public:
 	DBFRedactorPage(const QString& fileName, QWidget *parent = 0)
@@ -74,6 +75,11 @@ public:
 
 	void refresh()
 	{m_model->refresh();}
+
+	QList<int> columnSizes()
+	{return m_columnSizes;}
+	void setColumnSizes(QList<int> sizes)
+	{m_columnSizes = sizes;}
 };
 
 #endif //DBFREDACTORPAGE_H
