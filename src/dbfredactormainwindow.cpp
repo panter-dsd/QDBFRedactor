@@ -351,9 +351,11 @@ double DBFRedactorMainWindow::sum()
 	int i = 0;
 
 	foreach(const QModelIndex& index, indexes) {
-		progressBar->setValue(++i);
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+		i++;
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
 		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
 			sum += value;
@@ -386,10 +388,11 @@ double DBFRedactorMainWindow::min()
 	int i = 0;
 
 	foreach(const QModelIndex& index, indexes) {
-		progressBar->setValue(++i);
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+		i++;
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-		value = index.data(Qt::DisplayRole).toDouble(&ok);
+		}		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
 			if (min > value)
 				min = value;
@@ -415,10 +418,11 @@ double DBFRedactorMainWindow::max()
 	int i = 0;
 
 	foreach(const QModelIndex& index, indexes) {
-		progressBar->setValue(++i);
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+		i++;
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-		value = index.data(Qt::DisplayRole).toDouble(&ok);
+		}		value = index.data(Qt::DisplayRole).toDouble(&ok);
 		if (ok)
 			if (max < value)
 				max = value;
@@ -465,9 +469,10 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
 		QString tempStrting;
-		progressBar->setValue(i);
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
 		tempStrting += "<TR ALIGN=LEFT>";
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
@@ -513,10 +518,11 @@ void DBFRedactorMainWindow::exportToHtml()
 	stream.setCodec("UTF-8");
 
 	for (int i = 0; i < l.size(); i++) {
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
 		stream << l.at(i) << endl;
-		progressBar->setValue(i);
 	}
 	file.close();
 	delete progressBar;
@@ -565,9 +571,11 @@ void DBFRedactorMainWindow::exportToXml()
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
 		stream.writeStartElement("ROW");
-		progressBar->setValue(i);
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
 			stream.writeTextElement(view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString(),
@@ -619,9 +627,10 @@ void DBFRedactorMainWindow::exportToCsv()
 	tempStringList.clear();
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
-		progressBar->setValue(i);
-		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i)
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			switch (currentPage->redactor()->field(j).type) {
 				case DBFRedactor::TYPE_NUMERIC: case DBFRedactor::TYPE_FLOAT:
