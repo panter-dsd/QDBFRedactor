@@ -82,13 +82,38 @@ bool DBFRedactorSortFilterProxyModel::lessThan ( const QModelIndex & left, const
 		if (leftData == rightData)
 			continue;
 
-		if (leftData.type() == QVariant::DateTime)
-			return (leftData.toDateTime() < rightData.toDateTime()) ^ order;
-
-		if (leftData.type() == QVariant::Double)
-			return (leftData.toDouble() < rightData.toDouble()) ^ order;
-
-		return (QString::localeAwareCompare(leftData.toString(), rightData.toString()) < 0) ^ order;
+		switch (leftData.type()) {
+			case QVariant::Int:
+				return (leftData.toInt() < rightData.toInt()) ^ order;
+				break;
+			case QVariant::UInt:
+				return (leftData.toUInt() < rightData.toUInt()) ^ order;
+				break;
+			case QVariant::LongLong:
+				return (leftData.toLongLong() < rightData.toLongLong()) ^ order;
+				break;
+			case QVariant::ULongLong:
+				return (leftData.toULongLong() < rightData.toULongLong()) ^ order;
+				break;
+			case QVariant::Double:
+				return (leftData.toDouble() < rightData.toDouble()) ^ order;
+				break;
+			case QVariant::Char:
+				return (leftData.toChar() < rightData.toChar()) ^ order;
+				break;
+			case QVariant::Date:
+				return (leftData.toDate() < rightData.toDate()) ^ order;
+				break;
+			case QVariant::Time:
+				return (leftData.toTime() < rightData.toTime()) ^ order;
+				break;
+			case QVariant::DateTime:
+				return (leftData.toDateTime() < rightData.toDateTime()) ^ order;
+				break;
+			case QVariant::String:
+				return (QString::localeAwareCompare(leftData.toString(), rightData.toString()) < 0) ^ order;
+				break;
+		}
 	}
 	return false;
 }
