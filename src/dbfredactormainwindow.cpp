@@ -690,5 +690,5 @@ void DBFRedactorMainWindow::sort(int section)
 
 void DBFRedactorMainWindow::unsort()
 {
-//	currentPage->model()->sort(-1, currentPage->model()->sortOrder());
+	currentPage->model()->clearSort();
 }

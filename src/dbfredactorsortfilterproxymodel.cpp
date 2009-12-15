@@ -1,9 +1,10 @@
 #include <QtCore/QDebug>
+#include <QtCore/QDateTime>
 
 #include "dbfredactorsortfilterproxymodel.h"
 
 DBFRedactorSortFilterProxyModel::DBFRedactorSortFilterProxyModel(QObject *parent)
-	:QSortFilterProxyModel(parent)
+	:QSortFilterProxyModel(parent), m_sortOrder(Qt::AscendingOrder)
 {
 
 }
@@ -56,7 +57,29 @@ void DBFRedactorSortFilterProxyModel::clearSort()
 
 void DBFRedactorSortFilterProxyModel::sort()
 {
-	qDebug() << m_sortedColumns;
+	int column = m_sortedColumns.isEmpty() ? -1 : 0;
+	QSortFilterProxyModel::sort(column, Qt::AscendingOrder);
+}
+
+bool DBFRedactorSortFilterProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & right ) const
+{
+	for (int i = 0; i < m_sortedColumns.size(); i++) {
+		QVariant leftData = sourceModel()->index(left.row(), m_sortedColumns.at(i).first).data(Qt::DisplayRole);
+		QVariant rightData = sourceModel()->index(right.row(), m_sortedColumns.at(i).first).data(Qt::DisplayRole);
+		Qt::SortOrder order = m_sortedColumns.at(i).second;
+
+		if (leftData == rightData)
+			continue;
+
+		if (leftData.type() == QVariant::DateTime)
+			return (leftData.toDateTime() < rightData.toDateTime()) ^ order;
+
+		if (leftData.type() == QVariant::Double)
+			return (leftData.toDouble() < rightData.toDouble()) ^ order;
+
+		return (QString::localeAwareCompare(leftData.toString(), rightData.toString()) < 0) ^ order;
+	}
+	return false;
 }
 
 Qt::SortOrder DBFRedactorSortFilterProxyModel::sortOrder(int column) const

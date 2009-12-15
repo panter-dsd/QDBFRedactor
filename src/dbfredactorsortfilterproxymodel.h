@@ -30,6 +30,7 @@ public:
 protected:
 	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 	void sort();
+	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
 
 public Q_SLOTS:
 	void clearSort();
