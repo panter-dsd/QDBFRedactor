@@ -35,19 +35,23 @@ SortDialog::SortDialog(QList<QPair<int, Qt::SortOrder> > sortedColumns, QHash<in
 
 	addAllButton = new QToolButton(this);
 	addAllButton->setText(tr(">>"));
+	addAllButton->setToolTip(tr("Add all items"));
 	connect(addAllButton, SIGNAL(clicked()), this, SLOT(addAll()));
 
 	removeAllButton = new QToolButton(this);
 	removeAllButton->setText(tr("<<"));
+	removeAllButton->setToolTip(tr("Remove all items"));
 	connect(removeAllButton, SIGNAL(clicked()), this, SLOT(removeAll()));
 
 	addButton = new QToolButton(this);
 	addButton->setText(tr(">"));
+	addButton->setToolTip(tr("Add item"));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(add()));
 
 	removeButton = new QToolButton(this);
 	removeButton->setText(tr("<"));
 	connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
+	removeButton->setToolTip(tr("Remove item"));
 
 	QVBoxLayout *addRemoveButtonsLayout = new QVBoxLayout();
 	addRemoveButtonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
@@ -59,31 +63,36 @@ SortDialog::SortDialog(QList<QPair<int, Qt::SortOrder> > sortedColumns, QHash<in
 
 	moveUpButton = new QToolButton(this);
 	moveUpButton->setText(tr("Up"));
+	moveUpButton->setToolTip(tr("Move up"));
 	connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
 
 	moveDownButton = new QToolButton(this);
 	moveDownButton->setText(tr("Down"));
+	moveDownButton->setToolTip(tr("Move down"));
 	connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
 
-	moveHomeButton = new QToolButton(this);
-	moveHomeButton->setText(tr("Home"));
-	connect(moveHomeButton, SIGNAL(clicked()), this, SLOT(moveHome()));
+	moveTopButton = new QToolButton(this);
+	moveTopButton->setText(tr("Top"));
+	moveTopButton->setToolTip(tr("Move to top"));
+	connect(moveTopButton, SIGNAL(clicked()), this, SLOT(moveTop()));
 
-	moveEndButton = new QToolButton(this);
-	moveEndButton->setText(tr("End"));
-	connect(moveEndButton, SIGNAL(clicked()), this, SLOT(moveEnd()));
+	moveBottomButton = new QToolButton(this);
+	moveBottomButton->setText(tr("Bottom"));
+	moveBottomButton->setToolTip(tr("Move to bottom"));
+	connect(moveBottomButton, SIGNAL(clicked()), this, SLOT(moveBottom()));
 
 	changeSortOrderButton = new QToolButton(this);
 	changeSortOrderButton->setText(tr("<>"));
+	changeSortOrderButton->setToolTip(tr("Change sort order"));
 	connect(changeSortOrderButton, SIGNAL(clicked()), this, SLOT(changeSortOrder()));
 
 	QVBoxLayout *sortedButtonsLayout = new QVBoxLayout();
 	sortedButtonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
-	sortedButtonsLayout->addWidget(moveHomeButton);
+	sortedButtonsLayout->addWidget(moveTopButton);
 	sortedButtonsLayout->addWidget(moveUpButton);
 	sortedButtonsLayout->addWidget(changeSortOrderButton);
 	sortedButtonsLayout->addWidget(moveDownButton);
-	sortedButtonsLayout->addWidget(moveEndButton);
+	sortedButtonsLayout->addWidget(moveBottomButton);
 	sortedButtonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
 	QHBoxLayout *topLayout = new QHBoxLayout();
@@ -244,7 +253,7 @@ void SortDialog::moveDown()
 	}
 }
 
-void SortDialog::moveHome()
+void SortDialog::moveTop()
 {
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;
@@ -261,7 +270,7 @@ void SortDialog::moveHome()
 	}
 }
 
-void SortDialog::moveEnd()
+void SortDialog::moveBottom()
 {
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;

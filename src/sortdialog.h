@@ -30,8 +30,8 @@ private:
 
 	QToolButton *moveUpButton;
 	QToolButton *moveDownButton;
-	QToolButton *moveHomeButton;
-	QToolButton *moveEndButton;
+	QToolButton *moveTopButton;
+	QToolButton *moveBottomButton;
 	QToolButton *changeSortOrderButton;
 
 public:
@@ -52,8 +52,8 @@ private Q_SLOTS:
 	void remove();
 	void moveUp();
 	void moveDown();
-	void moveHome();
-	void moveEnd();
+	void moveTop();
+	void moveBottom();
 };
 
 #endif //SORTDIALOG_H
