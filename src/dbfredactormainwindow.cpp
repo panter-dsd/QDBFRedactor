@@ -23,6 +23,7 @@
 
 #include "dbfredactormainwindow.h"
 #include "dbfredactorpage.h"
+#include "sortdialog.h"
 
 #define ProcessEventsPeriod 500
 
@@ -132,6 +133,12 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionUnsort->setToolTip(tr("Remove sort"));
 	connect(actionUnsort, SIGNAL(triggered()), this, SLOT(unsort()));
 	view->horizontalHeader()->addAction(actionUnsort);
+
+	actionChangeSort = new QAction(tr("Change sort"), this);
+	actionChangeSort->setToolTip(tr("Change sort"));
+	connect(actionChangeSort, SIGNAL(triggered()), this, SLOT(changeSort()));
+	view->horizontalHeader()->addAction(actionChangeSort);
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -691,4 +698,17 @@ void DBFRedactorMainWindow::sort(int section)
 void DBFRedactorMainWindow::unsort()
 {
 	currentPage->model()->clearSort();
+}
+
+void DBFRedactorMainWindow::changeSort()
+{
+	QHash<int, QString> captions;
+
+	for (int i = 0; i < currentPage->model()->columnCount(); i++)
+		captions.insert(i, currentPage->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString());
+
+	SortDialog dialog(currentPage->model()->sortedColumns(), captions, this);
+
+	if (dialog.exec())
+		currentPage->model()->setSortedColumns(dialog.sortedColumns());
 }

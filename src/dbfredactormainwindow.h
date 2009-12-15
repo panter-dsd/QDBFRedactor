@@ -38,6 +38,7 @@ private:
 	QAction *acionExportToCsv;
 	QAction *actionResizeColumnsToContents;
 	QAction *actionUnsort;
+	QAction *actionChangeSort;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -70,6 +71,7 @@ private Q_SLOTS:
 	void exportToCsv();
 	void unsort();
 	void sort(int section);
+	void changeSort();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H
