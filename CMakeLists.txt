@@ -25,6 +25,7 @@ src/dbfredactormodel.cpp
 src/dbfredactorsortfilterproxymodel.cpp
 src/dbfredactormainwindow.cpp
 src/sortdialog.cpp
+src/filterdialog.cpp
 )
 
 set (src_HEADERS
@@ -34,6 +35,7 @@ src/dbfredactorpage.h
 src/dbfredactorsortfilterproxymodel.h
 src/dbfredactormainwindow.h
 src/sortdialog.h
+src/filterdialog.h
 )
 
 set(

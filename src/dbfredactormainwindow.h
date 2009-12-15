@@ -39,6 +39,7 @@ private:
 	QAction *actionResizeColumnsToContents;
 	QAction *actionUnsort;
 	QAction *actionChangeSort;
+	QAction *actionChangeFilter;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -72,6 +73,7 @@ private Q_SLOTS:
 	void unsort();
 	void sort(int section);
 	void changeSort();
+	void changeFilter();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

@@ -24,6 +24,7 @@
 #include "dbfredactormainwindow.h"
 #include "dbfredactorpage.h"
 #include "sortdialog.h"
+#include "filterdialog.h"
 
 #define ProcessEventsPeriod 500
 
@@ -138,6 +139,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionChangeSort->setToolTip(tr("Change sort"));
 	connect(actionChangeSort, SIGNAL(triggered()), this, SLOT(changeSort()));
 	view->horizontalHeader()->addAction(actionChangeSort);
+
+	actionChangeFilter = new QAction(tr("Change filter"), this);
+	actionChangeFilter->setToolTip(tr("Change filter"));
+	connect(actionChangeFilter, SIGNAL(triggered()), this, SLOT(changeFilter()));
+	view->horizontalHeader()->addAction(actionChangeFilter);
 
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
@@ -712,4 +718,15 @@ void DBFRedactorMainWindow::changeSort()
 
 	if (dialog.exec())
 		currentPage->model()->setSortedColumns(dialog.sortedColumns());
+}
+
+void DBFRedactorMainWindow::changeFilter()
+{
+	QHash<int, QString> captions;
+
+	for (int i = 0; i < currentPage->model()->columnCount(); i++)
+		captions.insert(i, currentPage->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString());
+
+	FilterDialog dialog(captions, this);
+	dialog.exec();
 }
