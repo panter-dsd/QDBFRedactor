@@ -35,12 +35,13 @@ private:
 	QToolButton *changeSortOrderButton;
 
 public:
-	SortDialog(QList<QPair<int, Qt::SortOrder> > sortedColumns, QHash<int, QString> captions, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
+	SortDialog(QHash<int, QString> captions, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
 	virtual ~SortDialog()
 	{}
 
-	QList<QPair<int, Qt::SortOrder> > sortedColumns()
+	QList<QPair<int, Qt::SortOrder> > sortedColumns() const
 	{return m_sortedColumns;}
+	void setSortedColumns(QList<QPair<int, Qt::SortOrder> > sortedColumns);
 
 private:
 	void updateLists();

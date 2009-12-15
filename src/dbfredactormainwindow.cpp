@@ -707,7 +707,8 @@ void DBFRedactorMainWindow::changeSort()
 	for (int i = 0; i < currentPage->model()->columnCount(); i++)
 		captions.insert(i, currentPage->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString());
 
-	SortDialog dialog(currentPage->model()->sortedColumns(), captions, this);
+	SortDialog dialog(captions, this);
+	dialog.setSortedColumns(currentPage->model()->sortedColumns());
 
 	if (dialog.exec())
 		currentPage->model()->setSortedColumns(dialog.sortedColumns());

@@ -9,8 +9,8 @@
 
 #include "sortdialog.h"
 
-SortDialog::SortDialog(QList<QPair<int, Qt::SortOrder> > sortedColumns, QHash<int, QString> captions, QWidget *parent, Qt::WindowFlags f)
-	:QDialog(parent, f), m_sortedColumns(sortedColumns), m_captions(captions)
+SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::WindowFlags f)
+	:QDialog(parent, f), m_captions(captions)
 {
 
 	columnsLabel = new QLabel(tr("Aviable columns"), this);
@@ -117,6 +117,12 @@ SortDialog::SortDialog(QList<QPair<int, Qt::SortOrder> > sortedColumns, QHash<in
 	foreach(QToolButton *button, findChildren<QToolButton*> ())
 		button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
+	updateLists();
+}
+
+void SortDialog::setSortedColumns(QList<QPair<int, Qt::SortOrder> > sortedColumns)
+{
+	m_sortedColumns = sortedColumns;
 	updateLists();
 }
 
