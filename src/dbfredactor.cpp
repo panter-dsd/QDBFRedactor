@@ -176,10 +176,7 @@ QVariant DBFRedactor::data(int row, int column)
 			return QVariant(tempString.toDouble());
 			break;
 		case TYPE_LOGICAL:
-			if (tempString.toInt() == 0)
-				return QVariant("FALSE");
-			else
-				return QVariant("TRUE");
+			return QVariant(tempString == "T");
 			break;
 		case TYPE_DATE:
 			return QVariant(QDate::fromString(tempString, "yyyyMMdd"));

@@ -7,9 +7,41 @@ class DBFRedactorSortFilterProxyModel : public QSortFilterProxyModel
 {
 	Q_OBJECT
 
+public:
+
+	enum FilterType {
+		FixedString = 0,
+		Wildcard,
+		RegExp
+	};
+
+	enum FilterOperator {
+		AND,
+		OR
+	};
+
+	enum FilterUslovie {
+		Equal = 0,
+		NotEqual,
+		Smaller,
+		SmallerOrEqual,
+		Lager,
+		LagerOrEqual
+	};
+
+	struct FilterItem {
+		FilterOperator m_operator;
+		int column;
+		FilterUslovie uslovie;
+		QString value;
+		FilterType type;
+		Qt::CaseSensitivity caseSensitivity;
+	};
+
 private:
 	QList<QPair<int, Qt::SortOrder> > m_sortedColumns;
 	Qt::SortOrder m_sortOrder;
+	QList<FilterItem> m_filter;
 
 public:
 	DBFRedactorSortFilterProxyModel(QObject *parent = 0);
@@ -39,6 +71,7 @@ public:
 protected:
 	void sort();
 	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
+	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 
 public Q_SLOTS:
 	void clearSort();

@@ -83,6 +83,9 @@ bool DBFRedactorSortFilterProxyModel::lessThan ( const QModelIndex & left, const
 			continue;
 
 		switch (leftData.type()) {
+			case QVariant::Bool:
+				return (leftData.toBool() < rightData.toBool()) ^ order;
+				break;
 			case QVariant::Int:
 				return (leftData.toInt() < rightData.toInt()) ^ order;
 				break;
@@ -135,4 +138,9 @@ bool DBFRedactorSortFilterProxyModel::isColumnInSort(int column) const
 		}
 	}
 	return false;
+}
+
+bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const
+{
+	//return sourceModel()->index(source_row, 1).data(Qt::DisplayRole).toString() == "20";
 }

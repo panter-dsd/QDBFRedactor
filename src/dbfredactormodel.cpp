@@ -32,6 +32,8 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 				return Qt::AlignRight;
 			if (redactor->field(index.column()).type == DBFRedactor::TYPE_DATE)
 				return Qt::AlignHCenter;
+			if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
+				return Qt::AlignHCenter;
 			return Qt::AlignLeft;
 			break;
 		case Qt::ForegroundRole:
@@ -45,6 +47,10 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 		case Qt::BackgroundRole:
 			if (redactor->isDeleted(index.row()))
 				return Qt::lightGray;
+			break;
+		case Qt::CheckStateRole:
+			if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
+				return value.toBool();
 			break;
 		}
 

@@ -120,11 +120,6 @@ SortDialog::SortDialog(QList<QPair<int, Qt::SortOrder> > sortedColumns, QHash<in
 	updateLists();
 }
 
-SortDialog::~SortDialog()
-{
-
-}
-
 void SortDialog::updateLists()
 {
 	QHash<int, QString> l(m_captions);
