@@ -58,7 +58,7 @@ Qt::ItemFlags DBFRedactorModel::flags(const QModelIndex &index) const
 
 QVariant DBFRedactorModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if(role == Qt::DisplayRole) {
+	if(role == Qt::DisplayRole || role == Qt::EditRole) {
 		if(orientation == Qt::Horizontal) {
 			return redactor->field(section).name;
 		} else {
