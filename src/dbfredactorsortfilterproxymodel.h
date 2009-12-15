@@ -16,9 +16,18 @@ public:
 	virtual ~DBFRedactorSortFilterProxyModel()
 	{}
 
+	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+
 	QList<QPair<int, Qt::SortOrder> > sortedColumns()
 	{return m_sortedColumns;}
+	void setSortedColumns(QList<QPair<int, Qt::SortOrder> > sortedColumns)
+	{
+		m_sortedColumns = sortedColumns;
+		sort();
+	}
+
 	void addSortedColumn(int column, Qt::SortOrder order);
+	void removeSortedColumn(int column);
 	void changeSortedColumn(int column, Qt::SortOrder order);
 
 	Qt::SortOrder sortOrder() const
@@ -28,7 +37,6 @@ public:
 	bool isColumnInSort(int column) const;
 
 protected:
-	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 	void sort();
 	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
 

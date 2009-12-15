@@ -36,6 +36,17 @@ void DBFRedactorSortFilterProxyModel::addSortedColumn(int column, Qt::SortOrder 
 	sort();
 }
 
+void DBFRedactorSortFilterProxyModel::removeSortedColumn(int column)
+{
+	for (int i = 0; i < m_sortedColumns.size(); i++) {
+		if (m_sortedColumns.at(i).first == column) {
+			m_sortedColumns.removeAt(i);
+			sort();
+			break;
+		}
+	}
+}
+
 void DBFRedactorSortFilterProxyModel::changeSortedColumn(int column, Qt::SortOrder order)
 {
 	for (int i = 0; i < m_sortedColumns.size(); i++) {
