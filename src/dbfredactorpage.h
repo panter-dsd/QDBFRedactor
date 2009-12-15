@@ -9,9 +9,10 @@ class QItemSelectionModel;
 #include <QtCore/QPoint>
 
 #include <QtGui/QItemSelectionModel>
-#include <QtGui/QSortFilterProxyModel>
+
 
 #include "dbfredactormodel.h"
+#include "dbfredactorsortfilterproxymodel.h"
 
 class DBFRedactorPage : QObject
 {
@@ -19,7 +20,7 @@ class DBFRedactorPage : QObject
 private:
 	DBFRedactorModel *m_model;
 	QItemSelectionModel* m_selectionModel;
-	QSortFilterProxyModel *m_sorModel;
+	DBFRedactorSortFilterProxyModel *m_sorModel;
 	QString m_fileName;
 	QPoint m_pos;
 	QList<int> m_columnSizes;
@@ -30,7 +31,7 @@ public:
 	{
 		m_model = new DBFRedactorModel(m_fileName, parent);
 
-		m_sorModel = new QSortFilterProxyModel(parent);
+		m_sorModel = new DBFRedactorSortFilterProxyModel(parent);
 		m_sorModel->setSourceModel(m_model);
 
 		m_selectionModel = new QItemSelectionModel(m_sorModel);
@@ -54,7 +55,7 @@ public:
 		m_selectionModel = selectionModel;
 	}
 
-	QSortFilterProxyModel* model() const
+	DBFRedactorSortFilterProxyModel* model() const
 	{return m_sorModel;}
 	void setModel(DBFRedactorModel *model)
 	{

@@ -40,8 +40,8 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	view->setContextMenuPolicy(Qt::ActionsContextMenu);
 	view->verticalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
 	view->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
+	connect(view->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(sort(int)));
 
-	view->setSortingEnabled(true);
 
 #ifndef Q_CC_MSVC
 	#warning "+ 10 is harcod"
@@ -127,6 +127,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionResizeColumnsToContents->setToolTip(tr("Resize columns to contents"));
 	connect(actionResizeColumnsToContents, SIGNAL(triggered()), view, SLOT(resizeColumnsToContents()));
 	view->horizontalHeader()->addAction(actionResizeColumnsToContents);
+
+	actionUnsort = new QAction(tr("Unsort"), this);
+	actionUnsort->setToolTip(tr("Remove sort"));
+	connect(actionUnsort, SIGNAL(triggered()), this, SLOT(unsort()));
+	view->horizontalHeader()->addAction(actionUnsort);
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -652,4 +657,38 @@ void DBFRedactorMainWindow::exportToCsv()
 	progressBar = 0;
 
 	QMessageBox::information(this, "", tr("Export finished"));
+}
+
+void DBFRedactorMainWindow::sort(int section)
+{
+	Qt::SortOrder order = currentPage->model()->sortOrder();
+	if (currentPage->model()->sortColumn() == section)
+		order = currentPage->model()->sortOrder() == Qt::AscendingOrder
+				? Qt::DescendingOrder
+				: Qt::AscendingOrder;
+
+	if (qApp->keyboardModifiers() & Qt::CTRL) {
+		if (currentPage->model()->isColumnInSort(section)) {
+			Qt::SortOrder order = currentPage->model()->sortOrder(section) == Qt::AscendingOrder
+								  ? Qt::DescendingOrder
+								  : Qt::AscendingOrder;
+			currentPage->model()->changeSortedColumn(section, order);
+		} else {
+			currentPage->model()->addSortedColumn(section, currentPage->model()->sortOrder());
+		}
+	} else {
+		Qt::SortOrder order = currentPage->model()->sortOrder();
+		if (currentPage->model()->isColumnInSort(section)) {
+			order = currentPage->model()->sortOrder(section) == Qt::AscendingOrder
+					? Qt::DescendingOrder
+					 : Qt::AscendingOrder;
+		}
+		currentPage->model()->clearSort();
+		currentPage->model()->addSortedColumn(section, order);
+	}
+}
+
+void DBFRedactorMainWindow::unsort()
+{
+//	currentPage->model()->sort(-1, currentPage->model()->sortOrder());
 }

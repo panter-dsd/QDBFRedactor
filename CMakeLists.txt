@@ -22,6 +22,7 @@ set (src_SRC
 src/main.cpp
 src/dbfredactor.cpp
 src/dbfredactormodel.cpp
+src/dbfredactorsortfilterproxymodel.cpp
 src/dbfredactormainwindow.cpp
 )
 
@@ -29,6 +30,7 @@ set (src_HEADERS
 src/dbfredactor.h
 src/dbfredactormodel.h
 src/dbfredactorpage.h
+src/dbfredactorsortfilterproxymodel.h
 src/dbfredactormainwindow.h
 )
 
