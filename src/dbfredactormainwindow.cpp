@@ -145,6 +145,21 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionChangeFilter, SIGNAL(triggered()), this, SLOT(changeFilter()));
 	view->horizontalHeader()->addAction(actionChangeFilter);
 
+	actionAddIncludeFilter = new QAction(tr("Add include filter"), this);
+	actionAddIncludeFilter->setToolTip(tr("Add include filter"));
+	connect(actionAddIncludeFilter, SIGNAL(triggered()), this, SLOT(addIncludeFilter()));
+	view->addAction(actionAddIncludeFilter);
+
+	actionAddExcludeFilter = new QAction(tr("Add exclude filter"), this);
+	actionAddExcludeFilter->setToolTip(tr("Add exclude filter"));
+	connect(actionAddExcludeFilter, SIGNAL(triggered()), this, SLOT(addExcludeFilter()));
+	view->addAction(actionAddExcludeFilter);
+
+	actionRemoveFilter = new QAction(tr("Remove filter"), this);
+	actionRemoveFilter->setToolTip(tr("Remove filter"));
+	connect(actionRemoveFilter, SIGNAL(triggered()), this, SLOT(removeFilter()));
+	view->addAction(actionRemoveFilter);
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -729,4 +744,43 @@ void DBFRedactorMainWindow::changeFilter()
 
 	FilterDialog dialog(captions, this);
 	dialog.exec();
+}
+
+void DBFRedactorMainWindow::addIncludeFilter()
+{
+	const QModelIndex& index = view->currentIndex();
+	if (!index.isValid())
+		return;
+
+	DBFRedactorSortFilterProxyModel::FilterItem item;
+	item.m_operator = DBFRedactorSortFilterProxyModel::AND;
+	item.column = index.column();
+	item.uslovie = DBFRedactorSortFilterProxyModel::Equal;
+	item.value = index.data(Qt::DisplayRole).toString();
+	item.type = DBFRedactorSortFilterProxyModel::FixedString;
+	item.caseSensitivity = Qt::CaseInsensitive;
+
+	currentPage->model()->addFilter(item);
+}
+
+void DBFRedactorMainWindow::addExcludeFilter()
+{
+	const QModelIndex& index = view->currentIndex();
+	if (!index.isValid())
+		return;
+
+	DBFRedactorSortFilterProxyModel::FilterItem item;
+	item.m_operator = DBFRedactorSortFilterProxyModel::AND;
+	item.column = index.column();
+	item.uslovie = DBFRedactorSortFilterProxyModel::NotEqual;
+	item.value = index.data(Qt::DisplayRole).toString();
+	item.type = DBFRedactorSortFilterProxyModel::FixedString;
+	item.caseSensitivity = Qt::CaseInsensitive;
+
+	currentPage->model()->addFilter(item);
+}
+
+void DBFRedactorMainWindow::removeFilter()
+{
+	currentPage->model()->removeFilter();
 }

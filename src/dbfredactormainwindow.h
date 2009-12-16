@@ -39,7 +39,11 @@ private:
 	QAction *actionResizeColumnsToContents;
 	QAction *actionUnsort;
 	QAction *actionChangeSort;
+
 	QAction *actionChangeFilter;
+	QAction *actionAddIncludeFilter;
+	QAction *actionAddExcludeFilter;
+	QAction *actionRemoveFilter;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -74,6 +78,9 @@ private Q_SLOTS:
 	void sort(int section);
 	void changeSort();
 	void changeFilter();
+	void addIncludeFilter();
+	void addExcludeFilter();
+	void removeFilter();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

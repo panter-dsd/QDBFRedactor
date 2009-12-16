@@ -33,7 +33,7 @@ public:
 		FilterOperator m_operator;
 		int column;
 		FilterUslovie uslovie;
-		QString value;
+		QVariant value;
 		FilterType type;
 		Qt::CaseSensitivity caseSensitivity;
 	};
@@ -68,13 +68,29 @@ public:
 
 	bool isColumnInSort(int column) const;
 
+	QList<FilterItem> filter()
+	{return m_filter;}
+	void addFilter(const FilterItem& filterItem)
+	{
+		m_filter.append(filterItem);
+		invalidate();
+	}
+
 protected:
 	void sort();
 	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 
+private:
+	inline int fixedStringCompare(const QVariant& left, const QVariant& right, Qt::CaseSensitivity sensitivity) const;
+
 public Q_SLOTS:
 	void clearSort();
+	void removeFilter()
+	{
+		m_filter.clear();
+		invalidate();
+	}
 };
 
 #endif //DBFREDACTORSORTFILTERPROXYMODEL_H
