@@ -756,9 +756,9 @@ void DBFRedactorMainWindow::addIncludeFilter()
 	item.m_operator = DBFRedactorSortFilterProxyModel::AND;
 	item.column = index.column();
 	item.uslovie = DBFRedactorSortFilterProxyModel::Equal;
-	item.value = index.data(Qt::DisplayRole).toString();
-	item.type = DBFRedactorSortFilterProxyModel::FixedString;
-	item.caseSensitivity = Qt::CaseInsensitive;
+	item.regExp.setPattern(index.data(Qt::DisplayRole).toString());
+	item.regExp.setPatternSyntax(QRegExp::FixedString);
+	item.regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
 	currentPage->model()->addFilter(item);
 }
@@ -773,9 +773,9 @@ void DBFRedactorMainWindow::addExcludeFilter()
 	item.m_operator = DBFRedactorSortFilterProxyModel::AND;
 	item.column = index.column();
 	item.uslovie = DBFRedactorSortFilterProxyModel::NotEqual;
-	item.value = index.data(Qt::DisplayRole).toString();
-	item.type = DBFRedactorSortFilterProxyModel::FixedString;
-	item.caseSensitivity = Qt::CaseInsensitive;
+	item.regExp.setPattern(index.data(Qt::DisplayRole).toString());
+	item.regExp.setPatternSyntax(QRegExp::FixedString);
+	item.regExp.setCaseSensitivity(Qt::CaseInsensitive);
 
 	currentPage->model()->addFilter(item);
 }

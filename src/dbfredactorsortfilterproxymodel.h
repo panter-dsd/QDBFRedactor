@@ -9,12 +9,6 @@ class DBFRedactorSortFilterProxyModel : public QSortFilterProxyModel
 
 public:
 
-	enum FilterType {
-		FixedString = 0,
-		Wildcard,
-		RegExp
-	};
-
 	enum FilterOperator {
 		AND,
 		OR
@@ -33,9 +27,7 @@ public:
 		FilterOperator m_operator;
 		int column;
 		FilterUslovie uslovie;
-		QVariant value;
-		FilterType type;
-		Qt::CaseSensitivity caseSensitivity;
+		QRegExp regExp;
 	};
 
 private:
@@ -80,9 +72,6 @@ protected:
 	void sort();
 	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
-
-private:
-	inline int fixedStringCompare(const QVariant& left, const QVariant& right, Qt::CaseSensitivity sensitivity) const;
 
 public Q_SLOTS:
 	void clearSort();

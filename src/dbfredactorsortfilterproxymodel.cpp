@@ -144,6 +144,7 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 {
 	bool res = true;
 	int i = 0;
+	QRegExp regExp;
 	foreach(FilterItem item, m_filter) {
 		bool tempRes = true;
 		if (i == 0)
@@ -153,22 +154,22 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 
 		switch (item.uslovie) {
 			case Equal:
-				tempRes = data == item.value;
+				tempRes = data.toString().remove(item.regExp).isEmpty();
 				break;
 			case NotEqual:
-				tempRes = data != item.value;
+				tempRes = !data.toString().remove(item.regExp).isEmpty();
 				break;
 			case Smaller:
-				tempRes =fixedStringCompare(data, item.value, item.caseSensitivity) < 0;
+				tempRes =QString::compare(data.toString(), item.regExp.pattern(), item.regExp.caseSensitivity()) < 0;
 				break;
 			case SmallerOrEqual:
-				tempRes = fixedStringCompare(data, item.value, item.caseSensitivity) <= 0;
+				tempRes = QString::compare(data.toString(), item.regExp.pattern(), item.regExp.caseSensitivity()) <= 0;
 				break;
 			case Lager:
-				tempRes = fixedStringCompare(data, item.value, item.caseSensitivity) > 0;
+				tempRes = QString::compare(data.toString(), item.regExp.pattern(), item.regExp.caseSensitivity()) > 0;
 				break;
 			case LagerOrEqual:
-				tempRes = fixedStringCompare(data, item.value, item.caseSensitivity) >= 0;
+				tempRes = QString::compare(data.toString(), item.regExp.pattern(), item.regExp.caseSensitivity()) >= 0;
 				break;
 		}
 		switch (item.m_operator) {
@@ -177,46 +178,4 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 		}
 	}
 	return res;
-}
-
-int DBFRedactorSortFilterProxyModel::fixedStringCompare(const QVariant& left, const QVariant& right, Qt::CaseSensitivity sensitivity) const
-{
-	if (left == right)
-		return 0;
-
-	switch (left.type()) {
-		case QVariant::Bool:
-			return left.toBool() < right.toBool() ? -1 : 1;
-			break;
-		case QVariant::Int:
-			return left.toInt() < right.toInt() ? -1 : 1;
-			break;
-		case QVariant::UInt:
-			return left.toUInt() < right.toUInt() ? -1 : 1;
-			break;
-		case QVariant::LongLong:
-			return left.toLongLong() < right.toLongLong() ? -1 : 1;
-			break;
-		case QVariant::ULongLong:
-			return left.toULongLong() < right.toULongLong() ? -1 : 1;
-			break;
-		case QVariant::Double:
-			return left.toDouble() < right.toDouble() ? -1 : 1;
-			break;
-		case QVariant::Char:
-			return left.toChar() < right.toChar() ? -1 : 1;
-			break;
-		case QVariant::Date:
-			return left.toDate() < right.toDate() ? -1 : 1;
-			break;
-		case QVariant::Time:
-			return left.toTime() < right.toTime() ? -1 : 1;
-			break;
-		case QVariant::DateTime:
-			return left.toDateTime() < right.toDateTime() ? -1 : 1;
-			break;
-		case QVariant::String:
-			return QString::compare(left.toString(), right.toString(), sensitivity);
-			break;
-		}
 }
