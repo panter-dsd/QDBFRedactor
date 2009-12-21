@@ -3,6 +3,8 @@
 
 class QGroupBox;
 class QListView;
+class QAction;
+class QToolButton;
 
 #include <QtCore/QHash>
 #include <QtGui/QDialog>
@@ -18,8 +20,13 @@ private:
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> m_filter;
 
 private:
-	QGroupBox *filterParamsBox;
 	QListView *filterView;
+
+	QAction *actionAdd;
+	QAction *actionRemove;
+
+	QToolButton *addButton;
+	QToolButton *removeButton;
 
 public:
 	FilterDialog(QHash<int, QString> captions, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
@@ -33,6 +40,8 @@ public:
 private:
 
 private Q_SLOTS:
+	void add();
+	void remove();
 };
 
 #endif //SORTDIALOG_H
