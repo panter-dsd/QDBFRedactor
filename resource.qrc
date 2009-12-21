@@ -10,5 +10,18 @@
         <file>share/images/refresh.png</file>
         <file>share/images/remove.png</file>
         <file>share/images/add.png</file>
+        <file>share/images/filter.png</file>
+        <file>share/images/2uparrow.png</file>
+        <file>share/images/1downarrow.png</file>
+        <file>share/images/1leftarrow.png</file>
+        <file>share/images/1rightarrow.png</file>
+        <file>share/images/1uparrow.png</file>
+        <file>share/images/2downarrow.png</file>
+        <file>share/images/2leftarrow.png</file>
+        <file>share/images/2rightarrow.png</file>
+        <file>share/images/find.png</file>
+        <file>share/images/preview.png</file>
+        <file>share/images/removefilter.png</file>
+        <file>share/images/copy.png</file>
     </qresource>
 </RCC>

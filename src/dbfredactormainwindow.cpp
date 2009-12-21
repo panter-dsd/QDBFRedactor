@@ -142,6 +142,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	actionChangeFilter = new QAction(tr("Change filter"), this);
 	actionChangeFilter->setToolTip(tr("Change filter"));
+	actionChangeFilter->setIcon(QIcon(":/share/images/filter.png"));
 	connect(actionChangeFilter, SIGNAL(triggered()), this, SLOT(changeFilter()));
 	view->horizontalHeader()->addAction(actionChangeFilter);
 
@@ -157,6 +158,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	actionRemoveFilter = new QAction(tr("Remove filter"), this);
 	actionRemoveFilter->setToolTip(tr("Remove filter"));
+	actionRemoveFilter->setIcon(QIcon(":/share/images/removefilter.png"));
 	connect(actionRemoveFilter, SIGNAL(triggered()), this, SLOT(removeFilter()));
 	view->addAction(actionRemoveFilter);
 

@@ -36,21 +36,25 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 
 	addAllButton = new QToolButton(this);
 	addAllButton->setText(tr(">>"));
+	addAllButton->setIcon(QIcon(":share/images/2rightarrow.png"));
 	addAllButton->setToolTip(tr("Add all items"));
 	connect(addAllButton, SIGNAL(clicked()), this, SLOT(addAll()));
 
 	removeAllButton = new QToolButton(this);
 	removeAllButton->setText(tr("<<"));
+	removeAllButton->setIcon(QIcon(":share/images/2leftarrow.png"));
 	removeAllButton->setToolTip(tr("Remove all items"));
 	connect(removeAllButton, SIGNAL(clicked()), this, SLOT(removeAll()));
 
 	addButton = new QToolButton(this);
 	addButton->setText(tr(">"));
+	addButton->setIcon(QIcon(":share/images/1rightarrow.png"));
 	addButton->setToolTip(tr("Add item"));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(add()));
 
 	removeButton = new QToolButton(this);
 	removeButton->setText(tr("<"));
+	removeButton->setIcon(QIcon(":share/images/1leftarrow.png"));
 	removeButton->setToolTip(tr("Remove item"));
 	connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
 
@@ -64,21 +68,25 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 
 	moveUpButton = new QToolButton(this);
 	moveUpButton->setText(tr("Up"));
+	moveUpButton->setIcon(QIcon(":share/images/1uparrow.png"));
 	moveUpButton->setToolTip(tr("Move up"));
 	connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
 
 	moveDownButton = new QToolButton(this);
 	moveDownButton->setText(tr("Down"));
+	moveDownButton->setIcon(QIcon(":share/images/1downarrow.png"));
 	moveDownButton->setToolTip(tr("Move down"));
 	connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
 
 	moveTopButton = new QToolButton(this);
 	moveTopButton->setText(tr("Top"));
+	moveTopButton->setIcon(QIcon(":share/images/2uparrow.png"));
 	moveTopButton->setToolTip(tr("Move to top"));
 	connect(moveTopButton, SIGNAL(clicked()), this, SLOT(moveTop()));
 
 	moveBottomButton = new QToolButton(this);
 	moveBottomButton->setText(tr("Bottom"));
+	moveBottomButton->setIcon(QIcon(":share/images/2downarrow.png"));
 	moveBottomButton->setToolTip(tr("Move to bottom"));
 	connect(moveBottomButton, SIGNAL(clicked()), this, SLOT(moveBottom()));
 
