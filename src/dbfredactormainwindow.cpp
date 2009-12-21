@@ -743,7 +743,10 @@ void DBFRedactorMainWindow::changeFilter()
 		captions.insert(i, currentPage->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString());
 
 	FilterDialog dialog(captions, this);
-	dialog.exec();
+	dialog.setFilter(currentPage->model()->filter());
+
+	if (dialog.exec())
+		currentPage->model()->setFilter(dialog.filter());
 }
 
 void DBFRedactorMainWindow::addIncludeFilter()
