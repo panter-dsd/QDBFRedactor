@@ -1,4 +1,5 @@
 #include <QtCore/QDebug>
+#include <QtCore/QSettings>
 
 #include <QtGui/QListWidget>
 #include <QtGui/QLabel>
@@ -120,6 +121,8 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	}
 
 	updateLists();
+
+	loadSettings();
 }
 
 void SortDialog::setSortedColumns(QList<QPair<int, Qt::SortOrder> > sortedColumns)
@@ -288,4 +291,24 @@ void SortDialog::moveBottom()
 			break;
 		}
 	}
+}
+
+void SortDialog::loadSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("SortDialog");
+	resize(settings.value("Size", QSize(0, 0)).toSize());
+	move(settings.value("Pos", QPoint()).toPoint());
+	settings.endGroup();
+}
+
+void SortDialog::saveSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("SortDialog");
+	settings.setValue("Size", size());
+	settings.setValue("Pos", pos());
+	settings.endGroup();
 }

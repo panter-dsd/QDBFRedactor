@@ -36,8 +36,8 @@ private:
 
 public:
 	SortDialog(QHash<int, QString> captions, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
-	virtual ~SortDialog()
-	{}
+	~SortDialog()
+	{saveSettings();}
 
 	QList<QPair<int, Qt::SortOrder> > sortedColumns() const
 	{return m_sortedColumns;}
@@ -45,6 +45,8 @@ public:
 
 private:
 	void updateLists();
+	void loadSettings();
+	void saveSettings();
 
 private Q_SLOTS:
 	void changeSortOrder();
