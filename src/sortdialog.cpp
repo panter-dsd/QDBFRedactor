@@ -50,8 +50,8 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 
 	removeButton = new QToolButton(this);
 	removeButton->setText(tr("<"));
-	connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
 	removeButton->setToolTip(tr("Remove item"));
+	connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
 
 	QVBoxLayout *addRemoveButtonsLayout = new QVBoxLayout();
 	addRemoveButtonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
@@ -114,8 +114,10 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 
 	setLayout(mainLayout);
 
-	foreach(QToolButton *button, findChildren<QToolButton*> ())
+	foreach(QToolButton *button, findChildren<QToolButton*> ()) {
 		button->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+		button->setAutoRaise(true);
+	}
 
 	updateLists();
 }
