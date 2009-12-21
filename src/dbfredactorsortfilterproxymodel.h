@@ -67,6 +67,11 @@ public:
 		m_filter.append(filterItem);
 		invalidate();
 	}
+	void setFilter(QList<FilterItem> filter)
+	{
+		m_filter = filter;
+		invalidate();
+	}
 
 protected:
 	void sort();
