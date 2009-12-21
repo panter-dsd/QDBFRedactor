@@ -35,8 +35,7 @@ public:
 	virtual ~FilterDialog()
 	{}
 
-	QList<DBFRedactorSortFilterProxyModel::FilterItem> filter() const
-	{return m_filter;}
+	QList<DBFRedactorSortFilterProxyModel::FilterItem> filter() const;
 	void setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter);
 
 private Q_SLOTS:

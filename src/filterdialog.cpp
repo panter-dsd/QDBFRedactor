@@ -20,7 +20,8 @@ private:
 	QHash<int, QString> m_captions;
 
 public:
-	FilterDelegate(QHash<int, QString> captions, QObject * parent = 0) : QItemDelegate(parent), m_captions(captions)
+	FilterDelegate(QHash<int, QString> captions, QObject * parent = 0)
+	 : QItemDelegate(parent), m_captions(captions)
 	{}
 
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -70,7 +71,7 @@ public:
 
 	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 	{
-		return QSize(option.fontMetrics.width(tr("AND")), option.fontMetrics.height());
+		return QItemDelegate::sizeHint(option, index);
 	}
 
 	QWidget *createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
@@ -259,25 +260,65 @@ void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> 
 
 	QStandardItem *item;
 	for (int i = 0; i < m_filter.size(); i++) {
-		item = new QStandardItem(QString::number(m_filter.at(i).m_operator));
+		item = new QStandardItem();
+		item->setData(QString::number(m_filter.at(i).m_operator), Qt::EditRole);
 		model->setItem(i, 0, item);
-		item = new QStandardItem(QString::number(m_filter.at(i).column));
+		item = new QStandardItem();
+		item->setData(QString::number(m_filter.at(i).column), Qt::EditRole);
 		model->setItem(i, 1, item);
-		item = new QStandardItem(QString::number(m_filter.at(i).uslovie));
+		item = new QStandardItem();
+		item->setData(QString::number(m_filter.at(i).uslovie), Qt::EditRole);
 		model->setItem(i, 2, item);
-		item = new QStandardItem(m_filter.at(i).regExp.pattern());
+		item = new QStandardItem();
+		item->setData(m_filter.at(i).regExp.pattern(), Qt::EditRole);
 		model->setItem(i, 3, item);
-		item = new QStandardItem(QString::number(m_filter.at(i).regExp.patternSyntax()));
+		item = new QStandardItem();
+		item->setData(QString::number(m_filter.at(i).regExp.patternSyntax()), Qt::EditRole);
 		model->setItem(i, 4, item);
 	}
 }
 
 void FilterDialog::add()
 {
-
+	QStandardItem *item;
+	QList<QStandardItem*> items;
+	item = new QStandardItem();
+	item->setData(DBFRedactorSortFilterProxyModel::AND, Qt::EditRole);
+	items << item;
+	item = new QStandardItem();
+	item->setData(m_captions.begin().key(), Qt::EditRole);
+	items << item;
+	item = new QStandardItem();
+	item->setData(DBFRedactorSortFilterProxyModel::Equal, Qt::EditRole);
+	items << item;
+	item = new QStandardItem();
+	item->setData("", Qt::EditRole);
+	items << item;
+	item = new QStandardItem();
+	item->setData(QRegExp::FixedString, Qt::EditRole);
+	items << item;
+	model->appendRow(items);
 }
 
 void FilterDialog::remove()
 {
+	if (!filterView->currentIndex().isValid())
+		return;
 
+	model->removeRow(filterView->currentIndex().row());
+}
+
+QList<DBFRedactorSortFilterProxyModel::FilterItem> FilterDialog::filter() const
+{
+	QList<DBFRedactorSortFilterProxyModel::FilterItem> l;
+	for (int i = 0; i < model->rowCount(); i++) {
+		DBFRedactorSortFilterProxyModel::FilterItem item;
+		item.m_operator = static_cast<DBFRedactorSortFilterProxyModel::FilterOperator> (model->item(i, 0)->data(Qt::EditRole).toInt());
+		item.column = model->item(i, 1)->data(Qt::EditRole).toInt();
+		item.uslovie = static_cast<DBFRedactorSortFilterProxyModel::FilterUslovie> (model->item(i, 2)->data(Qt::EditRole).toInt());
+		item.regExp.setPattern(model->item(i, 3)->data(Qt::EditRole).toString());
+		item.regExp.setPatternSyntax(static_cast<QRegExp::PatternSyntax> (model->item(i, 4)->data(Qt::EditRole).toInt()));
+		l << item;
+	}
+	return l;
 }
