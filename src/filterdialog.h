@@ -32,11 +32,15 @@ private:
 
 public:
 	FilterDialog(QHash<int, QString> captions, QWidget *parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint);
-	virtual ~FilterDialog()
-	{}
+	~FilterDialog()
+	{saveSettings();}
 
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> filter() const;
 	void setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter);
+
+private:
+	void loadSettings();
+	void saveSettings();
 
 private Q_SLOTS:
 	void add();

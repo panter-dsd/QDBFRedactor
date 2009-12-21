@@ -1,3 +1,5 @@
+#include <QtCore/QSettings>
+
 #include <QtGui/QTableView>
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QLayout>
@@ -64,6 +66,12 @@ public:
 					case QRegExp::W3CXmlSchema11: text = "W3CXmlSchema11"; break;
 				}
 				break;
+			case 5:
+				switch (index.data(Qt::DisplayRole).toInt()) {
+					case Qt::CaseInsensitive: text = "CaseInsensitive"; break;
+					case Qt::CaseSensitive: text = "CaseSensitive"; break;
+				}
+				break;
 		}
 		drawDisplay(painter, m_option, m_option.rect, text);
 		drawFocus(painter, m_option, m_option.rect);
@@ -125,6 +133,13 @@ public:
 					return comboBox;
 					break;
 				}
+			case 5: {
+				QComboBox *comboBox = new QComboBox(parent);
+				comboBox->addItem(tr("CaseInsensitive"), Qt::CaseInsensitive);
+				comboBox->addItem(tr("CaseSensitive"), Qt::CaseSensitive);
+				return comboBox;
+				break;
+			}
 		}
 		return 0;
 	}
@@ -153,6 +168,11 @@ public:
 					break;
 				}
 			case 4: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				comboBox->setCurrentIndex(comboBox->findData(index.data(Qt::EditRole)));
+				break;
+			}
+			case 5: {
 				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
 				comboBox->setCurrentIndex(comboBox->findData(index.data(Qt::EditRole)));
 				break;
@@ -189,6 +209,11 @@ public:
 				value = comboBox->itemData(comboBox->currentIndex());
 				break;
 			}
+			case 5: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				value = comboBox->itemData(comboBox->currentIndex());
+				break;
+			}
 		}
 		model->setData(index, value, Qt::EditRole);
 	}
@@ -204,6 +229,7 @@ FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::Wi
 	:QDialog(parent, f), m_captions(captions)
 {
 	model = new QStandardItemModel(this);
+	model->setColumnCount(6);
 
 	filterView = new QTableView(this);
 	filterView->setModel(model);
@@ -248,6 +274,7 @@ FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::Wi
 	mainLayout->addWidget(buttons);
 	setLayout(mainLayout);
 
+	loadSettings();
 }
 
 void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter)
@@ -255,7 +282,7 @@ void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> 
 	m_filter = filter;
 
 	model->clear();
-	model->setColumnCount(5);
+	model->setColumnCount(6);
 	model->setRowCount(m_filter.size());
 
 	QStandardItem *item;
@@ -275,7 +302,17 @@ void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> 
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).regExp.patternSyntax()), Qt::EditRole);
 		model->setItem(i, 4, item);
+		item = new QStandardItem();
+		item->setData(QString::number(m_filter.at(i).regExp.caseSensitivity()), Qt::EditRole);
+		model->setItem(i, 5, item);
 	}
+
+	model->setHeaderData(0, Qt::Horizontal, tr("Operation"));
+	model->setHeaderData(1, Qt::Horizontal, tr("Column"));
+	model->setHeaderData(2, Qt::Horizontal, tr("Uslovie"));
+	model->setHeaderData(3, Qt::Horizontal, tr("Pattern"));
+	model->setHeaderData(4, Qt::Horizontal, tr("Pattern syntax"));
+	model->setHeaderData(5, Qt::Horizontal, tr("Case sensitivity"));
 }
 
 void FilterDialog::add()
@@ -296,6 +333,9 @@ void FilterDialog::add()
 	items << item;
 	item = new QStandardItem();
 	item->setData(QRegExp::FixedString, Qt::EditRole);
+	items << item;
+	item = new QStandardItem();
+	item->setData(Qt::CaseInsensitive, Qt::EditRole);
 	items << item;
 	model->appendRow(items);
 }
@@ -318,7 +358,28 @@ QList<DBFRedactorSortFilterProxyModel::FilterItem> FilterDialog::filter() const
 		item.uslovie = static_cast<DBFRedactorSortFilterProxyModel::FilterUslovie> (model->item(i, 2)->data(Qt::EditRole).toInt());
 		item.regExp.setPattern(model->item(i, 3)->data(Qt::EditRole).toString());
 		item.regExp.setPatternSyntax(static_cast<QRegExp::PatternSyntax> (model->item(i, 4)->data(Qt::EditRole).toInt()));
+		item.regExp.setCaseSensitivity(static_cast<Qt::CaseSensitivity> (model->item(i, 5)->data(Qt::EditRole).toInt()));
 		l << item;
 	}
 	return l;
+}
+
+void FilterDialog::loadSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("FilterDialog");
+	resize(settings.value("Size", QSize(0, 0)).toSize());
+	move(settings.value("Pos", QPoint()).toPoint());
+	settings.endGroup();
+}
+
+void FilterDialog::saveSettings()
+{
+	QSettings settings;
+
+	settings.beginGroup("FilterDialog");
+	settings.setValue("Size", size());
+	settings.setValue("Pos", pos());
+	settings.endGroup();
 }
