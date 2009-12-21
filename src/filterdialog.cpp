@@ -1,17 +1,212 @@
-#include <QtGui/QGroupBox>
-#include <QtGui/QListView>
+#include <QtGui/QTableView>
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QLayout>
 #include <QtGui/QAction>
 #include <QtGui/QToolButton>
 #include <QtGui/QSpacerItem>
+#include <QtGui/QStandardItemModel>
+#include <QtGui/QItemDelegate>
+#include <QtGui/QPainter>
+#include <QtGui/QStyledItemDelegate>
+#include <QtGui/QComboBox>
+#include <QtGui/QLineEdit>
 
 #include "filterdialog.h"
+
+class FilterDelegate : public QItemDelegate
+{
+
+private:
+	QHash<int, QString> m_captions;
+
+public:
+	FilterDelegate(QHash<int, QString> captions, QObject * parent = 0) : QItemDelegate(parent), m_captions(captions)
+	{}
+
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+	{
+		if (option.state & QStyle::State_Selected)
+			painter->fillRect(option.rect, option.palette.highlight());
+
+		if (index.column() == 0 && index.row() == 0)
+			return;
+
+		QString text;
+		QStyleOptionViewItem m_option(option);
+		switch (index.column()) {
+			case 0:
+				text = index.data(Qt::DisplayRole).toInt() == DBFRedactorSortFilterProxyModel::AND ? tr("AND") : tr("OR");
+				break;
+			case 1:
+				text = m_captions.value(index.data(Qt::DisplayRole).toInt());
+				break;
+			case 2:
+				switch (index.data(Qt::DisplayRole).toInt()) {
+					case DBFRedactorSortFilterProxyModel::Equal: text = "="; break;
+					case DBFRedactorSortFilterProxyModel::NotEqual: text = "<>"; break;
+					case DBFRedactorSortFilterProxyModel::Smaller: text = "<"; break;
+					case DBFRedactorSortFilterProxyModel::SmallerOrEqual: text = "<="; break;
+					case DBFRedactorSortFilterProxyModel::Lager: text = ">"; break;
+					case DBFRedactorSortFilterProxyModel::LagerOrEqual: text = ">="; break;
+				}
+				break;
+			case 3:
+				text = index.data(Qt::DisplayRole).toString();
+				break;
+			case 4:
+				switch (index.data(Qt::DisplayRole).toInt()) {
+					case QRegExp::RegExp: text = "RegExp"; break;
+					case QRegExp::RegExp2: text = "RegExp2"; break;
+					case QRegExp::Wildcard: text = "Wildcard"; break;
+					case QRegExp::WildcardUnix: text = "WildcardUnix"; break;
+					case QRegExp::FixedString: text = "FixedString"; break;
+					case QRegExp::W3CXmlSchema11: text = "W3CXmlSchema11"; break;
+				}
+				break;
+		}
+		drawDisplay(painter, m_option, m_option.rect, text);
+		drawFocus(painter, m_option, m_option.rect);
+	}
+
+	QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+	{
+		return QSize(option.fontMetrics.width(tr("AND")), option.fontMetrics.height());
+	}
+
+	QWidget *createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+	{
+		if (index.column() == 0 && index.row() == 0)
+			return 0;
+
+		switch (index.column()) {
+			case 0: {
+				QComboBox *comboBox = new QComboBox(parent);
+				comboBox->addItem(tr("AND"), DBFRedactorSortFilterProxyModel::AND);
+				comboBox->addItem(tr("OR"), DBFRedactorSortFilterProxyModel::OR);
+				return comboBox;
+				break;
+			}
+			case 1: {
+				QComboBox *comboBox = new QComboBox(parent);
+				QHashIterator<int, QString> it (m_captions);
+				while (it.hasNext()) {
+					it.next();
+
+					comboBox->addItem(it.value(), it.key());
+				}
+				return comboBox;
+				break;
+			}
+			case 2: {
+				QComboBox *comboBox = new QComboBox(parent);
+				comboBox->addItem(tr("="), DBFRedactorSortFilterProxyModel::Equal);
+				comboBox->addItem(tr("<>"), DBFRedactorSortFilterProxyModel::NotEqual);
+				comboBox->addItem(tr("<"), DBFRedactorSortFilterProxyModel::Smaller);
+				comboBox->addItem(tr("<="), DBFRedactorSortFilterProxyModel::SmallerOrEqual);
+				comboBox->addItem(tr(">"), DBFRedactorSortFilterProxyModel::Lager);
+				comboBox->addItem(tr(">="), DBFRedactorSortFilterProxyModel::LagerOrEqual);
+				return comboBox;
+				break;
+			}
+			case 3: {
+					QLineEdit *edit = new QLineEdit(parent);
+					return edit;
+					break;
+				}
+			case 4: {
+					QComboBox *comboBox = new QComboBox(parent);
+					comboBox->addItem(tr("RegExp"), QRegExp::RegExp);
+					comboBox->addItem(tr("RegExp2"), QRegExp::RegExp2);
+					comboBox->addItem(tr("Wildcard"), QRegExp::Wildcard);
+					comboBox->addItem(tr("WildcardUnix"), QRegExp::WildcardUnix);
+					comboBox->addItem(tr("FixedString"), QRegExp::FixedString);
+					comboBox->addItem(tr("W3CXmlSchema11"), QRegExp::W3CXmlSchema11);
+					return comboBox;
+					break;
+				}
+		}
+		return 0;
+	}
+
+	void setEditorData(QWidget *editor, const QModelIndex &index) const
+	{
+		switch (index.column()) {
+			case 0: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				comboBox->setCurrentIndex(comboBox->findData(index.data(Qt::EditRole)));
+				break;
+			}
+			case 1: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				comboBox->setCurrentIndex(comboBox->findData(index.data(Qt::EditRole)));
+				break;
+			}
+			case 2: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				comboBox->setCurrentIndex(comboBox->findData(index.data(Qt::EditRole)));
+				break;
+			}
+			case 3: {
+					QLineEdit *lineEdit = qobject_cast<QLineEdit*> (editor);
+					lineEdit->setText(index.data(Qt::EditRole).toString());
+					break;
+				}
+			case 4: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				comboBox->setCurrentIndex(comboBox->findData(index.data(Qt::EditRole)));
+				break;
+			}
+		}
+	}
+
+	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+	{
+		QVariant value;
+		switch (index.column()) {
+			case 0: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				value = comboBox->itemData(comboBox->currentIndex());
+				break;
+			}
+			case 1: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				value = comboBox->itemData(comboBox->currentIndex());
+				break;
+			}
+			case 2: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				value = comboBox->itemData(comboBox->currentIndex());
+				break;
+			}
+			case 3: {
+				QLineEdit *lineEdit = qobject_cast<QLineEdit*> (editor);
+				value = lineEdit->text();
+				break;
+			}
+			case 4: {
+				QComboBox *comboBox = qobject_cast<QComboBox*> (editor);
+				value = comboBox->itemData(comboBox->currentIndex());
+				break;
+			}
+		}
+		model->setData(index, value, Qt::EditRole);
+	}
+
+	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
+	{
+		editor->setGeometry(option.rect);
+	}
+};
+
 
 FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::WindowFlags f)
 	:QDialog(parent, f), m_captions(captions)
 {
-	filterView = new QListView(this);
+	model = new QStandardItemModel(this);
+
+	filterView = new QTableView(this);
+	filterView->setModel(model);
+	filterView->setItemDelegate(new FilterDelegate(m_captions, filterView));
 
 	actionAdd = new QAction(tr("Add"), this);
 	actionAdd->setIcon(QIcon(":share/images/add.png"));
@@ -57,6 +252,24 @@ FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::Wi
 void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter)
 {
 	m_filter = filter;
+
+	model->clear();
+	model->setColumnCount(5);
+	model->setRowCount(m_filter.size());
+
+	QStandardItem *item;
+	for (int i = 0; i < m_filter.size(); i++) {
+		item = new QStandardItem(QString::number(m_filter.at(i).m_operator));
+		model->setItem(i, 0, item);
+		item = new QStandardItem(QString::number(m_filter.at(i).column));
+		model->setItem(i, 1, item);
+		item = new QStandardItem(QString::number(m_filter.at(i).uslovie));
+		model->setItem(i, 2, item);
+		item = new QStandardItem(m_filter.at(i).regExp.pattern());
+		model->setItem(i, 3, item);
+		item = new QStandardItem(QString::number(m_filter.at(i).regExp.patternSyntax()));
+		model->setItem(i, 4, item);
+	}
 }
 
 void FilterDialog::add()

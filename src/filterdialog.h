@@ -2,9 +2,10 @@
 #define FILTERDIALOG_H
 
 class QGroupBox;
-class QListView;
+class QTableView;
 class QAction;
 class QToolButton;
+class QStandardItemModel;
 
 #include <QtCore/QHash>
 #include <QtGui/QDialog>
@@ -20,7 +21,8 @@ private:
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> m_filter;
 
 private:
-	QListView *filterView;
+	QTableView *filterView;
+	QStandardItemModel *model;
 
 	QAction *actionAdd;
 	QAction *actionRemove;
@@ -36,8 +38,6 @@ public:
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> filter() const
 	{return m_filter;}
 	void setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter);
-
-private:
 
 private Q_SLOTS:
 	void add();
