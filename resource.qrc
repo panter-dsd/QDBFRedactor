@@ -8,5 +8,7 @@
         <file>share/images/print.png</file>
         <file>share/images/close.png</file>
         <file>share/images/refresh.png</file>
+        <file>share/images/remove.png</file>
+        <file>share/images/add.png</file>
     </qresource>
 </RCC>
