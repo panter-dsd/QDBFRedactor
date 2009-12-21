@@ -154,10 +154,10 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 
 		switch (item.uslovie) {
 			case Equal:
-				tempRes = data.toString().remove(item.regExp).isEmpty();
+				tempRes = data.toString().contains(item.regExp) && data.toString().remove(item.regExp).isEmpty();
 				break;
 			case NotEqual:
-				tempRes = !data.toString().remove(item.regExp).isEmpty();
+				tempRes = !(data.toString().contains(item.regExp) && data.toString().remove(item.regExp).isEmpty());
 				break;
 			case Smaller:
 				tempRes =QString::compare(data.toString(), item.regExp.pattern(), item.regExp.caseSensitivity()) < 0;
