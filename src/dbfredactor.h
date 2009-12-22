@@ -67,7 +67,7 @@ private:
 	QString m_fileName;
 	QFile m_file;
 	QByteArray m_buf;
-	QMap<int, QByteArray> m_hash;
+	QMap<int, QByteArray> m_cache;
 	QTextCodec	 *m_codec;
 	QString m_tableName;
 	int lastRecord;
@@ -107,7 +107,7 @@ public:
 	{
 		m_buffering = b;
 		if (!b)
-			m_hash.clear();
+			m_cache.clear();
 	}
 
 	QVariant data(int row, int column);

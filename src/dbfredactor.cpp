@@ -25,7 +25,7 @@ void DBFRedactor::close()
 {
 	header.fieldsList.clear();
 	m_file.close();
-	m_hash.clear();
+	m_cache.clear();
 }
 
 bool DBFRedactor::open(DBFOpenMode OpenMode)
@@ -111,19 +111,8 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	} while (m_buf.at(0) != 13);
 	m_file.seek(header.firstRecordPos);
 
-	lastRecord = 0;
-	while (!m_file.atEnd()) {
-		m_buf = m_file.read(READING_RECORDS_COUNT * header.recordLenght);
-		int pos = 0;
-		while (m_buf.size() - pos >= header.recordLenght) {
-			m_hash.insert(lastRecord++, m_buf.mid(pos, header.recordLenght));
-			pos += header.recordLenght;
-		}
-	}
-
 	m_buf.clear();
-	m_file.seek(header.firstRecordPos);
-	lastRecord = 0;
+	lastRecord = -1;
 	return true;
 }
 
@@ -145,7 +134,32 @@ QByteArray DBFRedactor::strRecord(int row)
 	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
 		return false;
 
-	m_buf = m_hash.value(row);
+	if (!m_cache.contains(row)) {
+		if (!m_buffering)
+			m_cache.clear();
+		qint64 filePos = 0;
+		if (row >= lastRecord) {
+			filePos = header.firstRecordPos + header.recordLenght * row;
+			lastRecord = row;
+		} else {
+			filePos = header.firstRecordPos + header.recordLenght * row - (READING_RECORDS_COUNT - 1) * header.recordLenght;
+			lastRecord = row - READING_RECORDS_COUNT + 1;
+			if (filePos < header.firstRecordPos) {
+				filePos = header.firstRecordPos;
+				lastRecord = 0;
+			}
+		}
+		m_file.seek(filePos);
+		m_buf = m_file.read(READING_RECORDS_COUNT * header.recordLenght);
+		int pos = 0;
+		while (m_buf.size() - pos >= header.recordLenght) {
+			m_cache.insert(lastRecord++, m_buf.mid(pos, header.recordLenght));
+			pos += header.recordLenght;
+		}
+	}
+
+	m_buf = m_cache.value(row);
+
 	Q_ASSERT(m_buf.size() == header.recordLenght);
 
 	return m_buf;

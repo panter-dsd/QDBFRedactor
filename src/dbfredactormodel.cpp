@@ -7,6 +7,7 @@ DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
 {
 	redactor = new DBFRedactor(fileName);
 	redactor->open(DBFRedactor::Read);
+	redactor->setBuffering(false);
 }
 
 DBFRedactorModel::~DBFRedactorModel()
