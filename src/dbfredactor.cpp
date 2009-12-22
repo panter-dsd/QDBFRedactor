@@ -1,7 +1,6 @@
 #include <QtCore/QDebug>
 
 #include "dbfredactor.h"
-#define MAX_BUFFER_SIZE 10000
 #define READING_RECORDS_COUNT 40960
 
 DBFRedactor::DBFRedactor()
@@ -116,7 +115,7 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	return true;
 }
 
-QByteArray DBFRedactor::revert(const QByteArray& array)
+QByteArray DBFRedactor::revert(const QByteArray& array) const
 {
 	QByteArray newArray;
 	for (int i = array.length() - 1; i >= 0; i--)
@@ -124,14 +123,14 @@ QByteArray DBFRedactor::revert(const QByteArray& array)
 	return newArray;
 }
 
-DBFRedactor::Field DBFRedactor::field(int number)
+DBFRedactor::Field DBFRedactor::field(int number) const
 {
 	return number < header.fieldsList.count() ? header.fieldsList.at(number) : Field();
 }
 
 QByteArray DBFRedactor::strRecord(int row)
 {
-	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
+	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount)
 		return false;
 
 	if (!m_cache.contains(row)) {
@@ -167,15 +166,12 @@ QByteArray DBFRedactor::strRecord(int row)
 
 QVariant DBFRedactor::data(int row, int column)
 {
-	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
-		return QVariant();
-
-	if (column < 0 || column >= header.fieldsList.size() || !m_file.isOpen())
+	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount || column < 0 || column >= header.fieldsList.size())
 		return QVariant();
 
 	QString tempString = m_codec->toUnicode(strRecord(row)).mid(header.fieldsList.at(column).pos, header.fieldsList.at(column).firstLenght);
-		//Delete last spaces
 
+	//Delete last spaces
 	if (!tempString.isEmpty()) {
 		int i = tempString.length();
 		while ((--i >= 0) && tempString[i].isSpace()) {;}
@@ -184,19 +180,19 @@ QVariant DBFRedactor::data(int row, int column)
 
 	switch (header.fieldsList.at(column).type) {
 		case TYPE_CHAR:
-			return QVariant(tempString);
+			return tempString;
 			break;
 		case TYPE_NUMERIC:
-			return QVariant(tempString.toDouble());
+			return tempString.toDouble();
 			break;
 		case TYPE_LOGICAL:
-			return QVariant(tempString == "T");
+			return tempString == "T";
 			break;
 		case TYPE_DATE:
-			return QVariant(QDate::fromString(tempString, "yyyyMMdd"));
+			return QDate::fromString(tempString, "yyyyMMdd");
 			break;
 		case TYPE_FLOAT:
-			return QVariant(tempString.toDouble());
+			return tempString.toDouble();
 			break;
 		case TYPE_MEMO:
 			return QVariant();
@@ -207,15 +203,18 @@ QVariant DBFRedactor::data(int row, int column)
 
 bool DBFRedactor::isDeleted(int row)
 {
-	if (row < 0 || row >= header.recordsCount || !m_file.isOpen())
+	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount)
 		return false;
 
-	return strRecord(row).at(0) == 0x2A;
+	m_file.seek(header.firstRecordPos + header.recordLenght * row);
+	char ch;
+	m_file.read(&ch, 1);
+	return ch == 0x2A;
 }
 
 DBFRedactor::Record DBFRedactor::record(int number)
 {
-	if (number < 0 || number >= header.recordsCount || !m_file.isOpen())
+	if (!m_file.isOpen() || number < 0 || number >= header.recordsCount)
 		return Record();
 
 	Record record;
@@ -238,10 +237,7 @@ DBFRedactor::Record DBFRedactor::record(int number)
 				record.value.append(tempString.toDouble());
 				break;
 			case TYPE_LOGICAL:
-				if (tempString.toInt() == 0)
-					record.value.append("FALSE");
-				else
-					record.value.append("TRUE");
+				record.value.append(tempString == "T");
 				break;
 			case TYPE_DATE:
 				record.value.append(QDate::fromString(tempString, "yyyyMMdd"));
@@ -258,21 +254,21 @@ DBFRedactor::Record DBFRedactor::record(int number)
 	return record;
 }
 
-bool DBFRedactor::compareRecord(Record* first,Record* second)
+bool DBFRedactor::compareRecord(const Record& first, const Record& second)
 {
-	if (first->isDeleted != second->isDeleted)
+	if (first.isDeleted != second.isDeleted)
 		return false;
 
-	if (first->value.count() != second->value.count())
+	if (first.value.size() != second.value.size())
 		return false;
 
-	for (int i = 0; i < first->value.count(); i++)
-		if (first->value.at(i) != second->value.at(i))
+	for (int i = 0; i < first.value.size(); i++)
+		if (first.value.at(i) != second.value.at(i))
 			return false;
 	return true;
 }
 
-bool DBFRedactor::isOpen()
+bool DBFRedactor::isOpen() const
 {
 	return m_file.isOpen();
 }
@@ -283,10 +279,10 @@ int DBFRedactor::deletedCount()
 	m_file.seek(header.firstRecordPos);
 
 	long deletedCount = 0;
-	for (int i = 0; i < header.recordsCount; i++)
-	{
-		m_buf = m_file.read(1);
-		if (m_buf.at(0) == 0x2A)
+	for (int i = 0; i < header.recordsCount; i++) {
+		char ch;
+		m_file.read(&ch, 1);
+		if (ch == 0x2A)
 			deletedCount++;
 		m_file.seek(header.firstRecordPos + header.recordLenght * (i + 1));
 	}
@@ -294,12 +290,9 @@ int DBFRedactor::deletedCount()
 	return deletedCount;
 }
 
-int DBFRedactor::rowsCount()
+int DBFRedactor::rowsCount() const
 {
-	if (m_file.isOpen())
-		return header.recordsCount;
-	else
-		return 0;
+	return m_file.isOpen() ? header.recordsCount : 0;
 }
 
 void DBFRedactor::refresh()

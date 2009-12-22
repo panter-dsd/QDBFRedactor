@@ -67,7 +67,7 @@ private:
 	QString m_fileName;
 	QFile m_file;
 	QByteArray m_buf;
-	QMap<int, QByteArray> m_cache;
+	QHash<int, QByteArray> m_cache;
 	QTextCodec	 *m_codec;
 	QString m_tableName;
 	int lastRecord;
@@ -83,25 +83,25 @@ public:
 	bool open(DBFOpenMode OpenMode);
 	void close();
 
-	DBFRedactor::Field field(int number);
+	DBFRedactor::Field field(int number) const;
 	QByteArray strRecord(int row);
 	DBFRedactor::Record record(int number);
 
-	int columnsCount()
+	int columnsCount() const
 	{return header.fieldsList.count();}
 
-	int rowsCount();
+	int rowsCount() const;
 
-	QString tableName()
+	QString tableName() const
 	{return m_tableName;}
 
-	static bool compareRecord(Record *first, Record *second);
-	bool isOpen();
+	static bool compareRecord(const Record& first, const Record& second);
+	bool isOpen() const;
 	int deletedCount();
 
 	void refresh();
 
-	bool buffering()
+	bool buffering() const
 	{return m_buffering;}
 	void setBuffering(bool b)
 	{
@@ -110,11 +110,11 @@ public:
 			m_cache.clear();
 	}
 
-	QVariant data(int row, int column);
+	QVariant data(int row, int column) ;
 
 	bool isDeleted(int row);
 
 private:
-	QByteArray revert(const QByteArray& array);
+	QByteArray revert(const QByteArray& array) const;
 };
 #endif
