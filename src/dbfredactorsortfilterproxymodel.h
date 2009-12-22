@@ -24,7 +24,7 @@ public:
 	};
 
 	struct FilterItem {
-		FilterOperator m_operator;
+		FilterOperator filterOperator;
 		int column;
 		FilterUslovie uslovie;
 		QRegExp regExp;
@@ -42,7 +42,7 @@ public:
 
 	QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
-	QList<QPair<int, Qt::SortOrder> > sortedColumns()
+	QList<QPair<int, Qt::SortOrder> > sortedColumns() const
 	{return m_sortedColumns;}
 	void setSortedColumns(QList<QPair<int, Qt::SortOrder> > sortedColumns)
 	{
@@ -60,7 +60,7 @@ public:
 
 	bool isColumnInSort(int column) const;
 
-	QList<FilterItem> filter()
+	QList<FilterItem> filter() const
 	{return m_filter;}
 	void addFilter(const FilterItem& filterItem)
 	{

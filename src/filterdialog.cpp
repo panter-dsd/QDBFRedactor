@@ -288,7 +288,7 @@ void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> 
 	QStandardItem *item;
 	for (int i = 0; i < m_filter.size(); i++) {
 		item = new QStandardItem();
-		item->setData(QString::number(m_filter.at(i).m_operator), Qt::EditRole);
+		item->setData(QString::number(m_filter.at(i).filterOperator), Qt::EditRole);
 		model->setItem(i, 0, item);
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).column), Qt::EditRole);
@@ -353,7 +353,7 @@ QList<DBFRedactorSortFilterProxyModel::FilterItem> FilterDialog::filter() const
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> l;
 	for (int i = 0; i < model->rowCount(); i++) {
 		DBFRedactorSortFilterProxyModel::FilterItem item;
-		item.m_operator = static_cast<DBFRedactorSortFilterProxyModel::FilterOperator> (model->item(i, 0)->data(Qt::EditRole).toInt());
+		item.filterOperator = static_cast<DBFRedactorSortFilterProxyModel::FilterOperator> (model->item(i, 0)->data(Qt::EditRole).toInt());
 		item.column = model->item(i, 1)->data(Qt::EditRole).toInt();
 		item.uslovie = static_cast<DBFRedactorSortFilterProxyModel::FilterUslovie> (model->item(i, 2)->data(Qt::EditRole).toInt());
 		item.regExp.setPattern(model->item(i, 3)->data(Qt::EditRole).toString());

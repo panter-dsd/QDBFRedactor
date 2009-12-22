@@ -62,7 +62,6 @@ void DBFRedactorSortFilterProxyModel::changeSortedColumn(int column, Qt::SortOrd
 void DBFRedactorSortFilterProxyModel::clearSort()
 {
 	m_sortedColumns.clear();
-	reset();
 	sort();
 }
 
@@ -74,10 +73,10 @@ void DBFRedactorSortFilterProxyModel::sort()
 
 bool DBFRedactorSortFilterProxyModel::lessThan ( const QModelIndex & left, const QModelIndex & right ) const
 {
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
-		QVariant leftData = sourceModel()->index(left.row(), m_sortedColumns.at(i).first).data(Qt::DisplayRole);
-		QVariant rightData = sourceModel()->index(right.row(), m_sortedColumns.at(i).first).data(Qt::DisplayRole);
-		Qt::SortOrder order = m_sortedColumns.at(i).second;
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
+		const QVariant& leftData = sourceModel()->index(left.row(), m_sortedColumns.at(i).first).data(Qt::DisplayRole);
+		const QVariant& rightData = sourceModel()->index(right.row(), m_sortedColumns.at(i).first).data(Qt::DisplayRole);
+		const Qt::SortOrder order = m_sortedColumns.at(i).second;
 
 		if (leftData == rightData)
 			continue;
@@ -132,11 +131,10 @@ Qt::SortOrder DBFRedactorSortFilterProxyModel::sortOrder(int column) const
 
 bool DBFRedactorSortFilterProxyModel::isColumnInSort(int column) const
 {
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
-		if (m_sortedColumns.at(i).first == column) {
+	for (int i = 0; i < m_sortedColumns.size(); i++)
+		if (m_sortedColumns.at(i).first == column)
 			return true;
-		}
-	}
+
 	return false;
 }
 
@@ -144,13 +142,13 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 {
 	bool res = true;
 	int i = 0;
-	QRegExp regExp;
+
 	foreach(FilterItem item, m_filter) {
 		bool tempRes = true;
 		if (i == 0)
-			item.m_operator = AND;
+			item.filterOperator = AND;
 		i++;
-		QVariant data = sourceModel()->index(source_row, item.column, source_parent).data(Qt::DisplayRole);
+		const QVariant& data = sourceModel()->index(source_row, item.column, source_parent).data(Qt::DisplayRole);
 
 		switch (item.uslovie) {
 			case Equal:
@@ -172,7 +170,7 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 				tempRes = QString::compare(data.toString(), item.regExp.pattern(), item.regExp.caseSensitivity()) >= 0;
 				break;
 		}
-		switch (item.m_operator) {
+		switch (item.filterOperator) {
 			case AND: res &= tempRes; break;
 			case OR: res |= tempRes; break;
 		}

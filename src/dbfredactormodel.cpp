@@ -7,7 +7,7 @@ DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
 {
 	redactor = new DBFRedactor(fileName);
 	redactor->open(DBFRedactor::Read);
-	redactor->setBuffering(false);
+	redactor->setBuffering(true);
 }
 
 DBFRedactorModel::~DBFRedactorModel()
@@ -21,7 +21,7 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 	if (!index.isValid())
 		return QVariant();
 
-	QVariant value(redactor->data(index.row(), index.column()));
+	const QVariant& value = redactor->data(index.row(), index.column());
 
 	switch (role) {
 		case Qt::DisplayRole:
@@ -84,17 +84,17 @@ QModelIndex DBFRedactorModel::index(int row, int column, const QModelIndex &pare
 		return createIndex(row, column);
 }
 
-QModelIndex DBFRedactorModel::parent(const QModelIndex &index) const
+QModelIndex DBFRedactorModel::parent(const QModelIndex &/*index*/) const
 {
 	return QModelIndex();
 }
 
-int DBFRedactorModel::rowCount(const QModelIndex &parent) const
+int DBFRedactorModel::rowCount(const QModelIndex &/*parent*/) const
 {
 	return redactor->rowsCount();
 }
 
-int DBFRedactorModel::columnCount(const QModelIndex &parent) const
+int DBFRedactorModel::columnCount(const QModelIndex &/*parent*/) const
 {
 	return redactor->columnsCount();
 }

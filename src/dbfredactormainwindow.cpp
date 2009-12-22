@@ -758,7 +758,7 @@ void DBFRedactorMainWindow::addIncludeFilter()
 		return;
 
 	DBFRedactorSortFilterProxyModel::FilterItem item;
-	item.m_operator = DBFRedactorSortFilterProxyModel::AND;
+	item.filterOperator = DBFRedactorSortFilterProxyModel::AND;
 	item.column = index.column();
 	item.uslovie = DBFRedactorSortFilterProxyModel::Equal;
 	item.regExp.setPattern(index.data(Qt::DisplayRole).toString());
@@ -775,7 +775,7 @@ void DBFRedactorMainWindow::addExcludeFilter()
 		return;
 
 	DBFRedactorSortFilterProxyModel::FilterItem item;
-	item.m_operator = DBFRedactorSortFilterProxyModel::AND;
+	item.filterOperator = DBFRedactorSortFilterProxyModel::AND;
 	item.column = index.column();
 	item.uslovie = DBFRedactorSortFilterProxyModel::NotEqual;
 	item.regExp.setPattern(index.data(Qt::DisplayRole).toString());
