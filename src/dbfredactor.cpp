@@ -12,7 +12,7 @@ DBFRedactor::DBFRedactor()
 DBFRedactor::DBFRedactor(const QString& fileName)
 	: m_fileName(fileName), m_openMode(No), m_buffering(true)
 {
-	m_tableName = QFileInfo(m_fileName).baseName();
+	header.recordsCount = -1;
 }
 
 DBFRedactor::~DBFRedactor()
@@ -169,30 +169,29 @@ QVariant DBFRedactor::data(int row, int column)
 	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount || column < 0 || column >= header.fieldsList.size())
 		return QVariant();
 
-	QString tempString = m_codec->toUnicode(strRecord(row)).mid(header.fieldsList.at(column).pos, header.fieldsList.at(column).firstLenght);
-
-	//Delete last spaces
-	if (!tempString.isEmpty()) {
-		int i = tempString.length();
-		while ((--i >= 0) && tempString[i].isSpace()) {;}
-		tempString.remove(i + 1, tempString.length());
-	}
+	QString tempString = m_codec->toUnicode(strRecord(row).mid(header.fieldsList.at(column).pos, header.fieldsList.at(column).firstLenght));
 
 	switch (header.fieldsList.at(column).type) {
 		case TYPE_CHAR:
+			//Delete last spaces
+			if (!tempString.isEmpty()) {
+				int i = tempString.length();
+				while ((--i >= 0) && tempString[i].isSpace()) {;}
+				tempString.remove(i + 1, tempString.length());
+			}
 			return tempString;
 			break;
 		case TYPE_NUMERIC:
-			return tempString.toDouble();
+			return tempString.trimmed();
 			break;
 		case TYPE_LOGICAL:
-			return tempString == "T";
+			return tempString.trimmed() == "T";
 			break;
 		case TYPE_DATE:
-			return QDate::fromString(tempString, "yyyyMMdd");
+			return QDate::fromString(tempString.trimmed(), "yyyyMMdd");
 			break;
 		case TYPE_FLOAT:
-			return tempString.toDouble();
+			return tempString.trimmed().toDouble();
 			break;
 		case TYPE_MEMO:
 			return QVariant();
@@ -205,6 +204,9 @@ bool DBFRedactor::isDeleted(int row)
 {
 	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount)
 		return false;
+
+	if (m_cache.contains(row))
+		return m_cache.value(row).at(0) == 0x2A;
 
 	m_file.seek(header.firstRecordPos + header.recordLenght * row);
 	char ch;
