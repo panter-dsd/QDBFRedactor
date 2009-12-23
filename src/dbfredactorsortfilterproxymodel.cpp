@@ -113,11 +113,81 @@ bool DBFRedactorSortFilterProxyModel::lessThan ( const QModelIndex & left, const
 				return (leftData.toDateTime() < rightData.toDateTime()) ^ order;
 				break;
 			case QVariant::String:
-				return (QString::localeAwareCompare(leftData.toString(), rightData.toString()) < 0) ^ order;
+				return (naturalCompare(leftData.toString(), rightData.toString()) < 0) ^ order;
 				break;
 		}
 	}
 	return false;
+}
+
+static inline QChar getNextChar(const QString &s, int location)
+{
+	return (location < s.length()) ? s.at(location) : QChar();
+}
+
+inline int DBFRedactorSortFilterProxyModel::naturalCompare(const QString& left, const QString& right, Qt::CaseSensitivity cs) const
+{
+	for(int l1 = 0, l2 = 0; l1 <= left.count() && l2 <= right.count(); ++l1, ++l2)
+	{
+		// skip spaces, tabs and 0's
+		QChar c1 = getNextChar(left, l1);
+		while(c1.isSpace())
+			c1 = getNextChar(left, ++l1);
+		QChar c2 = getNextChar(right, l2);
+		while(c2.isSpace())
+			c2 = getNextChar(right, ++l2);
+
+		if(c1.isDigit() && c2.isDigit())
+		{
+			while(c1.digitValue() == 0)
+				c1 = getNextChar(left, ++l1);
+			while(c2.digitValue() == 0)
+				c2 = getNextChar(right, ++l2);
+
+			int lookAheadLocation1 = l1;
+			int lookAheadLocation2 = l2;
+			int currentReturnValue = 0;
+			// find the last digit, setting currentReturnValue as we go if it isn't equal
+			for(QChar lookAhead1 = c1, lookAhead2 = c2;
+				(lookAheadLocation1 <= left.length() && lookAheadLocation2 <= right.length());
+				lookAhead1 = getNextChar(left, ++lookAheadLocation1),
+				lookAhead2 = getNextChar(right, ++lookAheadLocation2))
+			{
+				bool ileftADigit = !lookAhead1.isNull() && lookAhead1.isDigit();
+				bool irightADigit = !lookAhead2.isNull() && lookAhead2.isDigit();
+				if(!ileftADigit && !irightADigit)
+					break;
+				if(!ileftADigit)
+					return -1;
+				if(!irightADigit)
+					return 1;
+				if(currentReturnValue == 0)
+				{
+					if(lookAhead1 < lookAhead2)
+						currentReturnValue = -1;
+					else if(lookAhead1 > lookAhead2)
+						currentReturnValue = 1;
+				}
+			}
+			if(currentReturnValue != 0)
+				return currentReturnValue;
+		}
+
+		if(cs == Qt::CaseInsensitive)
+		{
+			if(!c1.isLower())
+				c1 = c1.toLower();
+			if(!c2.isLower())
+				c2 = c2.toLower();
+		}
+		int r = QString::localeAwareCompare(c1, c2);
+		if(r < 0)
+			return -1;
+		if(r > 0)
+			return 1;
+	}
+	// The two strings are the same (02 == 2) so fall back to the normal sort
+	return QString::compare(left, right, cs);
 }
 
 Qt::SortOrder DBFRedactorSortFilterProxyModel::sortOrder(int column) const

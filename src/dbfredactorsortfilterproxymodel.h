@@ -78,6 +78,9 @@ protected:
 	bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const;
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 
+private:
+	inline int naturalCompare(const QString& left, const QString& right, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
+
 public Q_SLOTS:
 	void clearSort();
 	void removeFilter()
