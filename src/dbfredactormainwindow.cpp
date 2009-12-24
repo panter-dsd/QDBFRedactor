@@ -39,12 +39,9 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
 	view = new QTableView(this);
-	view->setVisible(false);
 	view->setContextMenuPolicy(Qt::ActionsContextMenu);
-	view->verticalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
 	view->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
 	connect(view->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(sort(int)));
-
 
 #ifndef Q_CC_MSVC
 	#warning "+ 10 is harcod"
@@ -82,49 +79,41 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionOpen->setToolTip(tr("Open file"));
 	actionOpen->setShortcut(QKeySequence::Open);
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
-	addAction(actionOpen);
 
 	actionExit = new QAction(QIcon(":/share/images/exit.png"), tr("E&xit"), this);
 	actionExit->setToolTip(tr("Exit from program"));
 	actionExit->setShortcut(Qt::ALT + Qt::Key_X);
 	connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
-	addAction(actionExit);
 
 	actionClose = new QAction(QIcon(":/share/images/close.png"), tr("C&lose"), this);
 	actionClose->setToolTip(tr("Close current file"));
 	actionClose->setShortcut(Qt::CTRL + Qt::Key_W);
 	connect(actionClose, SIGNAL(triggered()), this, SLOT(closeCurrentTab()));
-	addAction(actionClose);
 	tabBar->addAction(actionClose);
 
 	actionRefresh = new QAction(QIcon(":/share/images/refresh.png"), tr("&Refresh"), this);
 	actionRefresh->setToolTip(tr("Refresh current file"));
 	actionRefresh->setShortcut(Qt::CTRL + Qt::Key_R);
 	connect(actionRefresh, SIGNAL(triggered()), this, SLOT(refreshModel()));
-	addAction(actionRefresh);
 	tabBar->addAction(actionRefresh);
 
 	actionCopy = new QAction(QIcon(":/share/images/copy.png"), tr("&Copy"), this);
 	actionCopy->setToolTip(tr("Copy current cell to clipboard"));
 	actionCopy->setShortcut(Qt::CTRL + Qt::Key_C);
 	connect(actionCopy, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
-	addAction(actionCopy);
 	view->addAction(actionCopy);
 
 	acionExportToHtml = new QAction(QIcon(":/share/images/exportToHtml.png"), tr("&Export to html"), this);
 	acionExportToHtml->setToolTip(tr("Export to html"));
 	connect(acionExportToHtml, SIGNAL(triggered()), this, SLOT(exportToHtml()));
-	addAction(acionExportToHtml);
 
 	acionExportToXml = new QAction(QIcon(":/share/images/exportToXml.png"), tr("&Export to xml"), this);
 	acionExportToXml->setToolTip(tr("Export to xml"));
 	connect(acionExportToXml, SIGNAL(triggered()), this, SLOT(exportToXml()));
-	addAction(acionExportToXml);
 
 	acionExportToCsv = new QAction(QIcon(":/share/images/exportToCsv.png"), tr("&Export to csv"), this);
 	acionExportToCsv->setToolTip(tr("Export to csv"));
 	connect(acionExportToCsv, SIGNAL(triggered()), this, SLOT(exportToCsv()));
-	addAction(acionExportToCsv);
 
 	actionResizeColumnsToContents = new QAction(tr("Resize columns to contents"), this);
 	actionResizeColumnsToContents->setToolTip(tr("Resize columns to contents"));
@@ -161,7 +150,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionRemoveFilter->setToolTip(tr("Remove filter"));
 	actionRemoveFilter->setIcon(QIcon(":/share/images/removefilter.png"));
 	connect(actionRemoveFilter, SIGNAL(triggered()), this, SLOT(removeFilter()));
-	view->addAction(actionRemoveFilter);
+	view->horizontalHeader()->addAction(actionRemoveFilter);
 
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
@@ -237,8 +226,8 @@ void DBFRedactorMainWindow::open()
 	QSettings settings;
 	const QStringList& fileNames = QFileDialog::getOpenFileNames(this,
 															tr("Open files"),
-															settings.value("Global/OpenPath", "'").toString(),
-															tr("DBase files (*.dbf)"));
+															settings.value("Global/OpenPath", QDir::homePath()).toString(),
+															tr("DBase files (*.dbf);;All files(*)"));
 	if (fileNames.isEmpty())
 		return;
 
@@ -269,7 +258,6 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 	}
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
-	view->setVisible(true);
 	updateActions();
 }
 
@@ -291,10 +279,9 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	}
 
 	DBFRedactorPage *page = pages.value(tabBar->tabData(index).toString());
-	if (!page) {
-		view->setModel(0);
+	if (!page)
 		return;
-	}
+
 	view->setModel(page->model());
 	view->setSelectionModel(page->selectionModel());
 	view->horizontalScrollBar()->setValue(page->pos().x());
@@ -311,7 +298,7 @@ void DBFRedactorMainWindow::tabChanged(int index)
 			this, SLOT(selectionChanged()));
 
 	currentPage = page;
-	currentFile->setText(tabBar->tabToolTip(index));
+	currentFile->setText(QDir::toNativeSeparators(currentPage->fileName()));
 	selectionChanged();
 }
 
@@ -324,10 +311,6 @@ void DBFRedactorMainWindow::closeTab(int index)
 	currentPage = 0;
 	pages.remove(tabBar->tabData(index).toString());
 	tabBar->removeTab(index);
-	if (tabBar->count() <= 0) {
-		view->setVisible(false);
-		currentFile->setText("");
-	}
 	updateActions();
 }
 
@@ -338,13 +321,14 @@ void DBFRedactorMainWindow::closeCurrentTab()
 
 void DBFRedactorMainWindow::updateActions()
 {
-	actionClose->setEnabled(tabBar->count() > 0);
+	actionClose->setEnabled(currentPage);
 	currentFile->setVisible(currentPage);
-	informationLabel->setVisible(currentPage);
+	informationLabel->setVisible(currentPage && functionComboBox->currentIndex() >= 0);
 	acionExportToHtml->setEnabled(currentPage);
 	acionExportToXml->setEnabled(currentPage);
 	acionExportToCsv->setEnabled(currentPage);
 	functionComboBox->setVisible(currentPage);
+	view->setVisible(currentPage);
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -373,6 +357,7 @@ void DBFRedactorMainWindow::selectionChanged()
 			functionComboBox->setCurrentIndex(-1);
 			informationLabel->clear();
 	}
+	updateActions();
 }
 
 double DBFRedactorMainWindow::sum()
@@ -407,9 +392,7 @@ double DBFRedactorMainWindow::sum()
 
 double DBFRedactorMainWindow::count()
 {
-	const QModelIndexList& indexes = view->selectionModel()->selection().indexes();
-
-	return indexes.size();
+	return view->selectionModel()->selection().indexes().size();
 }
 
 double DBFRedactorMainWindow::min()
@@ -431,10 +414,10 @@ double DBFRedactorMainWindow::min()
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
 			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-		}		value = index.data(Qt::DisplayRole).toDouble(&ok);
-		if (ok)
-			if (min > value)
-				min = value;
+		}
+		value = index.data(Qt::DisplayRole).toDouble(&ok);
+		if (ok && min > value)
+			min = value;
 	}
 	delete progressBar;
 	progressBar = 0;
@@ -461,10 +444,10 @@ double DBFRedactorMainWindow::max()
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
 			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-		}		value = index.data(Qt::DisplayRole).toDouble(&ok);
-		if (ok)
-			if (max < value)
-				max = value;
+		}
+		value = index.data(Qt::DisplayRole).toDouble(&ok);
+		if (ok && max < value)
+			max = value;
 	}
 	delete progressBar;
 	progressBar = 0;
@@ -474,32 +457,64 @@ double DBFRedactorMainWindow::max()
 
 void DBFRedactorMainWindow::copyToClipboard()
 {
+	const QModelIndexList& indexes = view->selectionModel()->selection().indexes();
+
+	progressBar = new QProgressBar(this);
+	progressBar->setFormat(tr("Coping to clipboard. %p% to finish."));
+	progressBar->setRange(0, indexes.size());
+	progressBar->setValue(0);
+	statusBar()->addWidget(progressBar, 1);
+
 	QMap<int, QString> text;
-	foreach(const QModelIndex& index, view->selectionModel()->selection().indexes()) {
+	int i = 0;
+	foreach(const QModelIndex& index, indexes) {
+		i++;
+		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
+			progressBar->setValue(i);
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
+
 		if (!text.contains(index.row()))
 			text.insert(index.row(), QString());
-		if (text.value(index.row()).isEmpty())
-			text[index.row()] += index.data(Qt::DisplayRole).toString();
-		else
-			text[index.row()] += "\t" + index.data(Qt::DisplayRole).toString();
+		if (!text.value(index.row()).isEmpty())
+			text[index.row()] += "\t";
+		switch(currentPage->redactor()->field(index.column()).type) {
+			case DBFRedactor::TYPE_DATE:
+				text[index.row()] += index.data(Qt::DisplayRole).toDate().toString(Qt::SystemLocaleShortDate);
+				break;
+			case DBFRedactor::TYPE_CHAR:
+				text[index.row()] += "\"" + index.data(Qt::DisplayRole).toString() + "\"";
+				break;
+			default:
+				text[index.row()] += index.data(Qt::DisplayRole).toString();
+		}
 	}
 	QApplication::clipboard()->setText(QStringList(text.values()).join("\n"));
+	delete progressBar;
+	progressBar = 0;
 }
 
 QStringList DBFRedactorMainWindow::prepareHtml()
 {
 	QStringList html;
-	html << "<HTML><HEAD><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /></HEAD>\n<BODY>";
-	html << "<TABLE BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4  CELLSPACING=0 WIDTH=\"100%\" ALIGN=LEFT>";
-	html << "<COLGROUP>";
-	for (int i = 0; i < view->model()->columnCount(); i++)
-		html << QString("<COL WIDTH=%1%>").arg(100 / view->model()->columnCount());
-	html << "<TBODY>";
-	html << "<TR VALIGN=TOP>";
-	for (int i = 0; i < view->model()->columnCount(); i++)
-		html << "<TD ALIGN=CENTER> " + view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString() + "</TD>";
-	html << "</TR>";
-	Q_ASSERT (progressBar == 0);
+	{
+		QStringList tempList;
+		tempList << "<HTML>\n<HEAD><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /></HEAD>\n<BODY>";
+		tempList << "<TABLE BORDER=1 BORDERCOLOR=\"#000000\" CELLPADDING=4  CELLSPACING=0 WIDTH=\"100%\" ALIGN=LEFT>";
+
+		tempList << "<COLGROUP>";
+		for (int i = 0; i < view->model()->columnCount(); i++)
+			tempList << "<COL>";
+
+		tempList << "<TBODY>";
+		tempList << "<TR VALIGN=TOP>";
+		for (int i = 0; i < view->model()->columnCount(); i++)
+			tempList << "<TD ALIGN=CENTER>" + view->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString() + "</TD>";
+		tempList << "</TR>";
+
+		html << tempList.join("\n");
+	}
+
 	progressBar = new QProgressBar(this);
 	progressBar->setFormat(tr("Preparing. %p% to finish."));
 	progressBar->setRange(0, view->model()->rowCount());
@@ -507,6 +522,9 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 	statusBar()->addWidget(progressBar, 1);
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
+		if (view->isRowHidden(i))
+			continue;
+
 		QString tempStrting;
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
 			progressBar->setValue(i);
@@ -514,10 +532,22 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 		}
 		tempStrting += "<TR ALIGN=LEFT>";
 		for (int j = 0; j < view->model()->columnCount(); j++) {
-			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
-			if (value.isEmpty())
-				value = "<BR>";
-			tempStrting += "\n<TD><P>" + value + "</P></TD>";
+			QVariant value = view->model()->index(i, j).data(Qt::DisplayRole);
+			QString stringValue;
+
+			switch(currentPage->redactor()->field(view->model()->index(i, j).column()).type) {
+				case DBFRedactor::TYPE_DATE:
+					stringValue = value.toDate().toString(Qt::SystemLocaleShortDate);
+					break;
+				case DBFRedactor::TYPE_LOGICAL:
+					stringValue = value.toBool() ? tr("Yes") : tr("No");
+					break;
+				default:
+					stringValue = value.toString();
+			}
+			if (stringValue.isEmpty())
+				stringValue = "<BR>";
+			tempStrting += "\n<TD><P>" + stringValue + "</P></TD>";
 		}
 		tempStrting += "\n</TR>";
 		html << tempStrting;
@@ -542,7 +572,6 @@ void DBFRedactorMainWindow::exportToHtml()
 
 	const QStringList& l(prepareHtml());
 
-	Q_ASSERT (progressBar == 0);
 	progressBar = new QProgressBar(this);
 	progressBar->setFormat(tr("Saving. %p% to finish."));
 	progressBar->setRange(0, l.size());
@@ -550,8 +579,10 @@ void DBFRedactorMainWindow::exportToHtml()
 	statusBar()->addWidget(progressBar, 1);
 
 	QFile file(fileName);
-	file.open(QIODevice::WriteOnly);
-
+	if (!file.open(QIODevice::WriteOnly)) {
+		QMessageBox::critical(this, "", tr("Error save to file.\n%1").arg(file.errorString()));
+		return;
+	}
 
 	QTextStream stream(&file);
 	stream.setCodec("UTF-8");
@@ -572,12 +603,6 @@ void DBFRedactorMainWindow::exportToHtml()
 
 bool DBFRedactorMainWindow::event(QEvent *ev)
 {
-//	if (ev->type() == QEvent::Resize || ev->type() == QEvent::Move) {
-//		if (progressBar) {
-//			progressBar->resize(statusBar()->size());
-//			progressBar->move(statusBar()->pos());
-//		}
-//	}
 	return QMainWindow::event(ev);
 }
 
@@ -593,7 +618,6 @@ void DBFRedactorMainWindow::exportToXml()
 
 	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
 
-	Q_ASSERT (progressBar == 0);
 	progressBar = new QProgressBar(this);
 	progressBar->setFormat(tr("Saving. %p% to finish."));
 	progressBar->setRange(0, view->model()->rowCount());
@@ -601,7 +625,10 @@ void DBFRedactorMainWindow::exportToXml()
 	statusBar()->addWidget(progressBar, 1);
 
 	QFile file(fileName);
-	file.open(QIODevice::WriteOnly);
+	if (!file.open(QIODevice::WriteOnly)) {
+		QMessageBox::critical(this, "", tr("Error save to file.\n%1").arg(file.errorString()));
+		return;
+	}
 
 	QXmlStreamWriter stream(&file);
 	stream.setAutoFormatting(true);
@@ -609,6 +636,9 @@ void DBFRedactorMainWindow::exportToXml()
 	stream.writeStartElement("ROWDATA");
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
+		if (view->isRowHidden(i))
+			continue;
+
 		stream.writeStartElement("ROW");
 
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
@@ -616,9 +646,9 @@ void DBFRedactorMainWindow::exportToXml()
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
 		for (int j = 0; j < view->model()->columnCount(); j++) {
-			QString value = view->model()->index(i, j).data(Qt::DisplayRole).toString();
+			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
 			stream.writeTextElement(view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString(),
-									value);
+									value.toString());
 		}
 		stream.writeEndElement();
 	}
@@ -644,7 +674,6 @@ void DBFRedactorMainWindow::exportToCsv()
 
 	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
 
-	Q_ASSERT (progressBar == 0);
 	progressBar = new QProgressBar(this);
 	progressBar->setFormat(tr("Saving. %p% to finish."));
 	progressBar->setRange(0, view->model()->rowCount());
@@ -652,7 +681,10 @@ void DBFRedactorMainWindow::exportToCsv()
 	statusBar()->addWidget(progressBar, 1);
 
 	QFile file(fileName);
-	file.open(QIODevice::WriteOnly);
+	if (!file.open(QIODevice::WriteOnly)) {
+		QMessageBox::critical(this, "", tr("Error save to file.\n%1").arg(file.errorString()));
+		return;
+	}
 
 	QTextStream stream(&file);
 	stream.setCodec("UTF-8");
@@ -663,27 +695,33 @@ void DBFRedactorMainWindow::exportToCsv()
 		tempStringList << "\"" + view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString() + "\"";
 
 	stream << tempStringList.join("|") << endl;
-	tempStringList.clear();
 
 	for (int i = 0; i < view->model()->rowCount(); i++) {
+		if (view->isRowHidden(i))
+			continue;
+
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
 			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
+		tempStringList.clear();
 		for (int j = 0; j < view->model()->columnCount(); j++) {
+			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
 			switch (currentPage->redactor()->field(j).type) {
-				case DBFRedactor::TYPE_NUMERIC: case DBFRedactor::TYPE_FLOAT:
-					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
+				case DBFRedactor::TYPE_CHAR:
+					tempStringList << "\"" + value.toString() + "\"";
+					break;
+				case DBFRedactor::TYPE_LOGICAL:
+					tempStringList << value.toString();
 					break;
 				case DBFRedactor::TYPE_DATE:
-					tempStringList << view->model()->index(i, j).data(Qt::DisplayRole).toString();
+					tempStringList << value.toDate().toString(Qt::SystemLocaleShortDate);
 					break;
-				case DBFRedactor::TYPE_CHAR: default:
-					tempStringList << "\"" + view->model()->index(i, j).data(Qt::DisplayRole).toString() + "\"";
+				default :
+					tempStringList << value.toString();
 			}
 		}
 		stream << tempStringList.join("|") << endl;
-		tempStringList.clear();
 	}
 
 	file.close();
@@ -793,3 +831,4 @@ void DBFRedactorMainWindow::removeFilter()
 {
 	currentPage->model()->removeFilter();
 }
+
