@@ -20,7 +20,7 @@ class DBFRedactorPage : QObject
 private:
 	DBFRedactorModel *m_model;
 	QItemSelectionModel* m_selectionModel;
-	DBFRedactorSortFilterProxyModel *m_sorModel;
+	DBFRedactorSortFilterProxyModel *m_sortModel;
 	QString m_fileName;
 	QPoint m_pos;
 	QList<int> m_columnSizes;
@@ -31,10 +31,10 @@ public:
 	{
 		m_model = new DBFRedactorModel(m_fileName, parent);
 
-		m_sorModel = new DBFRedactorSortFilterProxyModel(parent);
-		m_sorModel->setSourceModel(m_model);
+		m_sortModel = new DBFRedactorSortFilterProxyModel(parent);
+		m_sortModel->setSourceModel(m_model);
 
-		m_selectionModel = new QItemSelectionModel(m_sorModel);
+		m_selectionModel = new QItemSelectionModel(m_sortModel);
 	}
 
 	~DBFRedactorPage()
@@ -56,7 +56,7 @@ public:
 	}
 
 	DBFRedactorSortFilterProxyModel* model() const
-	{return m_sorModel;}
+	{return m_sortModel;}
 	void setModel(DBFRedactorModel *model)
 	{
 		if (m_model)

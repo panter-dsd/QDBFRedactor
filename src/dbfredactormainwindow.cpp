@@ -25,6 +25,7 @@
 #include "dbfredactorpage.h"
 #include "sortdialog.h"
 #include "filterdialog.h"
+#include "dbfredactordelegate.h"
 
 #define ProcessEventsPeriod 500
 
@@ -293,9 +294,9 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	}
 	view->setModel(page->model());
 	view->setSelectionModel(page->selectionModel());
-	//view->sortByColumn(page->model()->sortColumn());
 	view->horizontalScrollBar()->setValue(page->pos().x());
 	view->verticalScrollBar()->setValue(page->pos().y());
+	view ->setItemDelegate(new DBFRedactorDelegate(page->redactor(), view));
 
 	{
 		int i = 0;
