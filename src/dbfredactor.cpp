@@ -48,7 +48,7 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	if (OpenMode == DBFRedactor::Read)
 		openMode = QIODevice::ReadOnly;
 	if (OpenMode == DBFRedactor::Write)
-		openMode = QIODevice::Append;
+		openMode = QIODevice::ReadWrite;
 
 	if (!m_file.open(openMode)) {
 		qDebug("Error open file");
@@ -198,6 +198,42 @@ QVariant DBFRedactor::data(int row, int column)
 			break;
 	}
 	return QVariant();
+}
+
+bool DBFRedactor::setData(int row, int column, const QVariant& data)
+{
+	if (m_openMode != Write || row < 0 || row >= header.recordsCount || column < 0 || column >= header.fieldsList.size())
+		return false;
+
+	m_cache.remove(row);
+	m_file.seek(header.firstRecordPos + header.recordLenght * row + header.fieldsList.at(column).pos);
+
+	QByteArray buf;
+
+	switch (header.fieldsList.at(column).type) {
+		case TYPE_CHAR:
+			buf = m_codec->fromUnicode(data.toString());
+			break;
+		case TYPE_NUMERIC:
+			buf = m_codec->fromUnicode(QString::number(data.toString().left(header.fieldsList.at(column).firstLenght).toDouble()));
+			/*
+			  if data = 999.99 and firstLenght = 4 write not 999., write 999
+			  */
+			break;
+		case TYPE_LOGICAL:
+			buf = data.toBool() ? "T" : "F";
+			break;
+		case TYPE_DATE:
+			buf = m_codec->fromUnicode(data.toDate().toString("yyyyMMdd"));
+			break;
+		case TYPE_FLOAT:
+			buf.setNum(data.toDouble(), 'f', header.fieldsList.at(column).secondLenght);
+			break;
+		case TYPE_MEMO:
+			buf = m_codec->fromUnicode(data.toString());
+			break;
+	}
+	return m_file.write(buf.leftJustified(header.fieldsList.at(column).firstLenght, 0x20, true)) > 0;
 }
 
 bool DBFRedactor::isDeleted(int row)

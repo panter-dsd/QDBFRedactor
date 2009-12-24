@@ -110,7 +110,8 @@ public:
 			m_cache.clear();
 	}
 
-	QVariant data(int row, int column) ;
+	QVariant data(int row, int column);
+	bool setData(int row, int column, const QVariant& data);
 
 	bool isDeleted(int row);
 
