@@ -13,6 +13,7 @@ class QItemSelectionModel;
 
 #include "dbfredactormodel.h"
 #include "dbfredactorsortfilterproxymodel.h"
+#include "dbfredactordelegate.h"
 
 class DBFRedactorPage : QObject
 {
@@ -21,6 +22,7 @@ private:
 	DBFRedactorModel *m_model;
 	QItemSelectionModel* m_selectionModel;
 	DBFRedactorSortFilterProxyModel *m_sortModel;
+	DBFRedactorDelegate *m_delegate;
 	QString m_fileName;
 	QPoint m_pos;
 	QList<int> m_columnSizes;
@@ -35,12 +37,16 @@ public:
 		m_sortModel->setSourceModel(m_model);
 
 		m_selectionModel = new QItemSelectionModel(m_sortModel);
+
+		m_delegate = new DBFRedactorDelegate(m_model->dbfRedactor(), parent);
 	}
 
 	~DBFRedactorPage()
 	{
 		delete m_selectionModel;
 		delete m_model;
+		delete m_sortModel;
+		delete m_delegate;
 	}
 
 	QString fileName() const
@@ -66,6 +72,9 @@ public:
 
 	DBFRedactor *redactor()
 	{return m_model->dbfRedactor();}
+
+	DBFRedactorDelegate *delegate()
+	{return m_delegate;}
 
 	QPoint pos()
 	{return m_pos;}

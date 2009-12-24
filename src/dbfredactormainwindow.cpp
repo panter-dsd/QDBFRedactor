@@ -1,6 +1,7 @@
 #include <QtCore/QSettings>
 #include <QtCore/QTextStream>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDebug>
 
 #include <QtGui/QTabBar>
 #include <QtGui/QTableView>
@@ -25,7 +26,6 @@
 #include "dbfredactorpage.h"
 #include "sortdialog.h"
 #include "filterdialog.h"
-#include "dbfredactordelegate.h"
 
 #define ProcessEventsPeriod 500
 
@@ -275,6 +275,9 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 
 void DBFRedactorMainWindow::tabChanged(int index)
 {
+	if (index < 0)
+		return;
+
 	if (currentPage) {
 		disconnect(currentPage->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
 				this, SLOT(selectionChanged()));
@@ -296,7 +299,7 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	view->setSelectionModel(page->selectionModel());
 	view->horizontalScrollBar()->setValue(page->pos().x());
 	view->verticalScrollBar()->setValue(page->pos().y());
-	view ->setItemDelegate(new DBFRedactorDelegate(page->redactor(), view));
+	view->setItemDelegate(page->delegate());
 
 	{
 		int i = 0;
@@ -318,8 +321,8 @@ void DBFRedactorMainWindow::closeTab(int index)
 	if (!page)
 		return;
 	delete page;
-	pages.remove(tabBar->tabData(index).toString());
 	currentPage = 0;
+	pages.remove(tabBar->tabData(index).toString());
 	tabBar->removeTab(index);
 	if (tabBar->count() <= 0) {
 		view->setVisible(false);
