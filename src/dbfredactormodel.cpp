@@ -6,7 +6,7 @@ DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
 	:QAbstractItemModel(parent), m_fileName(fileName), m_showDeleted(true)
 {
 	redactor = new DBFRedactor(fileName);
-	redactor->open(DBFRedactor::Read);
+	redactor->open(DBFRedactor::Write);
 	redactor->setBuffering(true);
 }
 
@@ -24,43 +24,33 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 	const QVariant& value = redactor->data(index.row(), index.column());
 
 	switch (role) {
-		case Qt::DisplayRole:
+		case Qt::DisplayRole: case Qt::EditRole:
 			return value;
-			break;
-		case Qt::TextAlignmentRole:
-			if ((redactor->field(index.column()).type == DBFRedactor::TYPE_NUMERIC)
-				|| (redactor->field(index.column()).type == DBFRedactor::TYPE_FLOAT))
-				return Qt::AlignRight;
-			if (redactor->field(index.column()).type == DBFRedactor::TYPE_DATE)
-				return Qt::AlignHCenter;
-			if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
-				return Qt::AlignHCenter;
-			return Qt::AlignLeft;
-			break;
-		case Qt::ForegroundRole:
-			if ((redactor->field(index.column()).type == DBFRedactor::TYPE_NUMERIC)
-				|| (redactor->field(index.column()).type == DBFRedactor::TYPE_FLOAT))
-				return Qt::darkBlue;
-			if (redactor->field(index.column()).type == DBFRedactor::TYPE_DATE)
-				return Qt::darkGreen;
-			return Qt::black;
-			break;
-		case Qt::BackgroundRole:
-			if (redactor->isDeleted(index.row()))
-				return Qt::lightGray;
 			break;
 		case Qt::CheckStateRole:
 			if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
-				return value.toBool();
+				return value.toBool() ? Qt::Checked : Qt::Unchecked;
 			break;
 		}
 
 	return QVariant();
 }
 
+bool DBFRedactorModel::setData ( const QModelIndex & index, const QVariant & value, int role)
+{
+	if (!index.isValid())
+		return false;
+
+	return redactor->setData(index.row(), index.column(), value);
+}
+
 Qt::ItemFlags DBFRedactorModel::flags(const QModelIndex &index) const
 {
-	return index.isValid() ? Qt::ItemIsSelectable | Qt::ItemIsEnabled : Qt::NoItemFlags;
+	Qt::ItemFlags flags = index.isValid() ? Qt::ItemIsSelectable | Qt::ItemIsEnabled : Qt::NoItemFlags;
+	flags |= redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL
+			 ? Qt::ItemIsUserCheckable
+		: Qt::ItemIsEditable;
+	return flags;
 }
 
 QVariant DBFRedactorModel::headerData(int section, Qt::Orientation orientation, int role) const
