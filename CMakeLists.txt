@@ -12,6 +12,7 @@ add_definitions(-DUNICODE)
 
 include_directories(
 src
+src/preferences
 )
 
 ################################################################
@@ -27,6 +28,7 @@ src/dbfredactormainwindow.cpp
 src/sortdialog.cpp
 src/filterdialog.cpp
 src/dbfredactordelegate.cpp
+src/translationmanager.cpp
 )
 
 set (src_HEADERS
@@ -38,16 +40,36 @@ src/dbfredactormainwindow.h
 src/sortdialog.h
 src/filterdialog.h
 src/dbfredactordelegate.h
+src/filterdelegate.h
+src/translationmanager.h
 )
+
+################################################################
+# preferences
+################################################################
+set (preferences_SRC
+src/preferences/preferencesdialog.cpp
+src/preferences/globalpreferences.cpp
+)
+
+set (preferences_HEADERS
+src/preferences/preferencesdialog.h
+src/preferences/abstractpreferencespage.h
+src/preferences/globalpreferences.h
+)
+
+
 
 set(
 SOURCES
 ${src_SRC}
+${preferences_SRC}
 )
 
 set(
 HEADERS
 ${src_HEADERS}
+${preferences_HEADERS}
 )
 
 qt4_wrap_cpp( MOC_SOURCES ${HEADERS} )

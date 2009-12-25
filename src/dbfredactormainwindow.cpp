@@ -50,6 +50,7 @@
 #include "dbfredactorpage.h"
 #include "sortdialog.h"
 #include "filterdialog.h"
+#include "preferencesdialog.h"
 
 #define ProcessEventsPeriod 500
 
@@ -167,6 +168,10 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionRemoveFilter, SIGNAL(triggered()), this, SLOT(removeFilter()));
 	view->horizontalHeader()->addAction(actionRemoveFilter);
 
+	actionPreferences = new QAction(this);
+	actionPreferences->setIcon(QIcon(":/share/images/preferences.png"));
+	connect(actionPreferences, SIGNAL(triggered()), this, SLOT(preferences()));
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -174,6 +179,8 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileMenu = new QMenu(menuBar);
 	fileMenu->addAction(actionOpen);
 	fileMenu->addAction(actionClose);
+	fileMenu->addSeparator();
+	fileMenu->addAction(actionPreferences);
 	fileMenu->addSeparator();
 	fileMenu->addAction(actionExit);
 
@@ -259,6 +266,9 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	actionRemoveFilter->setText(tr("Remove filter"));
 	actionRemoveFilter->setToolTip(tr("Remove filter"));
+
+	actionPreferences->setText(tr("Preferences"));
+	actionPreferences->setToolTip(tr("Application preferences"));
 
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
@@ -911,3 +921,8 @@ void DBFRedactorMainWindow::removeFilter()
 	currentPage->model()->removeFilter();
 }
 
+void DBFRedactorMainWindow::preferences()
+{
+	PreferencesDialog d;
+	d.exec();
+}
