@@ -25,16 +25,18 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QSettings>
 #include <QtCore/QLocale>
+#include <QtCore/QSettings>
+#include <QtCore/QTranslator>
 
 #include <QtGui/QApplication>
 
 #include "dbfredactormainwindow.h"
+#include "translationmanager.h"
 
 #define ApplicationVersion "0.0.0.0"
 
 int main(int argc, char ** argv)
 {
-	QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("System"));
 
 	QApplication app(argc, argv);
@@ -45,6 +47,14 @@ int main(int argc, char ** argv)
 	app.setWindowIcon(QIcon(":share/images/main.ico"));
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
+
+	{
+		QSettings settings;
+		const QString& translationPath = settings.value("Global/Translation", "").toString();
+		if (!translationPath.isEmpty()) {
+			TranslationManager::instance()->addTranslation(translationPath);
+		}
+	}
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 

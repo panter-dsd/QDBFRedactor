@@ -50,6 +50,7 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	connect(tranlationsPathEdit, SIGNAL(textChanged(QString)), this, SLOT(updateTranslationsList()));
 
 	tranlationsPathButton = new QToolButton(this);
+	tranlationsPathButton->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
 	connect(tranlationsPathButton, SIGNAL(clicked()), this, SLOT(setTranslationsPath()));
 
 	translationsList = new QListWidget(this);
@@ -82,6 +83,9 @@ void GlobalPreferences::retranslateStrings()
 
 void GlobalPreferences::saveSettings()
 {
+	QSettings settings;
+
+	settings.beginGroup("Global");
 	const QString& translatorPath = translationsList->currentItem()->data(Qt::UserRole).toString();
 	const QStringList& translations = TranslationManager::instance()->translations();
 	if (!translations.contains(translatorPath) || translatorPath.isEmpty()) {
@@ -91,6 +95,10 @@ void GlobalPreferences::saveSettings()
 		}
 		TranslationManager::instance()->addTranslation(translatorPath);
 	}
+	settings.setValue("Translation", translatorPath);
+
+	settings.endGroup();
+	settings.sync();
 }
 
 void GlobalPreferences::loadSettings()
