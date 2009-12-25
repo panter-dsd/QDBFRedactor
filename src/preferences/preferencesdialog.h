@@ -58,14 +58,14 @@ public:
 	~PreferencesDialog();
 
 private Q_SLOTS:
-	void slotSavePreferences();
-	void slotSavePreferencesAndExit()
+	void savePreferences();
+	void savePreferencesAndExit()
 	{
-		slotSavePreferences();
+		savePreferences();
 		close();
 	}
-	void slotSetApplyEnabled();
-	void slotSetDefaults();
+	void setApplyEnabled();
+	void setDefaults();
 
 	void itemChanged(QTreeWidgetItem * item, int column);
 };

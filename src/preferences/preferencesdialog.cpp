@@ -53,19 +53,19 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	splitter->addWidget(preferencesWidgets);
 
 	GlobalPreferences *globalPreferences = new GlobalPreferences(this);
-	connect(globalPreferences, SIGNAL(modified()), this, SLOT(slotSetApplyEnabled()));
+	connect(globalPreferences, SIGNAL(modified()), this, SLOT(setApplyEnabled()));
 	pages.insert(preferencesWidgets->addWidget(globalPreferences), globalPreferences);
 
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply,
 								   Qt::Horizontal,
 								   this);
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
-	connect(buttons, 	SIGNAL(accepted()), this, SLOT(slotSavePreferencesAndExit()));
+	connect(buttons, 	SIGNAL(accepted()), this, SLOT(savePreferencesAndExit()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-	connect(buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(slotSavePreferences()));
+	connect(buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(savePreferences()));
 
 	defaultsButton =new QPushButton(this);
-	connect(defaultsButton, SIGNAL(clicked()), this, SLOT(slotSetDefaults()));
+	connect(defaultsButton, SIGNAL(clicked()), this, SLOT(setDefaults()));
 	buttons->addButton(defaultsButton, QDialogButtonBox::ApplyRole);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -90,7 +90,7 @@ PreferencesDialog::~PreferencesDialog()
 	saveSattings();
 }
 
-void PreferencesDialog::slotSavePreferences()
+void PreferencesDialog::savePreferences()
 {
 	QMapIterator<int, QWidget*> it(pages);
 
@@ -105,12 +105,12 @@ void PreferencesDialog::slotSavePreferences()
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
 }
 
-void PreferencesDialog::slotSetApplyEnabled()
+void PreferencesDialog::setApplyEnabled()
 {
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(true);
 }
 
-void PreferencesDialog::slotSetDefaults()
+void PreferencesDialog::setDefaults()
 {
 }
 

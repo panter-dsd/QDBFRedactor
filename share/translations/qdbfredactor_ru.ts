@@ -371,29 +371,29 @@
 <context>
     <name>GlobalPreferences</name>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="78"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="79"/>
         <source>Translates</source>
         <translation>Переводы</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="80"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="81"/>
         <source>Path to translations</source>
         <translation>Каталог с переводами</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="143"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="151"/>
         <source>English</source>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="152"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="160"/>
         <source>Translations path</source>
         <translation>Каталог с переводами</translation>
     </message>
     <message>
         <location filename="../../src/preferences/globalpreferences.h" line="57"/>
-        <source>Global/Language/Ru</source>
-        <translation></translation>
+        <source>Global/Language</source>
+        <translation>Основные/Язык</translation>
     </message>
 </context>
 <context>
@@ -515,7 +515,7 @@
 <context>
     <name>Translate</name>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="136"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="144"/>
         <source>English</source>
         <translation>Русский</translation>
     </message>

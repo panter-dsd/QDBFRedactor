@@ -54,7 +54,7 @@ public:
 	void setDefaults();
 
 	QString preferenceGroup()
-	{ return tr("Global/Language/Ru"); }
+	{ return tr("Global/Language"); }
 
 protected:
 	bool event(QEvent *ev);

@@ -51,9 +51,8 @@ int main(int argc, char ** argv)
 	{
 		QSettings settings;
 		const QString& translationPath = settings.value("Global/Translation", "").toString();
-		if (!translationPath.isEmpty()) {
+		if (!translationPath.isEmpty())
 			TranslationManager::instance()->addTranslation(translationPath);
-		}
 	}
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
