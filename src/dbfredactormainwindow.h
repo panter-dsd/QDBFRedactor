@@ -28,6 +28,11 @@ private:
 	QProgressBar *progressBar;
 	QComboBox *functionComboBox;
 
+	QMenu *fileMenu;
+	QMenu *exportMenu;
+
+	QToolBar *fileToolBar;
+
 	QAction *actionOpen;
 	QAction *actionExit;
 	QAction *actionClose;
@@ -59,6 +64,7 @@ private:
 	double count();
 	double min();
 	double max();
+	void retranslateStrings();
 
 protected:
 	bool event(QEvent *ev);

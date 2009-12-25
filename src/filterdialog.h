@@ -38,9 +38,13 @@ public:
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> filter() const;
 	void setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter);
 
+protected:
+	bool event(QEvent *ev);
+
 private:
 	void loadSettings();
 	void saveSettings();
+	void retranslateStrings();
 
 private Q_SLOTS:
 	void add();

@@ -1,6 +1,5 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QSettings>
-#include <QtCore/QTranslator>
 #include <QtCore/QLocale>
 
 #include <QtGui/QApplication>
@@ -22,23 +21,6 @@ int main(int argc, char ** argv)
 	app.setWindowIcon(QIcon(":share/images/main.ico"));
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
-
-
-	QTranslator translator;
-	translator.load(app.applicationDirPath()
-					+ "/../share/languages/"
-					+ app.applicationName().toLower()
-					+ "_"
-					+ QLocale::system().name()
-					+ ".qm");
-	app.installTranslator(&translator);
-
-	QTranslator translatorQt;
-	translatorQt.load(app.applicationDirPath()
-					  + "/../share/languages/qt_"
-					  + QLocale::system().name()
-					  + ".qm");
-	app.installTranslator(&translatorQt);
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 

@@ -7,6 +7,7 @@
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QLayout>
 #include <QtGui/QSpacerItem>
+#include <QtGui/QtEvents>
 
 #include "sortdialog.h"
 
@@ -14,10 +15,10 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	:QDialog(parent, f), m_captions(captions)
 {
 
-	columnsLabel = new QLabel(tr("Aviable columns"), this);
+	columnsLabel = new QLabel(this);
 	columnsLabel->setAlignment(Qt::AlignCenter);
 
-	sortedColumnsLabel = new QLabel(tr("Sorted columns"), this);
+	sortedColumnsLabel = new QLabel(this);
 	sortedColumnsLabel->setAlignment(Qt::AlignCenter);
 
 	columnsList = new QListWidget(this);
@@ -35,27 +36,19 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	sortedColumnsLayout->addWidget(sortedColumnsList);
 
 	addAllButton = new QToolButton(this);
-	addAllButton->setText(tr(">>"));
 	addAllButton->setIcon(QIcon(":share/images/2rightarrow.png"));
-	addAllButton->setToolTip(tr("Add all items"));
 	connect(addAllButton, SIGNAL(clicked()), this, SLOT(addAll()));
 
 	removeAllButton = new QToolButton(this);
-	removeAllButton->setText(tr("<<"));
 	removeAllButton->setIcon(QIcon(":share/images/2leftarrow.png"));
-	removeAllButton->setToolTip(tr("Remove all items"));
 	connect(removeAllButton, SIGNAL(clicked()), this, SLOT(removeAll()));
 
 	addButton = new QToolButton(this);
-	addButton->setText(tr(">"));
 	addButton->setIcon(QIcon(":share/images/1rightarrow.png"));
-	addButton->setToolTip(tr("Add item"));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(add()));
 
 	removeButton = new QToolButton(this);
-	removeButton->setText(tr("<"));
 	removeButton->setIcon(QIcon(":share/images/1leftarrow.png"));
-	removeButton->setToolTip(tr("Remove item"));
 	connect(removeButton, SIGNAL(clicked()), this, SLOT(remove()));
 
 	QVBoxLayout *addRemoveButtonsLayout = new QVBoxLayout();
@@ -67,32 +60,22 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	addRemoveButtonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
 	moveUpButton = new QToolButton(this);
-	moveUpButton->setText(tr("Up"));
 	moveUpButton->setIcon(QIcon(":share/images/1uparrow.png"));
-	moveUpButton->setToolTip(tr("Move up"));
 	connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
 
 	moveDownButton = new QToolButton(this);
-	moveDownButton->setText(tr("Down"));
 	moveDownButton->setIcon(QIcon(":share/images/1downarrow.png"));
-	moveDownButton->setToolTip(tr("Move down"));
 	connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
 
 	moveTopButton = new QToolButton(this);
-	moveTopButton->setText(tr("Top"));
 	moveTopButton->setIcon(QIcon(":share/images/2uparrow.png"));
-	moveTopButton->setToolTip(tr("Move to top"));
 	connect(moveTopButton, SIGNAL(clicked()), this, SLOT(moveTop()));
 
 	moveBottomButton = new QToolButton(this);
-	moveBottomButton->setText(tr("Bottom"));
 	moveBottomButton->setIcon(QIcon(":share/images/2downarrow.png"));
-	moveBottomButton->setToolTip(tr("Move to bottom"));
 	connect(moveBottomButton, SIGNAL(clicked()), this, SLOT(moveBottom()));
 
 	changeSortOrderButton = new QToolButton(this);
-	changeSortOrderButton->setText(tr("<>"));
-	changeSortOrderButton->setToolTip(tr("Change sort order"));
 	connect(changeSortOrderButton, SIGNAL(clicked()), this, SLOT(changeSortOrder()));
 
 	QVBoxLayout *sortedButtonsLayout = new QVBoxLayout();
@@ -131,6 +114,41 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	updateLists();
 
 	loadSettings();
+	retranslateStrings();
+}
+
+void SortDialog::retranslateStrings()
+{
+	columnsLabel->setText(tr("Aviable columns"));
+	sortedColumnsLabel->setText(tr("Sorted columns"));
+
+	addAllButton->setText(tr(">>"));
+	addAllButton->setToolTip(tr("Add all items"));
+
+	removeAllButton->setText(tr("<<"));
+	removeAllButton->setToolTip(tr("Remove all items"));
+
+	addButton->setText(tr(">"));
+	addButton->setToolTip(tr("Add item"));
+
+	removeButton->setText(tr("<"));
+	removeButton->setToolTip(tr("Remove item"));
+
+
+	moveUpButton->setText(tr("Up"));
+	moveUpButton->setToolTip(tr("Move up"));
+
+	moveDownButton->setText(tr("Down"));
+	moveDownButton->setToolTip(tr("Move down"));
+
+	moveTopButton->setText(tr("Top"));
+	moveTopButton->setToolTip(tr("Move to top"));
+
+	moveBottomButton->setText(tr("Bottom"));
+	moveBottomButton->setToolTip(tr("Move to bottom"));
+
+	changeSortOrderButton->setText(tr("<>"));
+	changeSortOrderButton->setToolTip(tr("Change sort order"));
 }
 
 void SortDialog::setSortedColumns(QList<QPair<int, Qt::SortOrder> > sortedColumns)
@@ -319,4 +337,13 @@ void SortDialog::saveSettings()
 	settings.setValue("Size", size());
 	settings.setValue("Pos", pos());
 	settings.endGroup();
+}
+
+bool SortDialog::event(QEvent *ev)
+{
+	if (ev->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	}
+
+	return QDialog::event(ev);
 }

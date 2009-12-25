@@ -12,6 +12,7 @@
 #include <QtGui/QStyledItemDelegate>
 #include <QtGui/QComboBox>
 #include <QtGui/QLineEdit>
+#include <QtGui/QtEvents>
 
 #include "filterdialog.h"
 
@@ -235,18 +236,16 @@ FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::Wi
 	filterView->setModel(model);
 	filterView->setItemDelegate(new FilterDelegate(m_captions, filterView));
 
-	actionAdd = new QAction(tr("Add"), this);
+	actionAdd = new QAction(this);
 	actionAdd->setIcon(QIcon(":share/images/add.png"));
-	actionAdd->setToolTip(tr("Add filter"));
 	connect(actionAdd, SIGNAL(triggered()), this, SLOT(add()));
 
 	addButton = new QToolButton(this);
 	addButton->setDefaultAction(actionAdd);
 	addButton->setAutoRaise(true);
 
-	actionRemove = new QAction(tr("Remove"), this);
+	actionRemove = new QAction(this);
 	actionRemove->setIcon(QIcon(":share/images/remove.png"));
-	actionRemove->setToolTip(tr("Remove filter"));
 	connect(actionRemove, SIGNAL(triggered()), this, SLOT(remove()));
 
 	removeButton = new QToolButton(this);
@@ -275,6 +274,17 @@ FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::Wi
 	setLayout(mainLayout);
 
 	loadSettings();
+	retranslateStrings();
+}
+
+void FilterDialog::retranslateStrings()
+{
+	actionAdd->setText(tr("Add"));
+	actionAdd->setToolTip(tr("Add filter"));
+
+	actionRemove->setText(tr("Remove"));
+	actionRemove->setToolTip(tr("Remove filter"));
+
 }
 
 void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> filter)
@@ -382,4 +392,13 @@ void FilterDialog::saveSettings()
 	settings.setValue("Size", size());
 	settings.setValue("Pos", pos());
 	settings.endGroup();
+}
+
+bool FilterDialog::event(QEvent *ev)
+{
+	if (ev->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	}
+
+	return QDialog::event(ev);
 }

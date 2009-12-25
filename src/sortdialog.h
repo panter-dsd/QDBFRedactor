@@ -47,6 +47,10 @@ private:
 	void updateLists();
 	void loadSettings();
 	void saveSettings();
+	void retranslateStrings();
+
+protected:
+	bool event(QEvent *ev);
 
 private Q_SLOTS:
 	void changeSortOrder();

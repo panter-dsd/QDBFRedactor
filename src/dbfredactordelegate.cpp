@@ -20,10 +20,10 @@ QRect DBFRedactorDelegate::checkRect
 	QStyleOptionButton opt;
 	opt.QStyleOption::operator=(option);
 	opt.rect = bounding;
-	QRect cr=qApp->style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
-	int deltaX=(bounding.width()-cr.width())/2;
-	int deltaY=(bounding.height()-cr.height())/2;
-	return QRect(bounding.left()+deltaX, bounding.top()+deltaY, cr.width(), cr.height());
+	QRect rect = qApp->style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
+	int deltaX = (bounding.width() - rect.width()) / 2;
+	int deltaY = (bounding.height() - rect.height()) / 2;
+	return QRect(bounding.left() + deltaX, bounding.top() + deltaY, rect.width(), rect.height());
 }
 
 void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const

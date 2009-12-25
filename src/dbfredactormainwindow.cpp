@@ -54,12 +54,10 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	statusBar()->insertWidget(0, currentFile);
 
 	functionComboBox = new QComboBox(this);
-	functionComboBox->addItems(QStringList() << tr("Sum")
-							   << tr("Count")
-							   << tr("Minimum")
-							   << tr("Maximum")
-							   << tr("Clear"));
+	for (int i = 0; i < 5; i++)
+		functionComboBox->addItem("");
 	functionComboBox->setCurrentIndex(-1);
+
 	connect(functionComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectionChanged()));
 	statusBar()->insertWidget(1, functionComboBox);
 
@@ -75,79 +73,72 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	setCentralWidget(centralWidget);
 
 //Actions
-	actionOpen = new QAction(QIcon(":/share/images/open.png"), tr("&Open"), this);
-	actionOpen->setToolTip(tr("Open file"));
+	actionOpen = new QAction(this);
 	actionOpen->setShortcut(QKeySequence::Open);
+	actionOpen->setIcon(QIcon(":/share/images/open.png"));
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
 
-	actionExit = new QAction(QIcon(":/share/images/exit.png"), tr("E&xit"), this);
-	actionExit->setToolTip(tr("Exit from program"));
+	actionExit = new QAction(this);
+	actionExit->setIcon(QIcon(":/share/images/exit.png"));
 	actionExit->setShortcut(Qt::ALT + Qt::Key_X);
 	connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
-	actionClose = new QAction(QIcon(":/share/images/close.png"), tr("C&lose"), this);
-	actionClose->setToolTip(tr("Close current file"));
+	actionClose = new QAction(this);
+	actionClose->setIcon(QIcon(":/share/images/close.png"));
 	actionClose->setShortcut(Qt::CTRL + Qt::Key_W);
 	connect(actionClose, SIGNAL(triggered()), this, SLOT(closeCurrentTab()));
 	tabBar->addAction(actionClose);
 
-	actionRefresh = new QAction(QIcon(":/share/images/refresh.png"), tr("&Refresh"), this);
-	actionRefresh->setToolTip(tr("Refresh current file"));
+	actionRefresh = new QAction(this);
+	actionRefresh->setIcon(QIcon(":/share/images/refresh.png"));
 	actionRefresh->setShortcut(Qt::CTRL + Qt::Key_R);
 	connect(actionRefresh, SIGNAL(triggered()), this, SLOT(refreshModel()));
 	tabBar->addAction(actionRefresh);
 
-	actionCopy = new QAction(QIcon(":/share/images/copy.png"), tr("&Copy"), this);
-	actionCopy->setToolTip(tr("Copy current cell to clipboard"));
+	actionCopy = new QAction(this);
+	actionCopy->setIcon(QIcon(":/share/images/copy.png"));
 	actionCopy->setShortcut(Qt::CTRL + Qt::Key_C);
 	connect(actionCopy, SIGNAL(triggered()), this, SLOT(copyToClipboard()));
 	view->addAction(actionCopy);
 
-	acionExportToHtml = new QAction(QIcon(":/share/images/exportToHtml.png"), tr("&Export to html"), this);
-	acionExportToHtml->setToolTip(tr("Export to html"));
+	acionExportToHtml = new QAction(this);
+	acionExportToHtml->setIcon(QIcon(":/share/images/exportToHtml.png"));
 	connect(acionExportToHtml, SIGNAL(triggered()), this, SLOT(exportToHtml()));
 
-	acionExportToXml = new QAction(QIcon(":/share/images/exportToXml.png"), tr("&Export to xml"), this);
-	acionExportToXml->setToolTip(tr("Export to xml"));
+	acionExportToXml = new QAction(this);
+	acionExportToXml->setIcon(QIcon(":/share/images/exportToXml.png"));
 	connect(acionExportToXml, SIGNAL(triggered()), this, SLOT(exportToXml()));
 
-	acionExportToCsv = new QAction(QIcon(":/share/images/exportToCsv.png"), tr("&Export to csv"), this);
-	acionExportToCsv->setToolTip(tr("Export to csv"));
+	acionExportToCsv = new QAction(this);
+	acionExportToCsv->setIcon(QIcon(":/share/images/exportToCsv.png"));
 	connect(acionExportToCsv, SIGNAL(triggered()), this, SLOT(exportToCsv()));
 
-	actionResizeColumnsToContents = new QAction(tr("Resize columns to contents"), this);
-	actionResizeColumnsToContents->setToolTip(tr("Resize columns to contents"));
+	actionResizeColumnsToContents = new QAction(this);
 	connect(actionResizeColumnsToContents, SIGNAL(triggered()), view, SLOT(resizeColumnsToContents()));
 	view->horizontalHeader()->addAction(actionResizeColumnsToContents);
 
-	actionUnsort = new QAction(tr("Unsort"), this);
-	actionUnsort->setToolTip(tr("Remove sort"));
+	actionUnsort = new QAction(this);
 	connect(actionUnsort, SIGNAL(triggered()), this, SLOT(unsort()));
 	view->horizontalHeader()->addAction(actionUnsort);
 
-	actionChangeSort = new QAction(tr("Change sort"), this);
-	actionChangeSort->setToolTip(tr("Change sort"));
+	actionChangeSort = new QAction(this);
 	connect(actionChangeSort, SIGNAL(triggered()), this, SLOT(changeSort()));
 	view->horizontalHeader()->addAction(actionChangeSort);
 
-	actionChangeFilter = new QAction(tr("Change filter"), this);
-	actionChangeFilter->setToolTip(tr("Change filter"));
+	actionChangeFilter = new QAction(this);
 	actionChangeFilter->setIcon(QIcon(":/share/images/filter.png"));
 	connect(actionChangeFilter, SIGNAL(triggered()), this, SLOT(changeFilter()));
 	view->horizontalHeader()->addAction(actionChangeFilter);
 
-	actionAddIncludeFilter = new QAction(tr("Add include filter"), this);
-	actionAddIncludeFilter->setToolTip(tr("Add include filter"));
+	actionAddIncludeFilter = new QAction(this);
 	connect(actionAddIncludeFilter, SIGNAL(triggered()), this, SLOT(addIncludeFilter()));
 	view->addAction(actionAddIncludeFilter);
 
-	actionAddExcludeFilter = new QAction(tr("Add exclude filter"), this);
-	actionAddExcludeFilter->setToolTip(tr("Add exclude filter"));
+	actionAddExcludeFilter = new QAction(this);
 	connect(actionAddExcludeFilter, SIGNAL(triggered()), this, SLOT(addExcludeFilter()));
 	view->addAction(actionAddExcludeFilter);
 
-	actionRemoveFilter = new QAction(tr("Remove filter"), this);
-	actionRemoveFilter->setToolTip(tr("Remove filter"));
+	actionRemoveFilter = new QAction(this);
 	actionRemoveFilter->setIcon(QIcon(":/share/images/removefilter.png"));
 	connect(actionRemoveFilter, SIGNAL(triggered()), this, SLOT(removeFilter()));
 	view->horizontalHeader()->addAction(actionRemoveFilter);
@@ -156,7 +147,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
 
-	QMenu *fileMenu = new QMenu(tr("&File"), menuBar);
+	fileMenu = new QMenu(menuBar);
 	fileMenu->addAction(actionOpen);
 	fileMenu->addAction(actionClose);
 	fileMenu->addSeparator();
@@ -164,7 +155,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	menuBar->addMenu(fileMenu);
 
-	QMenu *exportMenu = new QMenu(tr("&Export"), menuBar);
+	exportMenu = new QMenu(menuBar);
 	exportMenu->addAction(acionExportToHtml);
 	exportMenu->addAction(acionExportToXml);
 	exportMenu->addAction(acionExportToCsv);
@@ -172,7 +163,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	menuBar->addMenu(exportMenu);
 
 //ToolBars
-	QToolBar *fileToolBar = new QToolBar(this);
+	fileToolBar = new QToolBar(this);
 	fileToolBar->setObjectName("file_toolbar");
 	fileToolBar->addAction(actionOpen);
 	fileToolBar->addAction(actionClose);
@@ -182,6 +173,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	loadSettings();
 	updateActions();
+	retranslateStrings();
 }
 
 DBFRedactorMainWindow::~DBFRedactorMainWindow()
@@ -189,6 +181,65 @@ DBFRedactorMainWindow::~DBFRedactorMainWindow()
 	saveSettings();
 	while(tabBar->count() > 0)
 		closeTab(0);
+}
+
+void DBFRedactorMainWindow::retranslateStrings()
+{
+	functionComboBox->setItemText(0, tr("Sum"));
+	functionComboBox->setItemText(1, tr("Count"));
+	functionComboBox->setItemText(2, tr("Minimum"));
+	functionComboBox->setItemText(3, tr("Maximum"));
+	functionComboBox->setItemText(4, tr("Clear"));
+
+	actionOpen->setText(tr("&Open"));
+	actionOpen->setToolTip(tr("Open file"));
+
+	actionExit->setText(tr("E&xit"));
+	actionExit->setToolTip(tr("Exit from program"));
+
+	actionClose->setText(tr("C&lose"));
+	actionClose->setToolTip(tr("Close current file"));
+
+	actionRefresh->setText(tr("&Refresh"));
+	actionRefresh->setToolTip(tr("Refresh current file"));
+
+	actionCopy->setText(tr("&Copy"));
+	actionCopy->setToolTip(tr("Copy selected cells to clipboard"));
+
+	acionExportToHtml->setText(tr("Export to &html"));
+	acionExportToHtml->setToolTip(tr("Export to html"));
+
+	acionExportToXml->setText(tr("Export to &xml"));
+	acionExportToXml->setToolTip(tr("Export to xml"));
+
+	acionExportToCsv->setText(tr("Export to cs&v"));
+	acionExportToCsv->setToolTip(tr("Export to csv"));
+
+	actionResizeColumnsToContents->setText(tr("Resize columns to contents"));
+	actionResizeColumnsToContents->setToolTip(tr("Resize columns to contents"));
+
+	actionUnsort->setText(tr("Unsort"));
+	actionUnsort->setToolTip(tr("Remove sort"));
+
+	actionChangeSort->setText(tr("Change sort"));
+	actionChangeSort->setToolTip(tr("Change sort"));
+
+	actionChangeFilter->setText(tr("Change filter"));
+	actionChangeFilter->setToolTip(tr("Change filter"));
+
+	actionAddIncludeFilter->setText(tr("Add include filter"));
+	actionAddIncludeFilter->setToolTip(tr("Add include filter"));
+
+	actionAddExcludeFilter->setText(tr("Add exclude filter"));
+	actionAddExcludeFilter->setToolTip(tr("Add exclude filter"));
+
+	actionRemoveFilter->setText(tr("Remove filter"));
+	actionRemoveFilter->setToolTip(tr("Remove filter"));
+
+	fileMenu->setTitle(tr("&File"));
+	exportMenu->setTitle(tr("&Export"));
+
+	fileToolBar->setWindowTitle(tr("&File"));
 }
 
 void DBFRedactorMainWindow::loadSettings()
@@ -603,6 +654,10 @@ void DBFRedactorMainWindow::exportToHtml()
 
 bool DBFRedactorMainWindow::event(QEvent *ev)
 {
+	if (ev->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	}
+
 	return QMainWindow::event(ev);
 }
 
