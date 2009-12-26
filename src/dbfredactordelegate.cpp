@@ -52,10 +52,15 @@ QRect DBFRedactorDelegate::checkRect
 
 void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+	QStyleOptionViewItem m_option(option);
+
+	if (m_redactor->isDeleted(index.row())) {
+		m_option.palette.setBrush(QPalette::Background, Qt::darkGray);
+		painter->fillRect(option.rect, m_option.palette.background());
+	}
+
 	if (option.state & QStyle::State_Selected)
 		painter->fillRect(option.rect, option.palette.highlight());
-
-	QStyleOptionViewItem m_option(option);
 
 	QString text;
 	switch (m_redactor->field(index.column()).type) {
