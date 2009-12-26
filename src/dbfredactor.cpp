@@ -67,6 +67,7 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	m_openMode = OpenMode;
 	m_tableName = QFileInfo(m_fileName).baseName();
 	m_file.setFileName(m_fileName);
+	m_file.setTextModeEnabled(false);
 
 	QIODevice::OpenMode openMode;
 	if (OpenMode == DBFRedactor::Read)
@@ -361,4 +362,18 @@ void DBFRedactor::refresh()
 {
 	close();
 	open(m_openMode);
+}
+
+void DBFRedactor::setOpenMode(DBFOpenMode openMode)
+{
+	m_openMode = openMode;
+	QIODevice::OpenMode mode;
+	if (m_openMode & DBFRedactor::Read)
+		mode = QIODevice::ReadOnly;
+	if (m_openMode & DBFRedactor::Write)
+		mode = QIODevice::ReadWrite;
+
+	m_file.close();
+	m_file.open(mode);
+	m_cache.clear();
 }

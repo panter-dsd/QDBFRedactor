@@ -30,7 +30,7 @@ DBFRedactorModel::DBFRedactorModel(const QString& fileName, QObject *parent)
 	:QAbstractItemModel(parent), m_fileName(fileName), m_showDeleted(true)
 {
 	redactor = new DBFRedactor(fileName);
-	redactor->open(DBFRedactor::Write);
+	redactor->open(DBFRedactor::Read);
 	redactor->setBuffering(true);
 }
 
@@ -71,9 +71,11 @@ bool DBFRedactorModel::setData ( const QModelIndex & index, const QVariant & val
 Qt::ItemFlags DBFRedactorModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags flags = index.isValid() ? Qt::ItemIsSelectable | Qt::ItemIsEnabled : Qt::NoItemFlags;
-	flags |= redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL
-			 ? Qt::ItemIsUserCheckable
-		: Qt::ItemIsEditable;
+	if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
+		flags |= Qt::ItemIsUserCheckable;
+
+	if (!isReadOnly())
+		flags |= Qt::ItemIsEditable;
 	return flags;
 }
 
@@ -116,5 +118,12 @@ int DBFRedactorModel::columnCount(const QModelIndex &/*parent*/) const
 void DBFRedactorModel::refresh()
 {
 	redactor->refresh();
+	reset();
+}
+
+void DBFRedactorModel::setReadOnly(bool b)
+{
+	DBFRedactor::DBFOpenMode mode = b ? DBFRedactor::Read : DBFRedactor::Write;
+	redactor->setOpenMode(mode);
 	reset();
 }

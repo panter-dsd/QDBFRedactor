@@ -69,6 +69,7 @@ private:
 	QAction *actionUnsort;
 	QAction *actionChangeSort;
 	QAction *actionPreferences;
+	QAction *actionSetEditMode;
 
 	QAction *actionChangeFilter;
 	QAction *actionAddIncludeFilter;
@@ -113,6 +114,7 @@ private Q_SLOTS:
 	void addExcludeFilter();
 	void removeFilter();
 	void preferences();
+	void setEditMode(bool b);
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

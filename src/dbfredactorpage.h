@@ -90,6 +90,9 @@ public:
 	{return m_columnSizes;}
 	void setColumnSizes(QList<int> sizes)
 	{m_columnSizes = sizes;}
+
+	DBFRedactorModel *dbfModel()
+	{return m_model;}
 };
 
 #endif //DBFREDACTORPAGE_H

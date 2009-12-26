@@ -139,6 +139,10 @@ public:
 
 	bool isDeleted(int row);
 
+	DBFOpenMode openMode()
+	{return m_openMode;}
+	void setOpenMode(DBFOpenMode openMode);
+
 private:
 	QByteArray revert(const QByteArray& array) const;
 };

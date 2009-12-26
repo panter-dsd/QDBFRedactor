@@ -62,6 +62,10 @@ public:
 
 	DBFRedactor* dbfRedactor()
 	{return redactor;}
+
+	bool isReadOnly() const
+	{return redactor->openMode() & DBFRedactor::Read;}
+	void setReadOnly(bool b);
 };
 
 #endif //DBFREDACTORMODEL_H

@@ -172,6 +172,12 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionPreferences->setIcon(QIcon(":/share/images/preferences.png"));
 	connect(actionPreferences, SIGNAL(triggered()), this, SLOT(preferences()));
 
+	actionSetEditMode = new QAction(this);
+	actionSetEditMode->setIcon(QIcon(":/share/images/edit.png"));
+	actionSetEditMode->setCheckable(true);
+	actionSetEditMode->setChecked(false);
+	connect(actionSetEditMode, SIGNAL(toggled(bool)), this, SLOT(setEditMode(bool)));
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -179,6 +185,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileMenu = new QMenu(menuBar);
 	fileMenu->addAction(actionOpen);
 	fileMenu->addAction(actionClose);
+	fileMenu->addAction(actionSetEditMode);
 	fileMenu->addSeparator();
 	fileMenu->addAction(actionPreferences);
 	fileMenu->addSeparator();
@@ -269,6 +276,9 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	actionPreferences->setText(tr("Preferences"));
 	actionPreferences->setToolTip(tr("Application preferences"));
+
+	actionSetEditMode->setText(tr("Edit"));
+	actionSetEditMode->setText(tr("Edit this file"));
 
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
@@ -413,6 +423,10 @@ void DBFRedactorMainWindow::updateActions()
 	acionExportToXml->setEnabled(currentPage);
 	acionExportToCsv->setEnabled(currentPage);
 	functionComboBox->setVisible(currentPage);
+	actionSetEditMode->setEnabled(currentPage);
+	if (currentPage)
+		actionSetEditMode->setChecked(!currentPage->dbfModel()->isReadOnly());
+
 	view->setVisible(currentPage);
 }
 
@@ -925,4 +939,9 @@ void DBFRedactorMainWindow::preferences()
 {
 	PreferencesDialog d;
 	d.exec();
+}
+
+void DBFRedactorMainWindow::setEditMode(bool b)
+{
+	currentPage->dbfModel()->setReadOnly(!b);
 }
