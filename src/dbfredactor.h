@@ -143,6 +143,14 @@ public:
 	{return m_openMode;}
 	void setOpenMode(DBFOpenMode openMode);
 
+	QTextCodec* textCodec()
+	{return m_codec;}
+	void setTextCodec(QTextCodec *textCodec)
+	{
+		if (m_codec->name() != textCodec->name())
+			m_codec = textCodec;
+	}
+
 private:
 	QByteArray revert(const QByteArray& array) const;
 };

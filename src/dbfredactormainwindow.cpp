@@ -200,6 +200,9 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	menuBar->addMenu(exportMenu);
 
+	codecsMenu = new QMenu(menuBar);
+	menuBar->addMenu(codecsMenu);
+
 //ToolBars
 	fileToolBar = new QToolBar(this);
 	fileToolBar->setObjectName("file_toolbar");
@@ -212,6 +215,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	loadSettings();
 	updateActions();
 	retranslateStrings();
+	createCodecsMenu();
 }
 
 DBFRedactorMainWindow::~DBFRedactorMainWindow()
@@ -282,6 +286,7 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
+	codecsMenu->setTitle(tr("&Codecs"));
 
 	fileToolBar->setWindowTitle(tr("&File"));
 }
@@ -395,6 +400,7 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	currentPage = page;
 	currentFile->setText(QDir::toNativeSeparators(currentPage->fileName()));
 	selectionChanged();
+	setCurentCodec();
 }
 
 void DBFRedactorMainWindow::closeTab(int index)
@@ -428,6 +434,8 @@ void DBFRedactorMainWindow::updateActions()
 		actionSetEditMode->setChecked(!currentPage->dbfModel()->isReadOnly());
 
 	view->setVisible(currentPage);
+
+	codecsMenu->setEnabled(currentPage);
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -944,4 +952,49 @@ void DBFRedactorMainWindow::preferences()
 void DBFRedactorMainWindow::setEditMode(bool b)
 {
 	currentPage->dbfModel()->setReadOnly(!b);
+}
+
+QStringList DBFRedactorMainWindow::codecsList()
+{
+	QStringList codecs;
+	foreach(int mib, QTextCodec::availableMibs())
+		codecs << QTextCodec::codecForMib(mib)->name();
+	codecs.sort();
+	return codecs;
+}
+
+void DBFRedactorMainWindow::createCodecsMenu()
+{
+	QActionGroup *codecsGroup = new QActionGroup(this);
+
+	QAction *codecAction;
+
+	foreach(const QString& codecName, codecsList()) {
+		codecAction = new QAction(codecName, this);
+		codecAction->setCheckable(true);
+		connect(codecAction, SIGNAL(triggered()), this, SLOT(setPageCodec()));
+		codecsGroup->addAction(codecAction);
+		codecsMenu->addAction(codecAction);
+	}
+}
+
+void DBFRedactorMainWindow::setCurentCodec()
+{
+	const QString& codecName = currentPage->redactor()->textCodec()->name();
+
+	foreach(QAction *action, codecsMenu->actions()) {
+		if (action->text() == codecName) {
+			action->setChecked(true);
+			break;
+		}
+	}
+}
+
+void DBFRedactorMainWindow::setPageCodec()
+{
+	QAction *action = qobject_cast<QAction*> (sender());
+	if (!action)
+		return;
+
+	currentPage->redactor()->setTextCodec(QTextCodec::codecForName(action->text().toAscii()));
 }

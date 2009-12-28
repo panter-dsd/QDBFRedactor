@@ -54,6 +54,7 @@ private:
 
 	QMenu *fileMenu;
 	QMenu *exportMenu;
+	QMenu *codecsMenu;
 
 	QToolBar *fileToolBar;
 
@@ -91,6 +92,9 @@ private:
 	double min();
 	double max();
 	void retranslateStrings();
+	QStringList codecsList();
+	void createCodecsMenu();
+	void setCurentCodec();
 
 protected:
 	bool event(QEvent *ev);
@@ -115,6 +119,7 @@ private Q_SLOTS:
 	void removeFilter();
 	void preferences();
 	void setEditMode(bool b);
+	void setPageCodec();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H
