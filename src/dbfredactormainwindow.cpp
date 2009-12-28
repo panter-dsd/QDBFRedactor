@@ -945,7 +945,7 @@ void DBFRedactorMainWindow::removeFilter()
 
 void DBFRedactorMainWindow::preferences()
 {
-	PreferencesDialog d;
+	PreferencesDialog d(this);
 	d.exec();
 }
 

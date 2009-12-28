@@ -274,6 +274,102 @@
     </message>
 </context>
 <context>
+    <name>DisplayPreferences</name>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="188"/>
+        <source>Cell type</source>
+        <translation>Тип ячейки</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="193"/>
+        <source>String</source>
+        <translation>Строка</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="194"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="198"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="202"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="206"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="210"/>
+        <source>Color</source>
+        <translation>Цвет</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="195"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="199"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="203"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="207"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="211"/>
+        <source>Font</source>
+        <translation>Шрифт</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="186"/>
+        <source>Cells view preference</source>
+        <translation>Настройка вида ячеек</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="189"/>
+        <source>Alignment</source>
+        <translation>Выравнивание</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="190"/>
+        <source>Text color</source>
+        <translation>Цвет текста</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="191"/>
+        <source>Text font</source>
+        <translation>Шрифт текста</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="197"/>
+        <source>Numeric</source>
+        <translation>Число</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="201"/>
+        <source>Memo</source>
+        <translation>Текст</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="205"/>
+        <source>Date</source>
+        <translation>Дата</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="209"/>
+        <source>Float</source>
+        <translation>Число с плавающей запятой</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="214"/>
+        <source>Align left</source>
+        <translation>По левому краю</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="215"/>
+        <source>Align center</source>
+        <translation>По центру</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="216"/>
+        <source>Align right</source>
+        <translation>По правому краю</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="217"/>
+        <source>Align justify</source>
+        <translation>По ширине</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.h" line="89"/>
+        <source>Display/Table</source>
+        <translation>Вид/Таблица</translation>
+    </message>
+</context>
+<context>
     <name>FilterDelegate</name>
     <message>
         <location filename="../../src/filterdelegate.h" line="35"/>
@@ -414,12 +510,12 @@
 <context>
     <name>PreferencesDialog</name>
     <message>
-        <location filename="../../src/preferences/preferencesdialog.cpp" line="84"/>
+        <location filename="../../src/preferences/preferencesdialog.cpp" line="89"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/preferencesdialog.cpp" line="86"/>
+        <location filename="../../src/preferences/preferencesdialog.cpp" line="91"/>
         <source>Default</source>
         <translation>Исходные</translation>
     </message>

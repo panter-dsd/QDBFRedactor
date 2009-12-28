@@ -37,6 +37,7 @@
 #include "abstractpreferencespage.h"
 #include "preferencesdialog.h"
 #include "globalpreferences.h"
+#include "displaypreferences.h"
 
 PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent,f)
@@ -56,6 +57,10 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	GlobalPreferences *globalPreferences = new GlobalPreferences(this);
 	connect(globalPreferences, SIGNAL(modified()), this, SLOT(setApplyEnabled()));
 	pages.insert(preferencesWidgets->addWidget(globalPreferences), globalPreferences);
+
+	DisplayPreferences *displayPreferences = new DisplayPreferences(this);
+	connect(displayPreferences, SIGNAL(modified()), this, SLOT(setApplyEnabled()));
+	pages.insert(preferencesWidgets->addWidget(displayPreferences), displayPreferences);
 
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply,
 								   Qt::Horizontal,

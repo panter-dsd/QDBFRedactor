@@ -25,6 +25,7 @@
 #ifndef DBFREDACTORDELEGATE_H
 #define DBFREDACTORDELEGATE_H
 
+#include <QtCore/QSettings>
 #include <QtGui/QItemDelegate>
 #include "dbfredactor.h"
 
@@ -33,6 +34,7 @@ class DBFRedactorDelegate : public QItemDelegate
 
 private:
 	DBFRedactor *m_redactor;
+	QSettings m_settings;
 
 public:
 	DBFRedactorDelegate(DBFRedactor *redactor, QObject * parent = 0);

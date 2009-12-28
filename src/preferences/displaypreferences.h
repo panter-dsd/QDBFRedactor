@@ -22,31 +22,63 @@
 * Contact:		panter.dsd@gmail.com
 *******************************************************************/
 
-#ifndef GLOBALPREFERENCES_H
-#define GLOBALPREFERENCES_H
+#ifndef DISPLAYPREFERENCES_H
+#define DISPLAYPREFERENCES_H
 
 class QGroupBox;
-class QListWidget;
 class QLabel;
-class QLineEdit;
+class QComboBox;
 class QToolButton;
 
 #include "abstractpreferencespage.h"
 
-class GlobalPreferences : public AbstractPreferencesPage
+class DisplayPreferences : public AbstractPreferencesPage
 {
 	Q_OBJECT
 
 private:
-	QGroupBox *translationGroup;
-	QLabel *tranlationsPathLabel;
-	QLineEdit *tranlationsPathEdit;
-	QToolButton *tranlationsPathButton;
-	QListWidget *translationsList;
+	enum Alignment {
+		Left = 0,
+		Center,
+		Right
+	};
+
+private:
+	QGroupBox *delegatePreferencesGroup;
+
+	QLabel *cellType;
+	QLabel *cellAlignment;
+	QLabel *cellColor;
+	QLabel *cellFont;
+
+	QLabel *stringColorLabel;
+	QComboBox *stringAligmentEdit;
+	QToolButton *stringColorButton;
+	QToolButton *stringFontButton;
+
+	QLabel *numericColorLabel;
+	QComboBox *numericAligmentEdit;
+	QToolButton *numericColorButton;
+	QToolButton *numericFontButton;
+
+	QLabel *memoColorLabel;
+	QComboBox *memoAligmentEdit;
+	QToolButton *memoColorButton;
+	QToolButton *memoFontButton;
+
+	QLabel *dateColorLabel;
+	QComboBox *dateAligmentEdit;
+	QToolButton *dateColorButton;
+	QToolButton *dateFontButton;
+
+	QLabel *floatColorLabel;
+	QComboBox *floatAligmentEdit;
+	QToolButton *floatColorButton;
+	QToolButton *floatFontButton;
 
 public:
-	GlobalPreferences(QWidget *parent = 0);
-	virtual ~GlobalPreferences()
+	DisplayPreferences(QWidget *parent = 0);
+	virtual ~DisplayPreferences()
 	{}
 
 	void saveSettings();
@@ -54,7 +86,7 @@ public:
 	void setDefaults();
 
 	QString preferenceGroup()
-	{ return tr("Global/Language"); }
+	{ return tr("Display/Table"); }
 
 protected:
 	bool event(QEvent *ev);
@@ -63,8 +95,9 @@ private:
 	void retranslateStrings();
 
 private Q_SLOTS:
-	void updateTranslationsList();
-	void setTranslationsPath();
+	void setButtonColor();
+	void setButtonFont();
+
 };
 
-#endif // GLOBALPREFERENCES_H
+#endif // DISPLAYPREFERENCES_H
