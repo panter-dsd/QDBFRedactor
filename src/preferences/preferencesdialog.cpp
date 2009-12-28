@@ -32,6 +32,7 @@
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QSplitter>
 #include <QtGui/QHeaderView>
+#include <QtGui/QtEvents>
 
 #include "abstractpreferencespage.h"
 #include "preferencesdialog.h"
@@ -83,6 +84,15 @@ void PreferencesDialog::retranslateStrings()
 	setWindowTitle(tr("Preferences"));
 
 	defaultsButton->setText(tr("Default"));
+}
+
+bool PreferencesDialog::event(QEvent *ev)
+{
+	if (ev->type() == QEvent::LanguageChange) {
+		retranslateStrings();
+	}
+
+	return QWidget::event(ev);
 }
 
 PreferencesDialog::~PreferencesDialog()

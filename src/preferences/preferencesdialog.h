@@ -57,6 +57,9 @@ public:
 	PreferencesDialog(QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowSystemMenuHint | Qt::WindowMaximizeButtonHint);
 	~PreferencesDialog();
 
+protected:
+	bool event(QEvent *ev);
+
 private Q_SLOTS:
 	void savePreferences();
 	void savePreferencesAndExit()
