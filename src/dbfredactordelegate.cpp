@@ -70,6 +70,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 			opt.state = opt.state & ~QStyle::State_HasFocus;
 			opt.state |= (index.data(Qt::CheckStateRole).toInt() == Qt::Checked ? QStyle::State_On : QStyle::State_Off);
 			qApp->style()->drawPrimitive(QStyle::PE_IndicatorViewItemCheck, &opt, painter);
+			return;
 			break;
 		}
 		case DBFRedactor::TYPE_DATE:
@@ -86,9 +87,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 			text = index.data(Qt::DisplayRole).toString();
 	}
 
-	if (m_redactor->field(index.column()).type != DBFRedactor::TYPE_LOGICAL)
-		drawDisplay(painter, m_option, m_option.rect, text);
-
+	drawDisplay(painter, m_option, m_option.rect, text);
 	drawFocus(painter, m_option, m_option.rect);
 }
 bool DBFRedactorDelegate::editorEvent (QEvent* ev, QAbstractItemModel* model,const QStyleOptionViewItem& option, const QModelIndex& index)
