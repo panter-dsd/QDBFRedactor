@@ -50,6 +50,38 @@ public:
 	QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 	QModelIndex parent(const QModelIndex &index) const;
 
+	bool addRecord ()
+	{
+		beginInsertRows(QModelIndex(), rowCount(), rowCount());
+		redactor->addRecord();
+		endInsertRows();
+		return true;
+	}
+
+	bool removeRecord(int row)
+	{
+		return removeRecords(QList<int> () << row);
+	}
+
+	bool removeRecords (const QList<int> &rows)
+	{
+		foreach(int row, rows)
+			redactor->removeRecord(row);
+		return true;
+	}
+
+	bool recoverRecord(int row)
+	{
+		return recoverRecords(QList<int> () << row);
+	}
+
+	bool recoverRecords (const QList<int> &rows)
+	{
+		foreach(int row, rows)
+			redactor->recoverRecord(row);
+		return true;
+	}
+
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
@@ -66,6 +98,7 @@ public:
 	bool isReadOnly() const
 	{return redactor->openMode() & DBFRedactor::Read;}
 	void setReadOnly(bool b);
+
 };
 
 #endif //DBFREDACTORMODEL_H

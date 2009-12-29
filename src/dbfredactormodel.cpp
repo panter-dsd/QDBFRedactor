@@ -55,7 +55,10 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 			if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
 				return value.toBool() ? Qt::Checked : Qt::Unchecked;
 			break;
+		case Qt::UserRole:
+			return redactor->isDeleted(index.row());
 		}
+
 
 	return QVariant();
 }

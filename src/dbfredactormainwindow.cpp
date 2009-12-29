@@ -178,6 +178,24 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionSetEditMode->setChecked(false);
 	connect(actionSetEditMode, SIGNAL(toggled(bool)), this, SLOT(setEditMode(bool)));
 
+	actionAddRecord = new QAction(this);
+	actionAddRecord->setIcon(QIcon(":/share/images/edit.png"));
+	actionAddRecord->setShortcut(Qt::Key_F2);
+	connect(actionAddRecord, SIGNAL(triggered()), this, SLOT(addRecord()));
+	view->addAction(actionAddRecord);
+
+	actionRemoveRecord = new QAction(this);
+	actionRemoveRecord->setIcon(QIcon(":/share/images/edit.png"));
+	actionRemoveRecord->setShortcut(Qt::Key_F8);
+	connect(actionRemoveRecord, SIGNAL(triggered()), this, SLOT(removeRecord()));
+	view->addAction(actionRemoveRecord);
+
+	actionRecoverRecord = new QAction(this);
+	actionRecoverRecord->setIcon(QIcon(":/share/images/edit.png"));
+	actionRecoverRecord->setShortcut(Qt::Key_F9);
+	connect(actionRecoverRecord, SIGNAL(triggered()), this, SLOT(recoverRecord()));
+	view->addAction(actionRecoverRecord);
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -283,6 +301,12 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	actionSetEditMode->setText(tr("Edit"));
 	actionSetEditMode->setText(tr("Edit this file"));
+
+	actionAddRecord->setText(tr("Add record"));
+
+	actionRemoveRecord->setText(tr("Remove record"));
+
+	actionRecoverRecord->setText(tr("Recover record"));
 
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
@@ -432,6 +456,9 @@ void DBFRedactorMainWindow::updateActions()
 	actionSetEditMode->setEnabled(currentPage);
 	if (currentPage)
 		actionSetEditMode->setChecked(!currentPage->dbfModel()->isReadOnly());
+	actionAddRecord->setEnabled(actionSetEditMode->isChecked());
+	actionRemoveRecord->setEnabled(actionSetEditMode->isChecked());
+	actionRecoverRecord->setEnabled(actionSetEditMode->isChecked());
 
 	view->setVisible(currentPage);
 
@@ -997,4 +1024,39 @@ void DBFRedactorMainWindow::setPageCodec()
 		return;
 
 	currentPage->redactor()->setTextCodec(QTextCodec::codecForName(action->text().toAscii()));
+}
+
+void DBFRedactorMainWindow::addRecord()
+{
+	currentPage->dbfModel()->addRecord();
+}
+
+void DBFRedactorMainWindow::removeRecord()
+{
+	QList<int> rows;
+	foreach(const QModelIndex& index, view->selectionModel()->selectedIndexes()) {
+		const int row = currentPage->model()->mapToSource(index).row();
+		if (!rows.contains(row))
+			rows.append(row);
+	}
+
+	int res = QMessageBox::information(this, "", tr("Are you shure remove %1 records?").arg(rows.size()), QMessageBox::Ok | QMessageBox::Cancel);
+
+	if (res = QMessageBox::Ok)
+		currentPage->dbfModel()->removeRecords(rows);
+}
+
+void DBFRedactorMainWindow::recoverRecord()
+{
+	QList<int> rows;
+	foreach(const QModelIndex& index, view->selectionModel()->selectedIndexes()) {
+		const int row = currentPage->model()->mapToSource(index).row();
+		if (!rows.contains(row))
+			rows.append(row);
+	}
+
+	int res = QMessageBox::information(this, "", tr("Are you shure recover %1 records?").arg(rows.size()), QMessageBox::Ok | QMessageBox::Cancel);
+
+	if (res = QMessageBox::Ok)
+		currentPage->dbfModel()->recoverRecords(rows);
 }

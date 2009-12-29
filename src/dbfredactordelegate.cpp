@@ -54,7 +54,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 {
 	QStyleOptionViewItem m_option(option);
 
-	if (m_redactor->isDeleted(index.row())) {
+	if (index.data(Qt::UserRole).toBool()) {
 		m_option.palette.setBrush(QPalette::Background, Qt::darkGray);
 		painter->fillRect(option.rect, m_option.palette.background());
 	}

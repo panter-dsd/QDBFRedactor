@@ -71,6 +71,9 @@ private:
 	QAction *actionChangeSort;
 	QAction *actionPreferences;
 	QAction *actionSetEditMode;
+	QAction *actionAddRecord;
+	QAction *actionRemoveRecord;
+	QAction *actionRecoverRecord;
 
 	QAction *actionChangeFilter;
 	QAction *actionAddIncludeFilter;
@@ -120,6 +123,9 @@ private Q_SLOTS:
 	void preferences();
 	void setEditMode(bool b);
 	void setPageCodec();
+	void addRecord();
+	void removeRecord();
+	void recoverRecord();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

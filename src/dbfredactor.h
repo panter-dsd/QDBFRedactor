@@ -51,24 +51,26 @@ public:
 		Fox3M,
 		Fox4,
 		Fox,
-		Dbase4};
+		DBase3,
+		DBase4,
+		DBase5};
 
 	struct Field
 	{
 		QString name;
-		int type;
+		char type;
 		long pos;
-		int firstLenght;
-		int secondLenght;
+		char firstLenght;
+		char secondLenght;
 	};
 
 	struct Header
 	{
 		int fileType;
 		QDate lastUpdated;
-		long recordsCount;
-		int firstRecordPos;
-		int recordLenght;
+		qint32 recordsCount;
+		qint16 firstRecordPos;
+		qint16 recordLenght;
 		bool isIndex;
 		QList<Field> fieldsList;
 	};
@@ -151,7 +153,13 @@ public:
 			m_codec = textCodec;
 	}
 
+	void addRecord();
+
+	void removeRecord(int row);
+
+	void recoverRecord(int row);
+
 private:
-	QByteArray revert(const QByteArray& array) const;
+	void writeHeader();
 };
 #endif

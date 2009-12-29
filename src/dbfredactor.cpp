@@ -31,12 +31,14 @@ DBFRedactor::DBFRedactor()
 	:m_fileName(0), m_openMode(No), m_buffering(true)
 {
 	header.recordsCount = -1;
+	m_codec = QTextCodec::codecForName("IBM866");
 }
 
 DBFRedactor::DBFRedactor(const QString& fileName)
 	: m_fileName(fileName), m_openMode(No), m_buffering(true)
 {
 	header.recordsCount = -1;
+	m_codec = QTextCodec::codecForName("IBM866");
 }
 
 DBFRedactor::~DBFRedactor()
@@ -80,26 +82,30 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 		return false;
 	}
 
-	m_buf = m_file.read(32);
-	bool ok = false;
+	char *c = new char[33];
+	char *cTmp = c;
+	m_file.read(c, 32);
+
 #warning "Type is not true."
-	header.fileType = m_buf.at(0);
-	header.recordsCount = revert(m_buf.mid(4, 4)).toHex().toLong(&ok, 16);
-	header.firstRecordPos = revert(m_buf.mid(8, 2)).toHex().toInt(&ok, 16);
-	header.recordLenght = revert(m_buf.mid(10, 2)).toHex().toInt(&ok, 16);
-	header.isIndex = (m_buf.at(28) == 1);
+	if (c[0] & 0x3)
+		header.fileType = DBase3;
+	header.lastUpdated.setDate(2000 + c[1], c[2], c[3]);
+	cTmp += 4;
+	header.recordsCount = *(qint32*)cTmp;
+	cTmp += 4;
+	header.firstRecordPos = *(qint16*)cTmp;
+	cTmp += 2;
+	header.recordLenght = *(qint16*)cTmp;
+	header.isIndex = (c[28] == 1);
 
-	if (m_buf.at(29) == -55)
-		m_codec = QTextCodec::codecForName("CP1251");
-	else
-		m_codec = QTextCodec::codecForName("IBM866");
-
-	m_buf = m_file.read(32);
+	m_file.read(c, 32);
 	do {
 		Field field;
-		field.name = m_codec->toUnicode(m_buf.left(10));
-		field.name.remove(field.name.indexOf(QChar(0)), 10);
-		switch (m_buf.at(11)) {
+		m_buf.clear();
+		for (int i = 0; i < 10, c[i] != 0x0; i++)
+			m_buf.append(c[i]);
+		field.name = m_codec->toUnicode(m_buf);
+		switch (c[11]) {
 			case 'C':
 				field.type = TYPE_CHAR;
 				break;
@@ -125,27 +131,20 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 
 		field.pos = header.fieldsList.isEmpty() ? 1 : header.fieldsList.last().pos + header.fieldsList.last().firstLenght;
 
-		field.firstLenght = m_buf.mid(16, 1).toHex().toInt(&ok, 16);
-		field.secondLenght = m_buf.mid(17, 1).toHex().toInt(&ok, 16);
+		field.firstLenght = c[16];
+		field.secondLenght = c[17];
 		if ((field.type == TYPE_NUMERIC) && (field.firstLenght > 18))
 			field.type=TYPE_FLOAT;
 
 		header.fieldsList << field;
-		m_buf = m_file.read(32);
-	} while (m_buf.at(0) != 13);
+		m_file.read(c, 32);
+	} while (c[0] != 0xD);
+	delete [] c;
 	m_file.seek(header.firstRecordPos);
 
 	m_buf.clear();
 	lastRecord = -1;
 	return true;
-}
-
-QByteArray DBFRedactor::revert(const QByteArray& array) const
-{
-	QByteArray newArray;
-	for (int i = array.length() - 1; i >= 0; i--)
-		newArray.append(array.at(i));
-	return newArray;
 }
 
 DBFRedactor::Field DBFRedactor::field(int number) const
@@ -231,7 +230,6 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 		return false;
 
 	m_cache.remove(row);
-	m_file.seek(header.firstRecordPos + header.recordLenght * row + header.fieldsList.at(column).pos);
 
 	QByteArray buf;
 
@@ -258,6 +256,9 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 			buf = m_codec->fromUnicode(data.toString());
 			break;
 	}
+	header.lastUpdated = QDate::currentDate();
+	writeHeader();
+	m_file.seek(header.firstRecordPos + header.recordLenght * row + header.fieldsList.at(column).pos);
 	return m_file.write(buf.leftJustified(header.fieldsList.at(column).firstLenght, 0x20, true)) > 0;
 }
 
@@ -376,4 +377,69 @@ void DBFRedactor::setOpenMode(DBFOpenMode openMode)
 	m_file.close();
 	m_file.open(mode);
 	m_cache.clear();
+}
+
+void DBFRedactor::addRecord()
+{
+	if (m_openMode != Write)
+		return;
+
+	m_file.resize(m_file.size() + header.recordLenght);
+	header.recordsCount++;
+	header.lastUpdated = QDate::currentDate();
+	writeHeader();
+	m_file.seek(m_file.size() - header.recordLenght);
+	m_buf.resize(header.recordLenght);
+	m_buf.fill(0x20, header.recordLenght);
+	m_file.write(m_buf);
+}
+
+void DBFRedactor::removeRecord(int row)
+{
+	if (m_openMode != Write)
+		return;
+
+	m_cache.remove(row);
+	header.lastUpdated = QDate::currentDate();
+	writeHeader();
+	m_file.seek(header.firstRecordPos + header.recordLenght * row);
+	m_file.putChar(0x2A);
+}
+
+void DBFRedactor::recoverRecord(int row)
+{
+	if (m_openMode != Write)
+		return;
+
+	m_cache.remove(row);
+	header.lastUpdated = QDate::currentDate();
+	writeHeader();
+	m_file.seek(header.firstRecordPos + header.recordLenght * row);
+	m_file.putChar(0x20);
+}
+
+void DBFRedactor::writeHeader()
+{
+	if (m_openMode != Write)
+		return;
+
+	char *c = new char[33];
+	for (int i = 0; i < 32; i++)
+		c[i] = 0;
+	char *tmp = c;
+
+	c[0] = 0x3;
+	c[1] = header.lastUpdated.toString("yy").toShort();
+	c[2] = header.lastUpdated.month();
+	c[3] = header.lastUpdated.day();
+	tmp += 4;
+	*(qint32*)tmp = header.recordsCount;
+	tmp += 4;
+	*(qint16*)tmp = header.firstRecordPos;
+	tmp += 2;
+	*(qint16*)tmp = header.recordLenght;
+	m_file.seek(0);
+	m_file.write(c, 32);
+	delete [] c;
+
 }
