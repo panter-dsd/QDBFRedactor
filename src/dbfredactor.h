@@ -160,6 +160,8 @@ public:
 
 	void recoverRecord(int row);
 
+	bool isChanged(int row);
+
 private:
 	void writeHeader();
 };

@@ -439,5 +439,13 @@ void DBFRedactor::writeHeader()
 	m_file.seek(0);
 	m_file.write(c, 32);
 	delete [] c;
+}
 
+bool DBFRedactor::isChanged(int row)
+{
+	for (int i = 0; i < m_changedData.size(); i++) {
+		if (m_changedData.at(i).first == row)
+			return true;
+	}
+	return false;
 }
