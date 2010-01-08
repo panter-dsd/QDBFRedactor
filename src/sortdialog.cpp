@@ -51,14 +51,6 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	sortedColumnsList = new QListWidget(this);
 	connect(sortedColumnsList, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(remove()));
 
-	QVBoxLayout *columnsLayout = new QVBoxLayout();
-	columnsLayout->addWidget(columnsLabel);
-	columnsLayout->addWidget(columnsList);
-
-	QVBoxLayout *sortedColumnsLayout = new QVBoxLayout();
-	sortedColumnsLayout->addWidget(sortedColumnsLabel);
-	sortedColumnsLayout->addWidget(sortedColumnsList);
-
 	addAllButton = new QToolButton(this);
 	addAllButton->setIcon(QIcon(":share/images/2rightarrow.png"));
 	connect(addAllButton, SIGNAL(clicked()), this, SLOT(addAll()));
@@ -111,11 +103,25 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 	sortedButtonsLayout->addWidget(moveBottomButton);
 	sortedButtonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
+	QHBoxLayout *columnsHLayout = new QHBoxLayout();
+	columnsHLayout->addWidget(columnsList);
+	columnsHLayout->addLayout(addRemoveButtonsLayout);
+
+	QVBoxLayout *columnsLayout = new QVBoxLayout();
+	columnsLayout->addWidget(columnsLabel);
+	columnsLayout->addLayout(columnsHLayout);
+
+	QHBoxLayout *sortedColumnsHLayout = new QHBoxLayout();
+	sortedColumnsHLayout->addWidget(sortedColumnsList);
+	sortedColumnsHLayout->addLayout(sortedButtonsLayout);
+
+	QVBoxLayout *sortedColumnsLayout = new QVBoxLayout();
+	sortedColumnsLayout->addWidget(sortedColumnsLabel);
+	sortedColumnsLayout->addLayout(sortedColumnsHLayout);
+
 	QHBoxLayout *topLayout = new QHBoxLayout();
 	topLayout->addLayout(columnsLayout);
-	topLayout->addLayout(addRemoveButtonsLayout);
 	topLayout->addLayout(sortedColumnsLayout);
-	topLayout->addLayout(sortedButtonsLayout);
 
 	QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
 													 Qt::Horizontal,

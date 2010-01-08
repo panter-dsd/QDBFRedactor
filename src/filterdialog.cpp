@@ -190,7 +190,7 @@ void FilterDialog::loadSettings()
 	QSettings settings;
 
 	settings.beginGroup("FilterDialog");
-	resize(settings.value("Size", QSize(0, 0)).toSize());
+	resize(settings.value("Size", QSize(700, 300)).toSize());
 	move(settings.value("Pos", QPoint()).toPoint());
 	settings.endGroup();
 }
