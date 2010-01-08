@@ -86,9 +86,12 @@ void GlobalPreferences::saveSettings()
 	QSettings settings;
 
 	settings.beginGroup("Global");
-	const QString& translatorPath = translationsList->currentItem()->data(Qt::UserRole).toString();
+	settings.setValue("TranslationsPath", QDir::fromNativeSeparators(tranlationsPathEdit->text()));
+	QString translatorPath;
+	if (translationsList->currentItem())
+		translatorPath = translationsList->currentItem()->data(Qt::UserRole).toString();
 	const QStringList& translations = TranslationManager::instance()->translations();
-	if (!translations.contains(translatorPath) || translatorPath.isEmpty()) {
+	if (!translatorPath.isEmpty() && !translations.contains(translatorPath)) {
 		foreach(const QString& name, translations) {
 			if (QFileInfo(name).fileName().contains(QRegExp(QCoreApplication::applicationName().toLower() + "_*.qm", Qt::CaseSensitive, QRegExp::Wildcard)))
 				TranslationManager::instance()->removeTranslator(name);
