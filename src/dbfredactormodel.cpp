@@ -94,6 +94,14 @@ QVariant DBFRedactorModel::headerData(int section, Qt::Orientation orientation, 
 	if(role == Qt::TextAlignmentRole) {
 		return Qt::AlignCenter;
 	}
+
+	if(role == Qt::TextColorRole) {
+		if(orientation == Qt::Vertical) {
+			if (redactor->isChanged(section))
+				return Qt::red;
+		}
+	}
+
 	return QVariant();
 }
 
