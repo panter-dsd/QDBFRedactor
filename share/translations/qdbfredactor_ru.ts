@@ -4,273 +4,313 @@
 <context>
     <name>DBFRedactorMainWindow</name>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="230"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="254"/>
         <source>Sum</source>
         <translation>Сумма</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="231"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="255"/>
         <source>Count</source>
         <translation>Количество</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="232"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="256"/>
         <source>Minimum</source>
         <translation>Минимум</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="233"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="257"/>
         <source>Maximum</source>
         <translation>Максимум</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="234"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="258"/>
         <source>Clear</source>
         <translation>Очистка</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="236"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="260"/>
         <source>&amp;Open</source>
         <translation>&amp;Открыть</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="237"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="261"/>
         <source>Open file</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="239"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="263"/>
+        <source>&amp;Save</source>
+        <translation>&amp;Сохранить</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="264"/>
+        <source>Save file</source>
+        <translation>Сохранить файл</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="266"/>
         <source>E&amp;xit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="240"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="267"/>
         <source>Exit from program</source>
         <translation>Выйти из программы</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="242"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="269"/>
         <source>C&amp;lose</source>
         <translation>&amp;Закрыть</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="243"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="270"/>
         <source>Close current file</source>
         <translation>Закрыть текущий файл</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="245"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="272"/>
         <source>&amp;Refresh</source>
         <translation>О&amp;бновить</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="246"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="273"/>
         <source>Refresh current file</source>
         <translation>Обновить текущий файл</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="248"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="275"/>
         <source>&amp;Copy</source>
         <translation>&amp;Скопировать</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="249"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="276"/>
         <source>Copy selected cells to clipboard</source>
         <translation>Скопировать выделенные ячейки в буффер обмена</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="251"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="278"/>
         <source>Export to &amp;html</source>
         <translation>Экспортировать в &amp;html</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="252"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="279"/>
         <source>Export to html</source>
         <translation>Экспортировать в html</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="254"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="281"/>
         <source>Export to &amp;xml</source>
         <translation>Экспортировать в &amp;xml</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="255"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="282"/>
         <source>Export to xml</source>
         <translation>Экспортировать в xml</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="257"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="284"/>
         <source>Export to cs&amp;v</source>
         <translation>Экспортировать в cs&amp;v</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="258"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="285"/>
         <source>Export to csv</source>
         <translation>Экспортировать в csv</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="260"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="261"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="287"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="288"/>
         <source>Resize columns to contents</source>
         <translation>Подогнать ширину столбцов под содержимое</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="263"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="290"/>
         <source>Unsort</source>
         <translation>Убрать сортировку</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="264"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="291"/>
         <source>Remove sort</source>
         <translation>Убрать сортировку</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="266"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="267"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="293"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="294"/>
         <source>Change sort</source>
         <translation>Изменить сортировку</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="269"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="270"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="296"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="297"/>
         <source>Change filter</source>
         <translation>Изменить фильтр</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="272"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="273"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="299"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="300"/>
         <source>Add include filter</source>
         <translation>Добавить включающий фильтр</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="275"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="276"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="302"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="303"/>
         <source>Add exclude filter</source>
         <translation>Добавить исключающий фильтр</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="278"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="279"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="305"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="306"/>
         <source>Remove filter</source>
         <translation>Удалить фильтр</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="281"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="308"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="282"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="309"/>
         <source>Application preferences</source>
         <translation>Настройки программы</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="284"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="311"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="285"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="312"/>
         <source>Edit this file</source>
         <translation>Редактировать текущий файл</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="287"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="291"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="314"/>
+        <source>Add record</source>
+        <translation type="unfinished">Добавить запись</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="316"/>
+        <source>Remove record</source>
+        <translation>Удалить запись</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="318"/>
+        <source>Recover record</source>
+        <translation>Восстановить запись</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="320"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="324"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="288"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="321"/>
         <source>&amp;Export</source>
         <translation>&amp;Экспорт</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="289"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="322"/>
         <source>&amp;Codecs</source>
         <translation>&amp;Кодировки</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="328"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="361"/>
         <source>Open files</source>
         <translation>Открыть файлы</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="330"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="363"/>
         <source>DBase files (*.dbf);;All files(*)</source>
         <translation>Файлы DBase (*.dbf);;Все файлы(*)</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="475"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="510"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="540"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="375"/>
+        <source>Saving error</source>
+        <translation>Ошибка сохранения</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="520"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="555"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="585"/>
         <source>Calculating. %p% to finish.</source>
         <translation>Подсчет. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="570"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="615"/>
         <source>Coping to clipboard. %p% to finish.</source>
         <translation>Копирование в буффер обмена. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="626"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="671"/>
         <source>Preparing. %p% to finish.</source>
         <translation>Подготовка. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="650"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="695"/>
         <source>Yes</source>
         <translation>Да</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="650"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="695"/>
         <source>No</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="672"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="724"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="780"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="717"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="769"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="825"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="674"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="719"/>
         <source>HTML files (*.html)</source>
         <translation>HTML файлы (*.html)</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="683"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="733"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="789"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="728"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="778"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="834"/>
         <source>Saving. %p% to finish.</source>
         <translation>Сохранение. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="690"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="740"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="796"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="735"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="785"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="841"/>
         <source>Error save to file.
 %1</source>
         <translation>Ошибка сохранения в файл.
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="708"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="773"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="842"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="753"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="818"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="887"/>
         <source>Export finished</source>
         <translation>Экспорт завершен</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="726"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="771"/>
         <source>XML files (*.xml)</source>
         <translation>XML файлы (*.xml)</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="782"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="827"/>
         <source>CSV files (*.csv)</source>
         <translation>CSV файлы (*.csv)</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1061"/>
+        <source>Are you shure remove %1 records?</source>
+        <translation>Вы действительно хотите удалить %1 записей?</translation>
+    </message>
+    <message>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1076"/>
+        <source>Are you shure recover %1 records?</source>
+        <translation>Вы действительно хотите восстановить %1 записей?</translation>
     </message>
 </context>
 <context>
@@ -492,12 +532,12 @@
         <translation>Каталог с переводами</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="151"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="154"/>
         <source>English</source>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="160"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="163"/>
         <source>Translations path</source>
         <translation>Каталог с переводами</translation>
     </message>
@@ -523,102 +563,102 @@
 <context>
     <name>SortDialog</name>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="146"/>
-        <source>Aviable columns</source>
+        <location filename="../../src/sortdialog.cpp" line="152"/>
+        <source>Available columns</source>
         <translation>Доступные колонки</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="147"/>
+        <location filename="../../src/sortdialog.cpp" line="153"/>
         <source>Sorted columns</source>
         <translation>Колонки сортировки</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="149"/>
+        <location filename="../../src/sortdialog.cpp" line="155"/>
         <source>&gt;&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="150"/>
+        <location filename="../../src/sortdialog.cpp" line="156"/>
         <source>Add all items</source>
         <translation>Добавить все колонки</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="152"/>
+        <location filename="../../src/sortdialog.cpp" line="158"/>
         <source>&lt;&lt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="153"/>
+        <location filename="../../src/sortdialog.cpp" line="159"/>
         <source>Remove all items</source>
         <translation>Удалить все колонки</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="155"/>
+        <location filename="../../src/sortdialog.cpp" line="161"/>
         <source>&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="156"/>
+        <location filename="../../src/sortdialog.cpp" line="162"/>
         <source>Add item</source>
         <translation>Добавить колонку</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="158"/>
+        <location filename="../../src/sortdialog.cpp" line="164"/>
         <source>&lt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="159"/>
+        <location filename="../../src/sortdialog.cpp" line="165"/>
         <source>Remove item</source>
         <translation>Удалить колонку</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="162"/>
+        <location filename="../../src/sortdialog.cpp" line="168"/>
         <source>Up</source>
         <translation>Вверх</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="163"/>
+        <location filename="../../src/sortdialog.cpp" line="169"/>
         <source>Move up</source>
         <translation>Переместить вверх</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="165"/>
+        <location filename="../../src/sortdialog.cpp" line="171"/>
         <source>Down</source>
         <translation>Вниз</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="166"/>
+        <location filename="../../src/sortdialog.cpp" line="172"/>
         <source>Move down</source>
         <translation>Переместить вниз</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="168"/>
+        <location filename="../../src/sortdialog.cpp" line="174"/>
         <source>Top</source>
         <translation>В начало</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="169"/>
+        <location filename="../../src/sortdialog.cpp" line="175"/>
         <source>Move to top</source>
         <translation>Переместить в начало</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="171"/>
+        <location filename="../../src/sortdialog.cpp" line="177"/>
         <source>Bottom</source>
         <translation>В конец</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="172"/>
+        <location filename="../../src/sortdialog.cpp" line="178"/>
         <source>Move to bottom</source>
         <translation>Переместить в конец</translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="174"/>
+        <location filename="../../src/sortdialog.cpp" line="180"/>
         <source>&lt;&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/sortdialog.cpp" line="175"/>
+        <location filename="../../src/sortdialog.cpp" line="181"/>
         <source>Change sort order</source>
         <translation>Изменить порядок сортировки</translation>
     </message>
@@ -626,7 +666,7 @@
 <context>
     <name>Translate</name>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="144"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="147"/>
         <source>English</source>
         <translation>Русский</translation>
     </message>
