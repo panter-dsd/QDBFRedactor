@@ -32,7 +32,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QFileInfo>
 #include <QtCore/QVariant>
-#include <QtCore/QMap>
+#include <QtCore/QQueue>
 
 class DBFRedactor
 {
@@ -94,6 +94,7 @@ private:
 	QFile m_file;
 	QByteArray m_buf;
 	QHash<int, QByteArray> m_cache;
+	QQueue<QPair<int, QByteArray> > m_changedData;
 	QTextCodec	 *m_codec;
 	QString m_tableName;
 	int lastRecord;

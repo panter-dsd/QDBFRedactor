@@ -51,6 +51,7 @@ void DBFRedactor::close()
 	header.fieldsList.clear();
 	m_file.close();
 	m_cache.clear();
+	m_changedData.clear();
 }
 
 bool DBFRedactor::open(DBFOpenMode OpenMode)
@@ -157,7 +158,13 @@ QByteArray DBFRedactor::strRecord(int row)
 	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount)
 		return false;
 
-	if (!m_cache.contains(row)) {
+//Search in changedData
+	for (int i = m_changedData.size() - 1; i >= 0; i--) {
+		if (m_changedData.at(i).first == row)
+			return m_changedData.at(i).second;
+	}
+
+	if (!m_cache.contains(row)) {//If not in cache
 		if (!m_buffering)
 			m_cache.clear();
 		qint64 filePos = 0;
@@ -229,37 +236,40 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 	if (m_openMode != Write || row < 0 || row >= header.recordsCount || column < 0 || column >= header.fieldsList.size())
 		return false;
 
-	m_cache.remove(row);
-
-	QByteArray buf;
-
+	QByteArray tmpBuf;
 	switch (header.fieldsList.at(column).type) {
 		case TYPE_CHAR:
-			buf = m_codec->fromUnicode(data.toString());
+			tmpBuf = m_codec->fromUnicode(data.toString());
 			break;
 		case TYPE_NUMERIC:
-			buf = m_codec->fromUnicode(QString::number(data.toString().left(header.fieldsList.at(column).firstLenght).toDouble()));
+			tmpBuf = m_codec->fromUnicode(QString::number(data.toString().left(header.fieldsList.at(column).firstLenght).toDouble()));
 			/*
 			  if data = 999.99 and firstLenght = 4 write not 999., write 999
 			  */
 			break;
 		case TYPE_LOGICAL:
-			buf = data.toBool() ? "T" : "F";
+			tmpBuf = data.toBool() ? "T" : "F";
 			break;
 		case TYPE_DATE:
-			buf = m_codec->fromUnicode(data.toDate().toString("yyyyMMdd"));
+			tmpBuf = m_codec->fromUnicode(data.toDate().toString("yyyyMMdd"));
 			break;
 		case TYPE_FLOAT:
-			buf.setNum(data.toDouble(), 'f', header.fieldsList.at(column).secondLenght);
+			tmpBuf.setNum(data.toDouble(), 'f', header.fieldsList.at(column).secondLenght);
 			break;
 		case TYPE_MEMO:
-			buf = m_codec->fromUnicode(data.toString());
+			tmpBuf = m_codec->fromUnicode(data.toString());
 			break;
 	}
-	header.lastUpdated = QDate::currentDate();
-	writeHeader();
-	m_file.seek(header.firstRecordPos + header.recordLenght * row + header.fieldsList.at(column).pos);
-	return m_file.write(buf.leftJustified(header.fieldsList.at(column).firstLenght, 0x20, true)) > 0;
+	m_buf = strRecord(row);
+	m_buf.replace(header.fieldsList.at(column).pos,
+				  header.fieldsList.at(column).firstLenght,
+				  tmpBuf.leftJustified(header.fieldsList.at(column).firstLenght, 0x20, true));
+
+	QPair<int, QByteArray> pair;
+	pair.first = row;
+	pair.second = m_buf;
+	m_changedData.append(pair);
+	return true;
 }
 
 bool DBFRedactor::isDeleted(int row)
@@ -267,13 +277,7 @@ bool DBFRedactor::isDeleted(int row)
 	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount)
 		return false;
 
-	if (m_cache.contains(row))
-		return m_cache.value(row).at(0) == 0x2A;
-
-	m_file.seek(header.firstRecordPos + header.recordLenght * row);
-	char ch;
-	m_file.read(&ch, 1);
-	return ch == 0x2A;
+	return strRecord(row).at(0) == 0x2A;
 }
 
 DBFRedactor::Record DBFRedactor::record(int number)
@@ -339,18 +343,10 @@ bool DBFRedactor::isOpen() const
 
 int DBFRedactor::deletedCount()
 {
-	qint64 pos = m_file.pos();
-	m_file.seek(header.firstRecordPos);
-
 	long deletedCount = 0;
-	for (int i = 0; i < header.recordsCount; i++) {
-		char ch;
-		m_file.read(&ch, 1);
-		if (ch == 0x2A)
+	for (int i = 0; i < header.recordsCount; i++)
+		if (strRecord(i).at(i) == 0x2A)
 			deletedCount++;
-		m_file.seek(header.firstRecordPos + header.recordLenght * (i + 1));
-	}
-	m_file.seek(pos);
 	return deletedCount;
 }
 
@@ -374,9 +370,10 @@ void DBFRedactor::setOpenMode(DBFOpenMode openMode)
 	if (m_openMode & DBFRedactor::Write)
 		mode = QIODevice::ReadWrite;
 
+	m_cache.clear();
+	m_changedData.clear();
 	m_file.close();
 	m_file.open(mode);
-	m_cache.clear();
 }
 
 void DBFRedactor::addRecord()
@@ -384,14 +381,13 @@ void DBFRedactor::addRecord()
 	if (m_openMode != Write)
 		return;
 
-	m_file.resize(m_file.size() + header.recordLenght);
-	header.recordsCount++;
-	header.lastUpdated = QDate::currentDate();
-	writeHeader();
-	m_file.seek(m_file.size() - header.recordLenght);
+	QPair<int, QByteArray> pair;
+	pair.first = header.recordsCount++;
+	m_buf.clear();
 	m_buf.resize(header.recordLenght);
 	m_buf.fill(0x20, header.recordLenght);
-	m_file.write(m_buf);
+	pair.second = m_buf;
+	m_changedData.append(pair);
 }
 
 void DBFRedactor::removeRecord(int row)
@@ -399,11 +395,12 @@ void DBFRedactor::removeRecord(int row)
 	if (m_openMode != Write)
 		return;
 
-	m_cache.remove(row);
-	header.lastUpdated = QDate::currentDate();
-	writeHeader();
-	m_file.seek(header.firstRecordPos + header.recordLenght * row);
-	m_file.putChar(0x2A);
+	m_buf = strRecord(row);
+	m_buf[0] = 0x2A;
+	QPair<int, QByteArray> pair;
+	pair.first = row;
+	pair.second = m_buf;
+	m_changedData.append(pair);
 }
 
 void DBFRedactor::recoverRecord(int row)
@@ -411,11 +408,12 @@ void DBFRedactor::recoverRecord(int row)
 	if (m_openMode != Write)
 		return;
 
-	m_cache.remove(row);
-	header.lastUpdated = QDate::currentDate();
-	writeHeader();
-	m_file.seek(header.firstRecordPos + header.recordLenght * row);
-	m_file.putChar(0x20);
+	m_buf = strRecord(row);
+	m_buf[0] = 0x20;
+	QPair<int, QByteArray> pair;
+	pair.first = row;
+	pair.second = m_buf;
+	m_changedData.append(pair);
 }
 
 void DBFRedactor::writeHeader()
