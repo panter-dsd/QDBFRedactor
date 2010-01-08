@@ -145,6 +145,7 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 
 	m_buf.clear();
 	lastRecord = -1;
+	m_modified = false;
 	return true;
 }
 
@@ -269,6 +270,9 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 	pair.first = row;
 	pair.second = m_buf;
 	m_changedData.append(pair);
+	m_cache.remove(row);
+
+	m_modified = true;
 	return true;
 }
 
@@ -388,6 +392,8 @@ void DBFRedactor::addRecord()
 	m_buf.fill(0x20, header.recordLenght);
 	pair.second = m_buf;
 	m_changedData.append(pair);
+
+	m_modified = true;
 }
 
 void DBFRedactor::removeRecord(int row)
@@ -401,6 +407,9 @@ void DBFRedactor::removeRecord(int row)
 	pair.first = row;
 	pair.second = m_buf;
 	m_changedData.append(pair);
+	m_cache.remove(row);
+
+	m_modified = true;
 }
 
 void DBFRedactor::recoverRecord(int row)
@@ -414,6 +423,9 @@ void DBFRedactor::recoverRecord(int row)
 	pair.first = row;
 	pair.second = m_buf;
 	m_changedData.append(pair);
+	m_cache.remove(row);
+
+	m_modified = true;
 }
 
 void DBFRedactor::writeHeader()
@@ -448,4 +460,33 @@ bool DBFRedactor::isChanged(int row)
 			return true;
 	}
 	return false;
+}
+
+bool DBFRedactor::save()
+{
+	if (m_openMode != Write)
+		return false;
+
+	QMap<int, QByteArray> writeData;
+
+	for (int i = m_changedData.size() - 1; i >=0; i-- ) {
+		if (writeData.contains(m_changedData.at(i).first))
+			continue;
+		writeData.insert(m_changedData.at(i).first, m_changedData.at(i).second);
+	}
+
+	QMapIterator<int, QByteArray> it(writeData);
+
+	while(it.hasNext()) {
+		it.next();
+
+		m_file.seek(header.firstRecordPos + header.recordLenght * it.key());
+		m_file.write(it.value());
+	}
+
+	writeHeader();
+	m_changedData.clear();
+	m_modified = false;
+
+	return true;
 }

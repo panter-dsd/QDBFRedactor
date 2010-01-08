@@ -94,12 +94,13 @@ private:
 	QFile m_file;
 	QByteArray m_buf;
 	QHash<int, QByteArray> m_cache;
-	QQueue<QPair<int, QByteArray> > m_changedData;
+	QList<QPair<int, QByteArray> > m_changedData;
 	QTextCodec	 *m_codec;
 	QString m_tableName;
 	int lastRecord;
 	DBFOpenMode m_openMode;
 	bool m_buffering;
+	bool m_modified;
 
 public:
 	DBFRedactor();
@@ -161,6 +162,11 @@ public:
 	void recoverRecord(int row);
 
 	bool isChanged(int row);
+
+	bool save();
+
+	bool modified() const
+	{return m_modified;}
 
 private:
 	void writeHeader();

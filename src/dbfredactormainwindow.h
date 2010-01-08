@@ -59,6 +59,7 @@ private:
 	QToolBar *fileToolBar;
 
 	QAction *actionOpen;
+	QAction *actionSave;
 	QAction *actionExit;
 	QAction *actionClose;
 	QAction *actionRefresh;
@@ -104,6 +105,7 @@ protected:
 
 private Q_SLOTS:
 	void open();
+	void save();
 	void tabChanged(int index);
 	void closeTab(int index);
 	void closeCurrentTab();

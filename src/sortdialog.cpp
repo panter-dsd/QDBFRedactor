@@ -149,7 +149,7 @@ SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::Window
 
 void SortDialog::retranslateStrings()
 {
-	columnsLabel->setText(tr("Aviable columns"));
+	columnsLabel->setText(tr("Available columns"));
 	sortedColumnsLabel->setText(tr("Sorted columns"));
 
 	addAllButton->setText(tr(">>"));

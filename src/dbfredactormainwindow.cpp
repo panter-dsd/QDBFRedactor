@@ -103,6 +103,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionOpen->setIcon(QIcon(":/share/images/open.png"));
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(open()));
 
+	actionSave = new QAction(this);
+	actionSave->setShortcut(QKeySequence::Save);
+	actionSave->setIcon(QIcon(":/share/images/save.png"));
+	connect(actionSave, SIGNAL(triggered()), this, SLOT(save()));
+
 	actionExit = new QAction(this);
 	actionExit->setIcon(QIcon(":/share/images/exit.png"));
 	actionExit->setShortcut(Qt::ALT + Qt::Key_X);
@@ -202,6 +207,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	fileMenu = new QMenu(menuBar);
 	fileMenu->addAction(actionOpen);
+	fileMenu->addAction(actionSave);
 	fileMenu->addAction(actionClose);
 	fileMenu->addAction(actionSetEditMode);
 	fileMenu->addSeparator();
@@ -253,6 +259,9 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	actionOpen->setText(tr("&Open"));
 	actionOpen->setToolTip(tr("Open file"));
+
+	actionSave->setText(tr("&Save"));
+	actionSave->setToolTip(tr("Save file"));
 
 	actionExit->setText(tr("E&xit"));
 	actionExit->setToolTip(tr("Exit from program"));
@@ -360,6 +369,12 @@ void DBFRedactorMainWindow::open()
 	openFiles(fileNames);
 }
 
+void DBFRedactorMainWindow::save()
+{
+	if (!currentPage->redactor()->save())
+		QMessageBox::critical(this, "", tr("Saving error"));
+}
+
 void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 {
 	int index = 0;
@@ -456,6 +471,9 @@ void DBFRedactorMainWindow::updateActions()
 	actionSetEditMode->setEnabled(currentPage);
 	if (currentPage)
 		actionSetEditMode->setChecked(!currentPage->dbfModel()->isReadOnly());
+	actionSave->setEnabled(currentPage);
+	if (currentPage)
+		actionSave->setEnabled(currentPage->redactor()->modified());
 	actionAddRecord->setEnabled(actionSetEditMode->isChecked());
 	actionRemoveRecord->setEnabled(actionSetEditMode->isChecked());
 	actionRecoverRecord->setEnabled(actionSetEditMode->isChecked());
