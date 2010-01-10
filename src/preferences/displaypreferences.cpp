@@ -34,6 +34,7 @@
 #include <QtGui/QtEvents>
 
 #include "widgets/qtcolorbutton.h"
+#include "widgets/qtfontbutton.h"
 
 #include "displaypreferences.h"
 
@@ -68,10 +69,10 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	stringColorButton->setAutoRaise(true);
 	connect(stringColorButton, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
 
-	stringFontButton = new QToolButton(this);
+	stringFontButton = new QtFontButton(this);
 	stringFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	stringFontButton->setAutoRaise(true);
-	connect(stringFontButton, SIGNAL(clicked()), this, SLOT(setButtonFont()));
+	connect(stringFontButton, SIGNAL(fontChanged(const QFont &)), this, SIGNAL(modified()));
 
 	numericColorLabel = new QLabel(this);
 
@@ -87,10 +88,10 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	numericColorButton->setAutoRaise(true);
 	connect(numericColorButton, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
 
-	numericFontButton = new QToolButton(this);
+	numericFontButton = new QtFontButton(this);
 	numericFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	numericFontButton->setAutoRaise(true);
-	connect(numericFontButton, SIGNAL(clicked()), this, SLOT(setButtonFont()));
+	connect(numericFontButton, SIGNAL(fontChanged(const QFont &)), this, SIGNAL(modified()));
 
 	memoColorLabel = new QLabel(this);
 
@@ -106,10 +107,10 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	memoColorButton->setAutoRaise(true);
 	connect(memoColorButton, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
 
-	memoFontButton = new QToolButton(this);
+	memoFontButton = new QtFontButton(this);
 	memoFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	memoFontButton->setAutoRaise(true);
-	connect(memoFontButton, SIGNAL(clicked()), this, SLOT(setButtonFont()));
+	connect(memoFontButton, SIGNAL(fontChanged(const QFont &)), this, SIGNAL(modified()));
 
 	dateColorLabel = new QLabel(this);
 
@@ -125,10 +126,10 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	dateColorButton->setAutoRaise(true);
 	connect(dateColorButton, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
 
-	dateFontButton = new QToolButton(this);
+	dateFontButton = new QtFontButton(this);
 	dateFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	dateFontButton->setAutoRaise(true);
-	connect(dateFontButton, SIGNAL(clicked()), this, SLOT(setButtonFont()));
+	connect(dateFontButton, SIGNAL(fontChanged(const QFont &)), this, SIGNAL(modified()));
 
 	floatColorLabel = new QLabel(this);
 
@@ -144,10 +145,10 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	floatColorButton->setAutoRaise(true);
 	connect(floatColorButton, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
 
-	floatFontButton = new QToolButton(this);
+	floatFontButton = new QtFontButton(this);
 	floatFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	floatFontButton->setAutoRaise(true);
-	connect(floatFontButton, SIGNAL(clicked()), this, SLOT(setButtonFont()));
+	connect(floatFontButton, SIGNAL(fontChanged(const QFont &)), this, SIGNAL(modified()));
 
 	QGridLayout *colorLayout = new QGridLayout();
 	colorLayout->addWidget(cellType, 0, 0);
@@ -157,23 +158,23 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	colorLayout->addWidget(stringColorLabel, 1, 0);
 	colorLayout->addWidget(stringAligmentEdit, 1, 1);
 	colorLayout->addWidget(stringColorButton, 1, 2, Qt::AlignHCenter);
-	colorLayout->addWidget(stringFontButton, 1, 3, Qt::AlignHCenter);
+	colorLayout->addWidget(stringFontButton, 1, 3);
 	colorLayout->addWidget(numericColorLabel, 2, 0);
 	colorLayout->addWidget(numericAligmentEdit, 2, 1);
 	colorLayout->addWidget(numericColorButton, 2, 2, Qt::AlignHCenter);
-	colorLayout->addWidget(numericFontButton, 2, 3, Qt::AlignHCenter);
+	colorLayout->addWidget(numericFontButton, 2, 3);
 	colorLayout->addWidget(memoColorLabel, 3, 0);
 	colorLayout->addWidget(memoAligmentEdit, 3, 1);
 	colorLayout->addWidget(memoColorButton, 3, 2, Qt::AlignHCenter);
-	colorLayout->addWidget(memoFontButton, 3, 3, Qt::AlignHCenter);
+	colorLayout->addWidget(memoFontButton, 3, 3);
 	colorLayout->addWidget(dateColorLabel, 4, 0);
 	colorLayout->addWidget(dateAligmentEdit, 4, 1);
 	colorLayout->addWidget(dateColorButton, 4, 2, Qt::AlignHCenter);
-	colorLayout->addWidget(dateFontButton, 4, 3, Qt::AlignHCenter);
+	colorLayout->addWidget(dateFontButton, 4, 3);
 	colorLayout->addWidget(floatColorLabel, 5, 0);
 	colorLayout->addWidget(floatAligmentEdit, 5, 1);
 	colorLayout->addWidget(floatColorButton, 5, 2, Qt::AlignHCenter);
-	colorLayout->addWidget(floatFontButton, 5, 3, Qt::AlignHCenter);
+	colorLayout->addWidget(floatFontButton, 5, 3);
 
 	delegatePreferencesGroup->setLayout(colorLayout);
 
@@ -198,23 +199,23 @@ void DisplayPreferences::retranslateStrings()
 
 	stringColorLabel->setText(tr("String"));
 	stringColorButton->setText(tr("Color"));
-	stringFontButton->setText(tr("Font"));
+//	stringFontButton->setText(tr("Font"));
 
 	numericColorLabel->setText(tr("Numeric"));
 	numericColorButton->setText(tr("Color"));
-	numericFontButton->setText(tr("Font"));
+//	numericFontButton->setText(tr("Font"));
 
 	memoColorLabel->setText(tr("Memo"));
 	memoColorButton->setText(tr("Color"));
-	memoFontButton->setText(tr("Font"));
+//	memoFontButton->setText(tr("Font"));
 
 	dateColorLabel->setText(tr("Date"));
 	dateColorButton->setText(tr("Color"));
-	dateFontButton->setText(tr("Font"));
+//	dateFontButton->setText(tr("Font"));
 
 	floatColorLabel->setText(tr("Float"));
 	floatColorButton->setText(tr("Color"));
-	floatFontButton->setText(tr("Font"));
+//	floatFontButton->setText(tr("Font"));
 
 	foreach(QComboBox *comboBox, delegatePreferencesGroup->findChildren<QComboBox*> ()) {
 		comboBox->setItemText(0, tr("Align left"));
@@ -288,22 +289,5 @@ void DisplayPreferences::loadSettings()
 
 void DisplayPreferences::setDefaults()
 {
-
-}
-
-void DisplayPreferences::setButtonFont()
-{
-	QToolButton *button = qobject_cast<QToolButton*> (sender());
-	if (!button)
-		return;
-
-	bool ok = false;
-	QFont font = QFontDialog::getFont(&ok, button->font(), this);
-
-	if (ok && font != button->font()) {
-		button->setFont(font);
-		emit modified();
-	}
-
 
 }

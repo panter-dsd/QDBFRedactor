@@ -28,10 +28,11 @@
 class QGroupBox;
 class QLabel;
 class QComboBox;
-class QToolButton;
+//class QToolButton;
 //namespace Utils {
 	class QtColorButton;
 //}
+class QtFontButton;
 //using namespace Utils;
 #include "abstractpreferencespage.h"
 
@@ -57,27 +58,27 @@ private:
 	QLabel *stringColorLabel;
 	QComboBox *stringAligmentEdit;
 	QtColorButton *stringColorButton;
-	QToolButton *stringFontButton;
+	QtFontButton *stringFontButton;
 
 	QLabel *numericColorLabel;
 	QComboBox *numericAligmentEdit;
 	QtColorButton *numericColorButton;
-	QToolButton *numericFontButton;
+	QtFontButton *numericFontButton;
 
 	QLabel *memoColorLabel;
 	QComboBox *memoAligmentEdit;
 	QtColorButton *memoColorButton;
-	QToolButton *memoFontButton;
+	QtFontButton *memoFontButton;
 
 	QLabel *dateColorLabel;
 	QComboBox *dateAligmentEdit;
 	QtColorButton *dateColorButton;
-	QToolButton *dateFontButton;
+	QtFontButton *dateFontButton;
 
 	QLabel *floatColorLabel;
 	QComboBox *floatAligmentEdit;
 	QtColorButton *floatColorButton;
-	QToolButton *floatFontButton;
+	QtFontButton *floatFontButton;
 
 public:
 	DisplayPreferences(QWidget *parent = 0);
@@ -98,7 +99,6 @@ private:
 	void retranslateStrings();
 
 private Q_SLOTS:
-	void setButtonFont();
 };
 
 #endif // DISPLAYPREFERENCES_H

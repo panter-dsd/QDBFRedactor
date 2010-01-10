@@ -28,7 +28,8 @@ HEADERS += src/dbfredactor.h \
     src/preferences/displaypreferences.h \
     src/preferences/globalpreferences.h \
     src/preferences/preferencesdialog.h \
-    src/widgets/qtcolorbutton.h
+    src/widgets/qtcolorbutton.h \
+    src/widgets/qtfontbutton.h
 SOURCES += src/dbfredactor.cpp \
     src/dbfredactordelegate.cpp \
     src/dbfredactormainwindow.cpp \
@@ -41,6 +42,7 @@ SOURCES += src/dbfredactor.cpp \
     src/preferences/displaypreferences.cpp \
     src/preferences/globalpreferences.cpp \
     src/preferences/preferencesdialog.cpp \
-    src/widgets/qtcolorbutton.cpp
+    src/widgets/qtcolorbutton.cpp \
+    src/widgets/qtfontbutton.cpp
 RESOURCES += resource.qrc
 TRANSLATIONS += share/translations/qdbfredactor_ru.ts
