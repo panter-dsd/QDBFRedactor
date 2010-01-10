@@ -6,15 +6,20 @@
 QtFontButton::QtFontButton(QWidget *parent) :
     QToolButton(parent)
 {
-	setText(font().family());
+	setText(font());
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(this, SIGNAL(clicked()), SLOT(selectFont()));
+}
+
+void QtFontButton::setText(const QFont & font)
+{
+	QToolButton::setText(font.family() + ", " + QString::number(font.pointSize()));
 }
 
 void QtFontButton::setFont(const QFont & font)
 {
 	QWidget::setFont(font);
-	setText(font.family());
+	setText(font);
 	emit fontChanged(font);
 }
 

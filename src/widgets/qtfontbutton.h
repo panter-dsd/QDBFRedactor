@@ -7,7 +7,8 @@ class QtFontButton : public QToolButton
 {
 Q_OBJECT
 private:
-	void setText(const QString & text) { QToolButton::setText(text); }
+//	void setText(const QString & text) { QToolButton::setText(text); }
+	void setText(const QFont & font);
 public:
     explicit QtFontButton(QWidget *parent = 0);
 
