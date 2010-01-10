@@ -33,7 +33,11 @@
 #include <QtGui/QFontDialog>
 #include <QtGui/QtEvents>
 
+#include "widgets/qtcolorbutton.h"
+
 #include "displaypreferences.h"
+
+//using namespace Utils;
 
 DisplayPreferences::DisplayPreferences(QWidget *parent)
 	:AbstractPreferencesPage(parent)
@@ -58,10 +62,12 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	stringAligmentEdit->insertItem(2, "", Qt::AlignRight);
 	stringAligmentEdit->insertItem(3, "", Qt::AlignJustify);
 
-	stringColorButton = new QToolButton(this);
-	stringColorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	stringColorButton->setAutoRaise(true);
-	connect(stringColorButton, SIGNAL(clicked()), this, SLOT(setButtonColor()));
+	stringColorButton = new QtColorButton(this);
+	Q_ASSERT(stringColorButton);
+//	stringColorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+//	stringColorButton->setAutoRaise(true);
+//	stringColorButton->setIcon(QIcon());
+	connect(stringFontButton, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
 
 	stringFontButton = new QToolButton(this);
 	stringFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -77,10 +83,9 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	numericAligmentEdit->insertItem(2, "", Qt::AlignRight);
 	numericAligmentEdit->insertItem(3, "", Qt::AlignJustify);
 
-	numericColorButton = new QToolButton(this);
+	numericColorButton = new QtColorButton(this);
 	numericColorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	numericColorButton->setAutoRaise(true);
-	connect(numericColorButton, SIGNAL(clicked()), this, SLOT(setButtonColor()));
 
 	numericFontButton = new QToolButton(this);
 	numericFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -96,10 +101,9 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	memoAligmentEdit->insertItem(2, "", Qt::AlignRight);
 	memoAligmentEdit->insertItem(3, "", Qt::AlignJustify);
 
-	memoColorButton = new QToolButton(this);
+	memoColorButton = new QtColorButton(this);
 	memoColorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	memoColorButton->setAutoRaise(true);
-	connect(memoColorButton, SIGNAL(clicked()), this, SLOT(setButtonColor()));
 
 	memoFontButton = new QToolButton(this);
 	memoFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -115,10 +119,9 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	dateAligmentEdit->insertItem(2, "", Qt::AlignRight);
 	dateAligmentEdit->insertItem(3, "", Qt::AlignJustify);
 
-	dateColorButton = new QToolButton(this);
+	dateColorButton = new QtColorButton(this);
 	dateColorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	dateColorButton->setAutoRaise(true);
-	connect(dateColorButton, SIGNAL(clicked()), this, SLOT(setButtonColor()));
 
 	dateFontButton = new QToolButton(this);
 	dateFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -134,10 +137,9 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	floatAligmentEdit->insertItem(2, "", Qt::AlignRight);
 	floatAligmentEdit->insertItem(3, "", Qt::AlignJustify);
 
-	floatColorButton = new QToolButton(this);
+	floatColorButton = new QtColorButton(this);
 	floatColorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	floatColorButton->setAutoRaise(true);
-	connect(floatColorButton, SIGNAL(clicked()), this, SLOT(setButtonColor()));
 
 	floatFontButton = new QToolButton(this);
 	floatFontButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -239,11 +241,11 @@ void DisplayPreferences::saveSettings()
 	settings.setValue("Date_Alignment", dateAligmentEdit->itemData(dateAligmentEdit->currentIndex()));
 	settings.setValue("Float_Alignment", floatAligmentEdit->itemData(floatAligmentEdit->currentIndex()));
 
-	settings.setValue("String_Color", stringColorButton->palette().color(QPalette::ButtonText));
-	settings.setValue("Numeric_Color", numericColorButton->palette().color(QPalette::ButtonText));
-	settings.setValue("Memo_Color", memoColorButton->palette().color(QPalette::ButtonText));
-	settings.setValue("Date_Color", dateColorButton->palette().color(QPalette::ButtonText));
-	settings.setValue("Float_Color", floatColorButton->palette().color(QPalette::ButtonText));
+	settings.setValue("String_Color", stringColorButton->color());
+	settings.setValue("Numeric_Color", numericColorButton->color());
+	settings.setValue("Memo_Color", memoColorButton->color());
+	settings.setValue("Date_Color", dateColorButton->color());
+	settings.setValue("Float_Color", floatColorButton->color());
 
 	settings.setValue("String_Font", stringFontButton->font());
 	settings.setValue("Numeric_Font", numericFontButton->font());
@@ -270,7 +272,7 @@ void DisplayPreferences::loadSettings()
 	m_palette = palette();
 	m_palette.setColor(QPalette::ButtonText, settings.value("String_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
 	stringColorButton->setPalette(m_palette);
-
+	stringColorButton->setColor(settings.value("String_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
 	m_palette = palette();
 	m_palette.setColor(QPalette::ButtonText, settings.value("Numeric_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
 	numericColorButton->setPalette(m_palette);
@@ -301,24 +303,24 @@ void DisplayPreferences::setDefaults()
 
 }
 
-void DisplayPreferences::setButtonColor()
-{
-	QToolButton *button = qobject_cast<QToolButton*> (sender());
-	if (!button)
-		return;
-
-	QPalette palette = button->palette();
-
-	QColor color = QColorDialog::getColor(palette.color(QPalette::ButtonText), this);
-
-	if (color.isValid())
-		palette.setColor(QPalette::ButtonText, color);
-
-	if (palette != button->palette()) {
-		button->setPalette(palette);
-		emit modified();
-	}
-}
+//void DisplayPreferences::setButtonColor()
+//{
+//	QToolButton *button = qobject_cast<QToolButton*> (sender());
+//	if (!button)
+//		return;
+//
+//	QPalette palette = button->palette();
+//
+//	QColor color = QColorDialog::getColor(palette.color(QPalette::ButtonText), this);
+//
+//	if (color.isValid())
+//		palette.setColor(QPalette::ButtonText, color);
+//
+//	if (palette != button->palette()) {
+//		button->setPalette(palette);
+//		emit modified();
+//	}
+//}
 
 void DisplayPreferences::setButtonFont()
 {

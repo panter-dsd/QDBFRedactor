@@ -29,7 +29,10 @@ class QGroupBox;
 class QLabel;
 class QComboBox;
 class QToolButton;
-
+//namespace Utils {
+	class QtColorButton;
+//}
+//using namespace Utils;
 #include "abstractpreferencespage.h"
 
 class DisplayPreferences : public AbstractPreferencesPage
@@ -53,27 +56,27 @@ private:
 
 	QLabel *stringColorLabel;
 	QComboBox *stringAligmentEdit;
-	QToolButton *stringColorButton;
+	QtColorButton *stringColorButton;
 	QToolButton *stringFontButton;
 
 	QLabel *numericColorLabel;
 	QComboBox *numericAligmentEdit;
-	QToolButton *numericColorButton;
+	QtColorButton *numericColorButton;
 	QToolButton *numericFontButton;
 
 	QLabel *memoColorLabel;
 	QComboBox *memoAligmentEdit;
-	QToolButton *memoColorButton;
+	QtColorButton *memoColorButton;
 	QToolButton *memoFontButton;
 
 	QLabel *dateColorLabel;
 	QComboBox *dateAligmentEdit;
-	QToolButton *dateColorButton;
+	QtColorButton *dateColorButton;
 	QToolButton *dateFontButton;
 
 	QLabel *floatColorLabel;
 	QComboBox *floatAligmentEdit;
-	QToolButton *floatColorButton;
+	QtColorButton *floatColorButton;
 	QToolButton *floatFontButton;
 
 public:
@@ -95,7 +98,7 @@ private:
 	void retranslateStrings();
 
 private Q_SLOTS:
-	void setButtonColor();
+//	void setButtonColor();
 	void setButtonFont();
 
 };
