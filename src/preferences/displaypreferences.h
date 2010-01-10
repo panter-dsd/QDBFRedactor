@@ -98,9 +98,7 @@ private:
 	void retranslateStrings();
 
 private Q_SLOTS:
-//	void setButtonColor();
 	void setButtonFont();
-
 };
 
 #endif // DISPLAYPREFERENCES_H

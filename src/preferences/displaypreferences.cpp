@@ -306,26 +306,6 @@ void DisplayPreferences::setDefaults()
 
 }
 
-//void DisplayPreferences::setButtonColor()
-//{
-//	QToolButton *button = qobject_cast<QToolButton*> (sender());
-//	if (!button)
-//		return;
-//
-//	QPalette palette = button->palette();
-//
-//	QColor color = QColorDialog::getColor(palette.color(QPalette::ButtonText), this);
-//
-//	if (color.isValid())
-//		palette.setColor(QPalette::ButtonText, color);
-//
-//	if (palette != button->palette()) {
-//		button->setPalette(palette);
-//		emit modified();
-//	}
-//}
-
-
 void DisplayPreferences::setButtonFont()
 {
 	QToolButton *button = qobject_cast<QToolButton*> (sender());
