@@ -271,26 +271,11 @@ void DisplayPreferences::loadSettings()
 	floatAligmentEdit->setCurrentIndex(floatAligmentEdit->findData(settings.value("Float_Alignment", Qt::AlignLeft).toInt()));
 
 	QPalette m_palette;
-
-	m_palette = palette();
-	m_palette.setColor(QPalette::ButtonText, settings.value("String_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	stringColorButton->setPalette(m_palette);
 	stringColorButton->setColor(settings.value("String_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	m_palette = palette();
-	m_palette.setColor(QPalette::ButtonText, settings.value("Numeric_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	numericColorButton->setPalette(m_palette);
-
-	m_palette = palette();
-	m_palette.setColor(QPalette::ButtonText, settings.value("Memo_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	memoColorButton->setPalette(m_palette);
-
-	m_palette = palette();
-	m_palette.setColor(QPalette::ButtonText, settings.value("Date_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	dateColorButton->setPalette(m_palette);
-
-	m_palette = palette();
-	m_palette.setColor(QPalette::ButtonText, settings.value("Float_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	floatColorButton->setPalette(m_palette);
+	numericColorButton->setColor(settings.value("Numeric_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
+	memoColorButton->setColor(settings.value("Memo_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
+	dateColorButton->setColor(settings.value("Date_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
+	floatColorButton->setColor(settings.value("Float_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
 
 	stringFontButton->setFont(settings.value("String_Font", font()).value<QFont>());
 	numericFontButton->setFont(settings.value("Numeric_Font", font()).value<QFont>());
