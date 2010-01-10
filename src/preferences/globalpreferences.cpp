@@ -69,6 +69,7 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(translationGroup);
 	setLayout(mainLayout);
+         mainLayout->setContentsMargins(0,0,0,0);
 
 	loadSettings();
 	retranslateStrings();

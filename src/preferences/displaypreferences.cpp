@@ -175,7 +175,8 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(delegatePreferencesGroup);
 	mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
-	setLayout(mainLayout);
+         mainLayout->setContentsMargins(0,0,0,0);
+         setLayout(mainLayout);
 
 	retranslateStrings();
 	loadSettings();
