@@ -48,7 +48,7 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	connect(preferencesList, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemChanged(QTreeWidgetItem*,int)));
 
 	preferencesWidgets = new QStackedWidget(this);
-        preferencesWidgets->setContentsMargins(0,0,0,0);
+	preferencesWidgets->setContentsMargins(0,0,0,0);
 
 	splitter = new QSplitter(this);
 	splitter->setOrientation(Qt::Horizontal);
