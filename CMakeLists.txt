@@ -60,18 +60,31 @@ src/preferences/globalpreferences.h
 src/preferences/displaypreferences.h
 )
 
+################################################################
+# widgets
+################################################################
+set (widgets_SRC
+src/widgets/qtcolorbutton.cpp
+)
+
+set (widgets_HEADERS
+src/widgets/qtcolorbutton.h
+)
+
 
 
 set(
 SOURCES
 ${src_SRC}
 ${preferences_SRC}
+${widgets_SRC}
 )
 
 set(
 HEADERS
 ${src_HEADERS}
 ${preferences_HEADERS}
+${widgets_HEADERS}
 )
 
 qt4_wrap_cpp( MOC_SOURCES ${HEADERS} )
