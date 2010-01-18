@@ -46,6 +46,7 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 {
 	delegatePreferencesGroup = new QGroupBox(this);
 
+	// this is just a comment
 	cellType = new QLabel(this);
 	cellType->setAlignment(Qt::AlignHCenter);
 	cellAlignment = new QLabel(this);
