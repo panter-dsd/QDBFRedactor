@@ -804,7 +804,7 @@ void DBFRedactorMainWindow::exportToXml()
 		}
 		for (int j = 0; j < view->model()->columnCount(); j++) {
 			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
-			stream.writeTextElement(view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString(),
+			stream.writeTextElement(view->model()->headerData(j, Qt::Horizontal, Qt::EditRole).toString(),
 									value.toString());
 		}
 		stream.writeEndElement();
@@ -849,7 +849,7 @@ void DBFRedactorMainWindow::exportToCsv()
 
 	QStringList tempStringList;
 	for (int j = 0; j < view->model()->columnCount(); j++)
-		tempStringList << "\"" + view->model()->headerData(j, Qt::Horizontal, Qt::DisplayRole).toString() + "\"";
+		tempStringList << "\"" + view->model()->headerData(j, Qt::Horizontal, Qt::EditRole).toString() + "\"";
 
 	stream << tempStringList.join("|") << endl;
 
