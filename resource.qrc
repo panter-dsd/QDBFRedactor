@@ -23,5 +23,6 @@
         <file>share/images/preview.png</file>
         <file>share/images/removefilter.png</file>
         <file>share/images/copy.png</file>
+        <file>share/images/edit.png</file>
     </qresource>
 </RCC>

@@ -231,6 +231,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileToolBar = new QToolBar(this);
 	fileToolBar->setObjectName("file_toolbar");
 	fileToolBar->addAction(actionOpen);
+	fileToolBar->addAction(actionSetEditMode);
 	fileToolBar->addAction(actionClose);
 	fileToolBar->addSeparator();
 	fileToolBar->addAction(actionExit);
