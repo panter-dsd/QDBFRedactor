@@ -1,12 +1,13 @@
 project(QDBFRedactor)
 cmake_minimum_required( VERSION 2.6 )
 
-SET (CMAKE_BUILD_TYPE Release)
-#SET (CMAKE_BUILD_TYPE Debug)
+#SET (CMAKE_BUILD_TYPE Release)
+SET (CMAKE_BUILD_TYPE Debug)
 
 INCLUDE(FindQt4)
 find_package( Qt4 REQUIRED )
 SET(QT_USE_QTXML 1)
+SET(QT_USE_QTNETWORK 1)
 include( ${QT_USE_FILE})
 add_definitions(-DUNICODE)
 
@@ -16,6 +17,7 @@ src/core
 src/preferences
 src/widgets
 src/dialogs
+src/3dparty/qtsingleapplication/src
 )
 
 ################################################################
@@ -98,6 +100,20 @@ src/widgets/qtfontbutton.h
 )
 
 ################################################################
+# qtsingleapplication
+################################################################
+set(qtsingleapplication_SRC
+src/3dparty/qtsingleapplication/src/qtlocalpeer.cpp
+src/3dparty/qtsingleapplication/src/qtsingleapplication.cpp
+)
+
+set(qtsingleapplication_HEADERS
+src/3dparty/qtsingleapplication/src/qtlocalpeer.h
+src/3dparty/qtsingleapplication/src/qtsingleapplication.h
+)
+
+
+################################################################
 # all
 ################################################################
 set(
@@ -107,6 +123,7 @@ ${src_SRC}
 ${dialogs_SRC}
 ${preferences_SRC}
 ${widgets_SRC}
+${qtsingleapplication_SRC}
 )
 
 set(
@@ -116,6 +133,7 @@ ${src_HEADERS}
 ${dialogs_HEADERS}
 ${preferences_HEADERS}
 ${widgets_HEADERS}
+${qtsingleapplication_HEADERS}
 )
 
 qt4_wrap_cpp( MOC_SOURCES ${HEADERS} )

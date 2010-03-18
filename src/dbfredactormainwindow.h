@@ -132,6 +132,10 @@ private Q_SLOTS:
 	void removeRecord();
 	void recoverRecord();
 	void about();
+
+public Q_SLOTS:
+	void handleMessage(const QString& message)
+	{ openFiles(message.split("\n"));}
 };
 
 #endif // DBFREDACTORMAINWINDOW_H

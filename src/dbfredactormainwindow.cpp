@@ -407,6 +407,9 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 {
 	int index = 0;
 	foreach(const QString& fileName, fileList) {
+		if (!QFile::exists(fileName))
+			continue;
+
 		if (pages.contains(fileName)) {
 			for (int i = 0; i < tabBar->count(); i++) {
 				if (tabBar->tabData(i).toString() == fileName) {

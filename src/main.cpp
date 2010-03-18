@@ -32,6 +32,7 @@
 
 #include "dbfredactormainwindow.h"
 #include "translationmanager.h"
+#include "qtsingleapplication.h"
 
 #define ApplicationVersion "0.0.0.0"
 
@@ -39,12 +40,19 @@ int main(int argc, char ** argv)
 {
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("System"));
 
-	QApplication app(argc, argv);
+	QtSingleApplication app(argc, argv);
 	app.setOrganizationDomain("panter.org");
 	app.setOrganizationName("PanteR");
 	app.setApplicationName("QDBFRedactor");
 	app.setApplicationVersion(ApplicationVersion);
 	app.setWindowIcon(QIcon(":share/images/main.ico"));
+
+	if (app.isRunning()) {
+		QStringList message(app.arguments());
+		message.removeFirst();
+		app.sendMessage(message.join("\n"));
+		return 0;
+	}
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 
@@ -60,10 +68,12 @@ int main(int argc, char ** argv)
 	DBFRedactorMainWindow win;
 	win.setWindowTitle(app.applicationName()+" "+app.applicationVersion());
 
+	QObject::connect (&app, SIGNAL(messageReceived(QString)), &win, SLOT(handleMessage(QString)));
+	app.setActivationWindow(&win, true);
+
 	if (app.arguments().count() > 1) {
-		QStringList fileList;
-		for (int i = 1; i < app.arguments().size(); i++)
-			fileList << app.arguments().at(i);
+		QStringList fileList (app.arguments());
+		fileList.removeFirst();
 		win.openFiles(fileList);
 	}
 	win.show();
