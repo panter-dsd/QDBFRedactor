@@ -25,5 +25,6 @@
         <file>share/images/copy.png</file>
         <file>share/images/edit.png</file>
         <file>LICENSE.GPL3</file>
+        <file>share/images/save.png</file>
     </qresource>
 </RCC>
