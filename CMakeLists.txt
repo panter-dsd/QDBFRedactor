@@ -15,6 +15,7 @@ src
 src/core
 src/preferences
 src/widgets
+src/dialogs
 )
 
 ################################################################
@@ -24,8 +25,6 @@ src/widgets
 set (src_SRC
 src/main.cpp
 src/dbfredactormainwindow.cpp
-src/sortdialog.cpp
-src/filterdialog.cpp
 src/dbfredactordelegate.cpp
 src/translationmanager.cpp
 )
@@ -33,8 +32,6 @@ src/translationmanager.cpp
 set (src_HEADERS
 src/dbfredactorpage.h
 src/dbfredactormainwindow.h
-src/sortdialog.h
-src/filterdialog.h
 src/dbfredactordelegate.h
 src/filterdelegate.h
 src/translationmanager.h
@@ -53,6 +50,20 @@ set (core_HEADERS
 src/core/dbfredactor.h
 src/core/dbfredactormodel.h
 src/core/dbfredactorsortfilterproxymodel.h
+)
+
+################################################################
+# dialogs
+################################################################
+
+set (dialogs_SRC
+src/dialogs/sortdialog.cpp
+src/dialogs/filterdialog.cpp
+)
+
+set (dialogs_HEADERS
+src/dialogs/sortdialog.h
+src/dialogs/filterdialog.h
 )
 
 ################################################################
@@ -91,6 +102,7 @@ set(
 SOURCES
 ${core_SRC}
 ${src_SRC}
+${dialogs_SRC}
 ${preferences_SRC}
 ${widgets_SRC}
 )
@@ -99,6 +111,7 @@ set(
 HEADERS
 ${core_HEADERS}
 ${src_HEADERS}
+${dialogs_HEADERS}
 ${preferences_HEADERS}
 ${widgets_HEADERS}
 )
@@ -110,9 +123,9 @@ set( RESOURCES resource.qrc )
 qt4_add_resources( QRC_SOURCES ${RESOURCES} )
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-	add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
-else()
 	add_executable( QDBFRedactor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+else()
+	add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
 endif()
 
 target_link_libraries( QDBFRedactor ${QT_LIBRARIES} )
