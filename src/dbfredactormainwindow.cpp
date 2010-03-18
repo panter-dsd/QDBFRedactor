@@ -25,6 +25,7 @@
 #include <QtCore/QSettings>
 #include <QtCore/QTextStream>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QUrl>
 #include <QtCore/QDebug>
 
 #include <QtGui/QTabBar>
@@ -43,6 +44,8 @@
 #include <QtGui/QProgressBar>
 #include <QtGui/QMessageBox>
 #include <QtGui/QComboBox>
+#include <QtGui/QDragEnterEvent>
+#include <QtGui/QDropEvent>
 
 #include <QtXml/QXmlStreamWriter>
 
@@ -58,6 +61,8 @@
 DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 		: QMainWindow(parent, f), currentPage(0), progressBar(0)
 {
+	setAcceptDrops(true);
+
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
 	tabBar->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -781,6 +786,24 @@ bool DBFRedactorMainWindow::event(QEvent *ev)
 {
 	if (ev->type() == QEvent::LanguageChange) {
 		retranslateStrings();
+	}
+
+	if (ev->type() == QEvent::DragEnter) {
+		QDragEnterEvent *dragEvent = static_cast<QDragEnterEvent*> (ev);
+
+		if (dragEvent->mimeData()->hasFormat("text/uri-list")) {
+			dragEvent->acceptProposedAction();
+		}
+	}
+
+	if (ev->type() == QEvent::Drop) {
+		QDropEvent *dropEvent = static_cast<QDragEnterEvent*> (ev);
+
+		QStringList fileNames;
+		foreach (const QUrl& url, dropEvent->mimeData()->urls()) {
+			fileNames << url.toLocalFile();
+		}
+		openFiles(fileNames);
 	}
 
 	return QMainWindow::event(ev);
