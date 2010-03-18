@@ -1,8 +1,8 @@
 project(QDBFRedactor)
 cmake_minimum_required( VERSION 2.6 )
 
-#SET (CMAKE_BUILD_TYPE Release)
-SET (CMAKE_BUILD_TYPE Debug)
+SET (CMAKE_BUILD_TYPE Release)
+#SET (CMAKE_BUILD_TYPE Debug)
 
 INCLUDE(FindQt4)
 find_package( Qt4 REQUIRED )
@@ -65,14 +65,17 @@ src/preferences/displaypreferences.h
 ################################################################
 set (widgets_SRC
 src/widgets/qtcolorbutton.cpp
+src/widgets/qtfontbutton.cpp
 )
 
 set (widgets_HEADERS
 src/widgets/qtcolorbutton.h
+src/widgets/qtfontbutton.h
 )
 
-
-
+################################################################
+# all
+################################################################
 set(
 SOURCES
 ${src_SRC}
@@ -93,9 +96,10 @@ set( RESOURCES resource.qrc )
 
 qt4_add_resources( QRC_SOURCES ${RESOURCES} )
 
-#add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
-add_executable( QDBFRedactor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+	add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+else()
+	add_executable( QDBFRedactor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+endif()
 
 target_link_libraries( QDBFRedactor ${QT_LIBRARIES} )
-
-
