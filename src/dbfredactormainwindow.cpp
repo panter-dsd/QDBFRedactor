@@ -51,6 +51,7 @@
 #include "sortdialog.h"
 #include "filterdialog.h"
 #include "preferencesdialog.h"
+#include "aboutdialog.h"
 
 #define ProcessEventsPeriod 500
 
@@ -1101,5 +1102,19 @@ void DBFRedactorMainWindow::recoverRecord()
 
 void DBFRedactorMainWindow::about()
 {
+	AboutDialog d (this);
 
+	d.setAuthor(tr("PanteR"));
+	d.setMail("panter.dsd@gmail.com");
+	d.setPhone("89094119675");
+	d.setLicense("GNU GPL v3");
+
+	{
+		QFile file(":/LICENSE.GPL3");
+		if (file.open(QFile::ReadOnly)) {
+			d.setLicenseText(QString(file.readAll()));
+			file.close();
+		}
+	}
+	d.exec();
 }
