@@ -378,6 +378,7 @@ void DBFRedactor::setOpenMode(DBFOpenMode openMode)
 	m_changedData.clear();
 	m_file.close();
 	m_file.open(mode);
+	m_modified = false;
 }
 
 void DBFRedactor::addRecord()

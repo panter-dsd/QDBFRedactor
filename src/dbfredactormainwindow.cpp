@@ -182,7 +182,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionSetEditMode->setIcon(QIcon(":/share/images/edit.png"));
 	actionSetEditMode->setCheckable(true);
 	actionSetEditMode->setChecked(false);
-	connect(actionSetEditMode, SIGNAL(toggled(bool)), this, SLOT(setEditMode(bool)));
+	connect(actionSetEditMode, SIGNAL(triggered(bool)), this, SLOT(setEditMode(bool)));
 
 	actionAddRecord = new QAction(this);
 	actionAddRecord->setIcon(QIcon(":/share/images/edit.png"));
@@ -395,6 +395,7 @@ void DBFRedactorMainWindow::save()
 {
 	if (!currentPage->redactor()->save())
 		QMessageBox::critical(this, "", tr("Saving error"));
+	updateActions();
 }
 
 void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
@@ -462,6 +463,7 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	currentFile->setText(QDir::toNativeSeparators(currentPage->fileName()));
 	selectionChanged();
 	setCurentCodec();
+	updateActions();
 }
 
 void DBFRedactorMainWindow::closeTab(int index)
@@ -1019,6 +1021,7 @@ void DBFRedactorMainWindow::preferences()
 void DBFRedactorMainWindow::setEditMode(bool b)
 {
 	currentPage->dbfModel()->setReadOnly(!b);
+	updateActions();
 }
 
 QStringList DBFRedactorMainWindow::codecsList()
