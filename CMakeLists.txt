@@ -12,7 +12,9 @@ add_definitions(-DUNICODE)
 
 include_directories(
 src
+src/core
 src/preferences
+src/widgets
 )
 
 ################################################################
@@ -21,9 +23,6 @@ src/preferences
 
 set (src_SRC
 src/main.cpp
-src/dbfredactor.cpp
-src/dbfredactormodel.cpp
-src/dbfredactorsortfilterproxymodel.cpp
 src/dbfredactormainwindow.cpp
 src/sortdialog.cpp
 src/filterdialog.cpp
@@ -32,16 +31,28 @@ src/translationmanager.cpp
 )
 
 set (src_HEADERS
-src/dbfredactor.h
-src/dbfredactormodel.h
 src/dbfredactorpage.h
-src/dbfredactorsortfilterproxymodel.h
 src/dbfredactormainwindow.h
 src/sortdialog.h
 src/filterdialog.h
 src/dbfredactordelegate.h
 src/filterdelegate.h
 src/translationmanager.h
+)
+
+################################################################
+# core
+################################################################
+set (core_SRC
+src/core/dbfredactor.cpp
+src/core/dbfredactormodel.cpp
+src/core/dbfredactorsortfilterproxymodel.cpp
+)
+
+set (core_HEADERS
+src/core/dbfredactor.h
+src/core/dbfredactormodel.h
+src/core/dbfredactorsortfilterproxymodel.h
 )
 
 ################################################################
@@ -78,6 +89,7 @@ src/widgets/qtfontbutton.h
 ################################################################
 set(
 SOURCES
+${core_SRC}
 ${src_SRC}
 ${preferences_SRC}
 ${widgets_SRC}
@@ -85,6 +97,7 @@ ${widgets_SRC}
 
 set(
 HEADERS
+${core_HEADERS}
 ${src_HEADERS}
 ${preferences_HEADERS}
 ${widgets_HEADERS}
