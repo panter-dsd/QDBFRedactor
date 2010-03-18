@@ -38,7 +38,7 @@
 #include "aboutdialog.h"
 
 AboutDialog::AboutDialog(QWidget *parent, Qt::WFlags f)
-		:QDialog(parent, f)
+	:QDialog(parent, f)
 {
 	resize(400, 300);
 
@@ -82,6 +82,15 @@ AboutDialog::AboutDialog(QWidget *parent, Qt::WFlags f)
 
 	tabWidget->addTab(copyrightView, tr("Copyright"));
 
+//Thanks
+	thanksView = new QTextEdit(this);
+	thanksView->setReadOnly(true);
+	thanksView->setWordWrapMode(QTextOption::NoWrap);
+	thanksView->setTextInteractionFlags(Qt::TextBrowserInteraction);
+	thanksView->setPalette(palette);
+
+	tabWidget->addTab(thanksView, tr("Thanks"));
+
 //License
 	licenseView = new QTextEdit(this);
 	licenseView->setReadOnly(true);
@@ -116,4 +125,17 @@ void AboutDialog::printCopyright()
 
 	copyrightView->clear();
 	copyrightView->setText(text.arg(m_author).arg(m_mail).arg(m_phone).arg(m_license));
+}
+
+void AboutDialog::printThanks ()
+{
+	const QString text = "<b>" + tr("Name") + "</b>: %1"
+						 + "<BR><b>" + tr("e-mail") + "</b>: <a href=\"%2\">%2</a>"
+						 + "<BR><b>" + tr("Work type") + "</b>: %3";
+
+	thanksView->clear();
+
+	foreach (const QStringList& l, m_thanks) {
+		thanksView->append(text.arg(l[0]).arg(l[1]).arg(l[2]));
+	}
 }

@@ -44,12 +44,15 @@ private:
 	QTabWidget *tabWidget;
 
 	QTextEdit *copyrightView;
+	QTextEdit *thanksView;
 	QTextEdit *licenseView;
 
 	QString m_author;
 	QString m_mail;
 	QString m_phone;
 	QString m_license;
+
+	QList<QStringList> m_thanks;
 public:
 	AboutDialog(QWidget *parent = 0, Qt::WFlags f = Qt::WindowSystemMenuHint);
 	virtual ~AboutDialog()
@@ -69,8 +72,17 @@ public:
 	void setLicense(const QString& license)
 	{m_license = license; printCopyright();}
 
+	void addThanks (const QString& name, const QString& email, const QString& typeWork)
+	{
+		QStringList l;
+		l << name << email << typeWork;
+		m_thanks << l;
+		printThanks ();
+	}
+
 private:
 	void printCopyright();
+	void printThanks ();
 };
 
 #endif //ABOUTDIALOG_H

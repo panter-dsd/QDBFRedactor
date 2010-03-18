@@ -190,19 +190,19 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionSetEditMode, SIGNAL(triggered(bool)), this, SLOT(setEditMode(bool)));
 
 	actionAddRecord = new QAction(this);
-	actionAddRecord->setIcon(QIcon(":/share/images/edit.png"));
+	actionAddRecord->setIcon(QIcon(":/share/images/addrecord.png"));
 	actionAddRecord->setShortcut(Qt::Key_F2);
 	connect(actionAddRecord, SIGNAL(triggered()), this, SLOT(addRecord()));
 	view->addAction(actionAddRecord);
 
 	actionRemoveRecord = new QAction(this);
-	actionRemoveRecord->setIcon(QIcon(":/share/images/edit.png"));
+	actionRemoveRecord->setIcon(QIcon(":/share/images/removerecord.png"));
 	actionRemoveRecord->setShortcut(Qt::Key_F8);
 	connect(actionRemoveRecord, SIGNAL(triggered()), this, SLOT(removeRecord()));
 	view->addAction(actionRemoveRecord);
 
 	actionRecoverRecord = new QAction(this);
-	actionRecoverRecord->setIcon(QIcon(":/share/images/edit.png"));
+	actionRecoverRecord->setIcon(QIcon(":/share/images/recoverrecord.png"));
 	actionRecoverRecord->setShortcut(Qt::Key_F9);
 	connect(actionRecoverRecord, SIGNAL(triggered()), this, SLOT(recoverRecord()));
 	view->addAction(actionRecoverRecord);
@@ -513,6 +513,10 @@ void DBFRedactorMainWindow::updateActions()
 	view->setVisible(currentPage);
 
 	codecsMenu->setEnabled(currentPage);
+
+	actionCopy->setEnabled(currentPage);
+	if (currentPage)
+		actionCopy->setEnabled(currentPage->model()->rowCount() > 0);
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -1146,5 +1150,6 @@ void DBFRedactorMainWindow::about()
 			file.close();
 		}
 	}
+	d.addThanks("Abbapoh", "archangel_rus@mail.ru", tr ("Color and Font buttons"));
 	d.exec();
 }
