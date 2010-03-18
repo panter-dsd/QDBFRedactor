@@ -1,3 +1,27 @@
+/********************************************************************
+* Copyright (C) PanteR
+*-------------------------------------------------------------------
+*
+* QDBFRedactor is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License as
+* published by the Free Software Foundation; either version 2
+* of the License, or (at your option) any later version.
+*
+* QDBFRedactor is distributed in the hope that it will be
+* useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Panther Commander; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin St, Fifth Floor,
+* Boston, MA 02110-1301 USA
+*-------------------------------------------------------------------
+* Project:		QDBFRedactor
+* Author:		PanteR
+* Contact:		panter.dsd@gmail.com
+*******************************************************************/
+
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 
@@ -30,7 +54,7 @@ AboutDialog::AboutDialog(QWidget *parent, Qt::WFlags f)
 						 + QApplication::applicationVersion()
 						 + "</h2>"
 						 + "<p>"
-						 + tr("Created %1 in %2").arg(fi.created().date().toString("dd.MM.yyyy")).arg(fi.created().time().toString("hh:mm:ss")));
+						 + tr("Compiled %1 in %2").arg(fi.created().date().toString("dd.MM.yyyy")).arg(fi.created().time().toString("hh:mm:ss")));
 
 	closeButton = new QToolButton(this);
 	closeButton->setText(tr("Close"));
