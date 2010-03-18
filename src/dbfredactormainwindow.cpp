@@ -201,6 +201,14 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionRecoverRecord, SIGNAL(triggered()), this, SLOT(recoverRecord()));
 	view->addAction(actionRecoverRecord);
 
+	actionAbout = new QAction(this);
+	actionAbout->setIcon(QIcon(":/share/images/about.png"));
+	connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+
+	actionAboutQt = new QAction(this);
+	actionAboutQt->setIcon(QIcon(":/share/images/aboutQt.png"));
+	connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -226,6 +234,12 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	codecsMenu = new QMenu(menuBar);
 	menuBar->addMenu(codecsMenu);
+
+	helpMenu = new QMenu(menuBar);
+	helpMenu->addAction(actionAbout);
+	helpMenu->addAction(actionAboutQt);
+
+	menuBar->addMenu(helpMenu);
 
 //ToolBars
 	fileToolBar = new QToolBar(this);
@@ -318,9 +332,14 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	actionRecoverRecord->setText(tr("Recover record"));
 
+	actionAbout->setText(tr("About..."));
+
+	actionAboutQt->setText(tr("About Qt"));
+
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
 	codecsMenu->setTitle(tr("&Codecs"));
+	helpMenu->setTitle(tr("&Help"));
 
 	fileToolBar->setWindowTitle(tr("&File"));
 }
@@ -1078,4 +1097,9 @@ void DBFRedactorMainWindow::recoverRecord()
 
 	if (res = QMessageBox::Ok)
 		currentPage->dbfModel()->recoverRecords(rows);
+}
+
+void DBFRedactorMainWindow::about()
+{
+
 }

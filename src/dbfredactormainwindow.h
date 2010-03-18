@@ -55,6 +55,7 @@ private:
 	QMenu *fileMenu;
 	QMenu *exportMenu;
 	QMenu *codecsMenu;
+	QMenu *helpMenu;
 
 	QToolBar *fileToolBar;
 
@@ -75,6 +76,8 @@ private:
 	QAction *actionAddRecord;
 	QAction *actionRemoveRecord;
 	QAction *actionRecoverRecord;
+	QAction *actionAbout;
+	QAction *actionAboutQt;
 
 	QAction *actionChangeFilter;
 	QAction *actionAddIncludeFilter;
@@ -128,6 +131,7 @@ private Q_SLOTS:
 	void addRecord();
 	void removeRecord();
 	void recoverRecord();
+	void about();
 };
 
 #endif // DBFREDACTORMAINWINDOW_H
