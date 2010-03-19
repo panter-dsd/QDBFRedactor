@@ -190,19 +190,19 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionSetEditMode, SIGNAL(triggered(bool)), this, SLOT(setEditMode(bool)));
 
 	actionAddRecord = new QAction(this);
-	actionAddRecord->setIcon(QIcon(":/share/images/addrecord.png"));
+	actionAddRecord->setIcon(QIcon(":/share/images/add.png"));
 	actionAddRecord->setShortcut(Qt::Key_F2);
 	connect(actionAddRecord, SIGNAL(triggered()), this, SLOT(addRecord()));
 	view->addAction(actionAddRecord);
 
 	actionRemoveRecord = new QAction(this);
-	actionRemoveRecord->setIcon(QIcon(":/share/images/removerecord.png"));
+	actionRemoveRecord->setIcon(QIcon(":/share/images/remove.png"));
 	actionRemoveRecord->setShortcut(Qt::Key_F8);
 	connect(actionRemoveRecord, SIGNAL(triggered()), this, SLOT(removeRecord()));
 	view->addAction(actionRemoveRecord);
 
 	actionRecoverRecord = new QAction(this);
-	actionRecoverRecord->setIcon(QIcon(":/share/images/recoverrecord.png"));
+	actionRecoverRecord->setIcon(QIcon(":/share/images/recover.png"));
 	actionRecoverRecord->setShortcut(Qt::Key_F9);
 	connect(actionRecoverRecord, SIGNAL(triggered()), this, SLOT(recoverRecord()));
 	view->addAction(actionRecoverRecord);
