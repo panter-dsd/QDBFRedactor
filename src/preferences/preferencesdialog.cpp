@@ -176,7 +176,19 @@ void PreferencesDialog::updatePreferencesList()
 		QList<QTreeWidgetItem *> items;
 		QTreeWidgetItem *parent = 0;
 		foreach(const QString& name, l) {
-			QTreeWidgetItem *item = new QTreeWidgetItem(parent);
+			bool b = false;
+			QTreeWidgetItem *item;
+			foreach (item, preferencesList->findItems(name, Qt::MatchFixedString)) {
+				if (item->parent() == parent) {
+					parent = item;
+					b = true;
+					break;
+				}
+			}
+			if (b)
+				continue;
+
+			item = new QTreeWidgetItem(parent);
 			item->setText(0, name);
 			items.append(item);
 			parent = item;
