@@ -39,6 +39,7 @@
 GlobalPreferences::GlobalPreferences(QWidget *parent)
 	:AbstractPreferencesPage(parent)
 {
+//Association
 	associationGroup = new QGroupBox (this);
 
 	currentAssociationLabel = new QLabel (this);
@@ -61,7 +62,7 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	associationLayout->addLayout(associationLabelsLayout);
 	associationLayout->addLayout(associationButtonLayout);
 	associationGroup->setLayout(associationLayout);
-
+//Run
 	runGroup = new QGroupBox (this);
 
 	onlyOneCopy = new QCheckBox (this);
@@ -74,10 +75,24 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	runLayout->addWidget(onlyOneCopy);
 	runLayout->addWidget(restoreWindowParams);
 	runGroup->setLayout(runLayout);
+//Tray
+	trayGroup = new QGroupBox (this);
+
+	alwaysShowTray = new QCheckBox (this);
+	connect (alwaysShowTray, SIGNAL(stateChanged(int)), this, SIGNAL(modified()));
+
+	moveToTrayWhenClose = new QCheckBox (this);
+	connect (moveToTrayWhenClose, SIGNAL(stateChanged(int)), this, SIGNAL(modified()));
+
+	QVBoxLayout *trayLayout = new QVBoxLayout ();
+	trayLayout->addWidget(alwaysShowTray);
+	trayLayout->addWidget(moveToTrayWhenClose);
+	trayGroup->setLayout(trayLayout);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(associationGroup);
 	mainLayout->addWidget(runGroup);
+	mainLayout->addWidget(trayGroup);
 	mainLayout->addSpacerItem(new QSpacerItem (0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	setLayout(mainLayout);
@@ -95,6 +110,10 @@ void GlobalPreferences::retranslateStrings()
 	runGroup->setTitle(tr ("Run"));
 	onlyOneCopy->setText(tr ("Allow only one copy"));
 	restoreWindowParams->setText (tr ("Restore window position and size"));
+
+	trayGroup->setTitle(tr ("Tray icon"));
+	alwaysShowTray->setText(tr ("Always show tray icon"));
+	moveToTrayWhenClose->setText(tr ("Move to tray when close"));
 }
 
 void GlobalPreferences::saveSettings()
@@ -104,6 +123,8 @@ void GlobalPreferences::saveSettings()
 	settings.beginGroup("Global");
 	settings.setValue("OnlyOneCopy", onlyOneCopy->isChecked());
 	settings.setValue("RestoreWindowParams", restoreWindowParams->isChecked());
+	settings.setValue("TrayAlwaysShow", alwaysShowTray->isChecked());
+	settings.setValue("MoveToTrayWhenClose", moveToTrayWhenClose->isChecked());
 	settings.endGroup();
 	settings.sync();
 }
@@ -115,6 +136,8 @@ void GlobalPreferences::loadSettings()
 	settings.beginGroup("Global");
 	onlyOneCopy->setChecked(settings.value("OnlyOneCopy", true).toBool());
 	restoreWindowParams->setChecked(settings.value("RestoreWindowParams", true).toBool());
+	alwaysShowTray->setChecked(settings.value("TrayAlwaysShow", true).toBool());
+	moveToTrayWhenClose->setChecked(settings.value("MoveToTrayWhenClose", true).toBool());
 
 	settings.endGroup();
 }

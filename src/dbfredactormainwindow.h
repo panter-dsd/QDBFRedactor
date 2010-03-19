@@ -33,10 +33,12 @@ class QLabel;
 class QItemSelection;
 class QProgressBar;
 class QComboBox;
+class QSystemTrayIcon;
 
 #include <QtCore/QMap>
 
 #include <QtGui/QMainWindow>
+#include <QtGui/QSystemTrayIcon>
 
 class DBFRedactorMainWindow : public QMainWindow
 {
@@ -83,6 +85,8 @@ private:
 	QAction *actionAddIncludeFilter;
 	QAction *actionAddExcludeFilter;
 	QAction *actionRemoveFilter;
+
+	QSystemTrayIcon *trayIcon;
 
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
@@ -132,6 +136,8 @@ private Q_SLOTS:
 	void removeRecord();
 	void recoverRecord();
 	void about();
+	void reloadSettings ();
+	void trayClicked(QSystemTrayIcon::ActivationReason reason);
 
 public Q_SLOTS:
 	void handleMessage(const QString& message)

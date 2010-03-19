@@ -118,7 +118,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionExit = new QAction(this);
 	actionExit->setIcon(QIcon(":/share/images/exit.png"));
 	actionExit->setShortcut(Qt::ALT + Qt::Key_X);
-	connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(actionExit, SIGNAL(triggered()), qApp, SLOT( quit ()));
 
 	actionClose = new QAction(this);
 	actionClose->setIcon(QIcon(":/share/images/close.png"));
@@ -259,6 +259,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileToolBar->addAction(actionExit);
 	addToolBar(fileToolBar);
 
+	trayIcon = new QSystemTrayIcon(this);
+	trayIcon->setIcon(QApplication::windowIcon());
+	connect(trayIcon, SIGNAL(activated (QSystemTrayIcon::ActivationReason)),
+					this, SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
+
 	loadSettings();
 	updateActions();
 	retranslateStrings();
@@ -366,6 +371,19 @@ void DBFRedactorMainWindow::loadSettings()
 		restoreState(settings.value("State", "").toByteArray());
 		settings.endGroup();
 	}
+
+	reloadSettings ();
+}
+
+void DBFRedactorMainWindow::reloadSettings ()
+{
+	QSettings settings;
+
+	if (settings.value("Global/TrayAlwaysShow", true).toBool())
+		trayIcon->show();
+	else
+		trayIcon->hide ();
+
 }
 
 void DBFRedactorMainWindow::saveSettings()
@@ -816,6 +834,16 @@ bool DBFRedactorMainWindow::event(QEvent *ev)
 		openFiles(fileNames);
 	}
 
+	if (ev->type() == QEvent::Close) {
+		QSettings settings;
+		if (settings.value("Global/MoveToTrayWhenClose", true).toBool()) {
+			hide ();
+			trayIcon->show();
+			ev->ignore();
+			return true;
+		}
+	}
+
 	return QMainWindow::event(ev);
 }
 
@@ -1048,7 +1076,10 @@ void DBFRedactorMainWindow::removeFilter()
 void DBFRedactorMainWindow::preferences()
 {
 	PreferencesDialog d(this);
-	d.exec();
+
+	connect (&d, SIGNAL(applied()), this, SLOT(reloadSettings()));
+	if (d.exec())
+		reloadSettings ();
 }
 
 void DBFRedactorMainWindow::setEditMode(bool b)
@@ -1155,4 +1186,23 @@ void DBFRedactorMainWindow::about()
 	}
 	d.addThanks("Abbapoh", "archangel_rus@mail.ru", tr ("Color and Font buttons"));
 	d.exec();
+}
+
+void DBFRedactorMainWindow::trayClicked(QSystemTrayIcon::ActivationReason reason)
+{
+	QSettings settings;
+	switch (reason) {
+		case QSystemTrayIcon::Trigger:
+			if (isHidden()) {
+				show();
+				activateWindow();
+				if (!settings.value("Global/TrayAlwaysShow", true).toBool())
+					trayIcon->hide();
+			} else {
+				hide();
+			}
+			break;
+		default:
+			break;
+	}
 }

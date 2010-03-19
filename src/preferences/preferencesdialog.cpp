@@ -75,6 +75,7 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	connect(buttons, 	SIGNAL(accepted()), this, SLOT(savePreferencesAndExit()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 	connect(buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(savePreferences()));
+	connect(buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SIGNAL(applied()));
 
 	defaultsButton =new QPushButton(this);
 	connect(defaultsButton, SIGNAL(clicked()), this, SLOT(setDefaults()));

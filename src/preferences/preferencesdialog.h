@@ -65,11 +65,14 @@ private Q_SLOTS:
 	void savePreferencesAndExit()
 	{
 		savePreferences();
-		close();
+		accept();
 	}
 	void setApplyEnabled();
 	void setDefaults();
 
 	void itemChanged(QTreeWidgetItem * item, int column);
+
+Q_SIGNALS:
+	void applied ();
 };
 #endif //PREFERENCESDIALOG_H

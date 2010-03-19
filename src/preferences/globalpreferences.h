@@ -46,6 +46,11 @@ private:
 	QCheckBox *onlyOneCopy;
 	QCheckBox *restoreWindowParams;
 
+	QGroupBox *trayGroup;
+	QCheckBox *alwaysShowTray;
+	QCheckBox *moveToTrayWhenClose;
+
+
 	QString m_currentAssociation;
 
 public:
