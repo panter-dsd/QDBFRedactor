@@ -145,7 +145,11 @@ private Q_SLOTS:
 
 public Q_SLOTS:
 	void handleMessage(const QString& message)
-	{ openFiles(message.split("\n"));}
+	{
+		openFiles(message.split("\n"));
+		if (isHidden())
+			show ();
+	}
 };
 
 #endif // DBFREDACTORMAINWINDOW_H
