@@ -22,8 +22,8 @@
 * Contact:		panter.dsd@gmail.com
 *******************************************************************/
 
-#ifndef GLOBALPREFERENCES_H
-#define GLOBALPREFERENCES_H
+#ifndef LANGUAGEPREFERENCES_H
+#define LANGUAGEPREFERENCES_H
 
 class QGroupBox;
 class QListWidget;
@@ -33,7 +33,7 @@ class QToolButton;
 
 #include "abstractpreferencespage.h"
 
-class GlobalPreferences : public AbstractPreferencesPage
+class LanguagePreferences : public AbstractPreferencesPage
 {
 	Q_OBJECT
 
@@ -45,8 +45,8 @@ private:
 	QListWidget *translationsList;
 
 public:
-	GlobalPreferences(QWidget *parent = 0);
-	virtual ~GlobalPreferences()
+	LanguagePreferences(QWidget *parent = 0);
+	virtual ~LanguagePreferences()
 	{}
 
 	void saveSettings();
@@ -67,4 +67,4 @@ private Q_SLOTS:
 	void setTranslationsPath();
 };
 
-#endif // GLOBALPREFERENCES_H
+#endif // LANGUAGEPREFERENCES_H

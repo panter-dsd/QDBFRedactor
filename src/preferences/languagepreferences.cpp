@@ -36,10 +36,10 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QFileDialog>
 
-#include "globalpreferences.h"
+#include "languagepreferences.h"
 #include "translationmanager.h"
 
-GlobalPreferences::GlobalPreferences(QWidget *parent)
+LanguagePreferences::LanguagePreferences(QWidget *parent)
 	:AbstractPreferencesPage(parent)
 {
 	translationGroup = new QGroupBox(this);
@@ -75,14 +75,14 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	retranslateStrings();
 }
 
-void GlobalPreferences::retranslateStrings()
+void LanguagePreferences::retranslateStrings()
 {
 	translationGroup->setTitle(tr("Translates"));
 
 	tranlationsPathLabel->setText(tr("Path to translations"));
 }
 
-void GlobalPreferences::saveSettings()
+void LanguagePreferences::saveSettings()
 {
 	QSettings settings;
 
@@ -105,7 +105,7 @@ void GlobalPreferences::saveSettings()
 	settings.sync();
 }
 
-void GlobalPreferences::loadSettings()
+void LanguagePreferences::loadSettings()
 {
 	QSettings settings;
 
@@ -117,12 +117,12 @@ void GlobalPreferences::loadSettings()
 	settings.endGroup();
 }
 
-void GlobalPreferences::setDefaults()
+void LanguagePreferences::setDefaults()
 {
 
 }
 
-bool GlobalPreferences::event(QEvent *ev)
+bool LanguagePreferences::event(QEvent *ev)
 {
 	if (ev->type() == QEvent::LanguageChange) {
 		retranslateStrings();
@@ -131,7 +131,7 @@ bool GlobalPreferences::event(QEvent *ev)
 	return QWidget::event(ev);
 }
 
-void GlobalPreferences::updateTranslationsList()
+void LanguagePreferences::updateTranslationsList()
 {
 	QDir dir(tranlationsPathEdit->text());
 	const QStringList& translations = dir.entryList(QStringList(QCoreApplication::applicationName().toLower() + "_*.qm"), QDir::Files, QDir::Name);
@@ -159,7 +159,7 @@ void GlobalPreferences::updateTranslationsList()
 	}
 }
 
-void GlobalPreferences::setTranslationsPath()
+void LanguagePreferences::setTranslationsPath()
 {
 	const QString& path = QFileDialog::getExistingDirectory(this, tr("Translations path"), tranlationsPathEdit->text());
 

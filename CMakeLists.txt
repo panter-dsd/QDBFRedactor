@@ -75,14 +75,14 @@ src/dialogs/aboutdialog.h
 ################################################################
 set (preferences_SRC
 src/preferences/preferencesdialog.cpp
-src/preferences/globalpreferences.cpp
+src/preferences/languagepreferences.cpp
 src/preferences/displaypreferences.cpp
 )
 
 set (preferences_HEADERS
 src/preferences/preferencesdialog.h
 src/preferences/abstractpreferencespage.h
-src/preferences/globalpreferences.h
+src/preferences/languagepreferences.h
 src/preferences/displaypreferences.h
 )
 
