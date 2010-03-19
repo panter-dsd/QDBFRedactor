@@ -27,6 +27,7 @@
 #include <QtCore/QLocale>
 #include <QtCore/QSettings>
 #include <QtCore/QTranslator>
+#include <QtCore/QDebug>
 
 #include <QtGui/QApplication>
 
@@ -47,14 +48,18 @@ int main(int argc, char ** argv)
 	app.setApplicationVersion(ApplicationVersion);
 	app.setWindowIcon(QIcon(":share/images/main.ico"));
 
-	if (app.isRunning()) {
-		QStringList message(app.arguments());
-		message.removeFirst();
-		app.sendMessage(message.join("\n"));
-		return 0;
+	QSettings::setDefaultFormat(QSettings::IniFormat);
+
+	{
+		QSettings settings;
+		if (settings.value("Global/OnlyOneCopy", true).toBool() && app.isRunning()) {
+			QStringList message(app.arguments());
+			message.removeFirst();
+			app.sendMessage(message.join("\n"));
+			return 0;
+		}
 	}
 
-	QSettings::setDefaultFormat(QSettings::IniFormat);
 
 	{
 		QSettings settings;

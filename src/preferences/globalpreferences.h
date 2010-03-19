@@ -28,6 +28,7 @@
 class QGroupBox;
 class QPushButton;
 class QLabel;
+class QCheckBox;
 
 #include "abstractpreferencespage.h"
 
@@ -40,6 +41,9 @@ private:
 	QLabel *currentAssociationLabel;
 	QLabel *currentAssociation;
 	QPushButton *associationButton;
+
+	QGroupBox *runGroup;
+	QCheckBox *onlyOneCopy;
 
 	QString m_currentAssociation;
 

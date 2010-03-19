@@ -31,6 +31,7 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QtEvents>
 #include <QtGui/QLabel>
+#include <QtGui/QCheckBox>
 
 #include "globalpreferences.h"
 #include "translationmanager.h"
@@ -61,8 +62,18 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	associationLayout->addLayout(associationButtonLayout);
 	associationGroup->setLayout(associationLayout);
 
+	runGroup = new QGroupBox (this);
+
+	onlyOneCopy = new QCheckBox (this);
+	connect (onlyOneCopy, SIGNAL(stateChanged(int)), this, SIGNAL(modified()));
+
+	QVBoxLayout *runLayout = new QVBoxLayout ();
+	runLayout->addWidget(onlyOneCopy);
+	runGroup->setLayout(runLayout);
+
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(associationGroup);
+	mainLayout->addWidget(runGroup);
 	mainLayout->addSpacerItem(new QSpacerItem (0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
 	mainLayout->setContentsMargins(0, 0, 0, 0);
 	setLayout(mainLayout);
@@ -76,6 +87,9 @@ void GlobalPreferences::retranslateStrings()
 	associationGroup->setTitle(tr ("Association"));
 	currentAssociationLabel->setText(tr ("Current association") + ":");
 	associationButton->setText(tr ("Make association"));
+
+	runGroup->setTitle(tr ("Run"));
+	onlyOneCopy->setText(tr ("Allow only one copy"));
 }
 
 void GlobalPreferences::saveSettings()
@@ -83,7 +97,7 @@ void GlobalPreferences::saveSettings()
 	QSettings settings;
 
 	settings.beginGroup("Global");
-
+	settings.setValue("OnlyOneCopy", onlyOneCopy->isChecked());
 	settings.endGroup();
 	settings.sync();
 }
@@ -93,7 +107,7 @@ void GlobalPreferences::loadSettings()
 	QSettings settings;
 
 	settings.beginGroup("Global");
-
+	onlyOneCopy->setChecked(settings.value("OnlyOneCopy", true).toBool());
 
 	settings.endGroup();
 }
