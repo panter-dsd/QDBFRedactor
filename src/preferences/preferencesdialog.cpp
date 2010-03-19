@@ -201,6 +201,7 @@ void PreferencesDialog::updatePreferencesList()
 		items.last()->setData(0, Qt::UserRole, it.key());
 		preferencesList->addTopLevelItems(items);
 	}
+	preferencesList->expandAll();
 }
 
 void PreferencesDialog::itemChanged(QTreeWidgetItem * item, int column)
