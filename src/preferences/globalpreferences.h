@@ -27,6 +27,7 @@
 
 class QGroupBox;
 class QPushButton;
+class QLabel;
 
 #include "abstractpreferencespage.h"
 
@@ -36,7 +37,11 @@ class GlobalPreferences : public AbstractPreferencesPage
 
 private:
 	QGroupBox *associationGroup;
+	QLabel *currentAssociationLabel;
+	QLabel *currentAssociation;
 	QPushButton *associationButton;
+
+	QString m_currentAssociation;
 
 public:
 	GlobalPreferences(QWidget *parent = 0);
@@ -55,9 +60,10 @@ protected:
 
 private:
 	void retranslateStrings();
+	void updateCurrentAssociation ();
 
 private Q_SLOTS:
-	void doAssociation ();
+	void makeAssociation ();
 };
 
 #endif // GLOBALPREFERENCES_H
