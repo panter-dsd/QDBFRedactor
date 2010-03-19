@@ -77,6 +77,7 @@ set (preferences_SRC
 src/preferences/preferencesdialog.cpp
 src/preferences/languagepreferences.cpp
 src/preferences/displaypreferences.cpp
+src/preferences/globalpreferences.cpp
 )
 
 set (preferences_HEADERS
@@ -84,6 +85,7 @@ src/preferences/preferencesdialog.h
 src/preferences/abstractpreferencespage.h
 src/preferences/languagepreferences.h
 src/preferences/displaypreferences.h
+src/preferences/globalpreferences.h
 )
 
 ################################################################

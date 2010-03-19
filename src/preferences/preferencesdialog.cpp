@@ -38,6 +38,7 @@
 #include "preferencesdialog.h"
 #include "languagepreferences.h"
 #include "displaypreferences.h"
+#include "globalpreferences.h"
 
 PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	: QDialog(parent,f)
@@ -55,9 +56,13 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	splitter->addWidget(preferencesList);
 	splitter->addWidget(preferencesWidgets);
 
-	LanguagePreferences *globalPreferences = new LanguagePreferences(this);
+	GlobalPreferences *globalPreferences = new GlobalPreferences(this);
 	connect(globalPreferences, SIGNAL(modified()), this, SLOT(setApplyEnabled()));
 	pages.insert(preferencesWidgets->addWidget(globalPreferences), globalPreferences);
+
+	LanguagePreferences *languagePreferences = new LanguagePreferences(this);
+	connect(languagePreferences, SIGNAL(modified()), this, SLOT(setApplyEnabled()));
+	pages.insert(preferencesWidgets->addWidget(languagePreferences), languagePreferences);
 
 	DisplayPreferences *displayPreferences = new DisplayPreferences(this);
 	connect(displayPreferences, SIGNAL(modified()), this, SLOT(setApplyEnabled()));
