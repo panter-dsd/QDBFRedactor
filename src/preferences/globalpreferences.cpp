@@ -143,22 +143,26 @@ bool GlobalPreferences::event(QEvent *ev)
 
 void GlobalPreferences::makeAssociation ()
 {
+#ifdef Q_WS_WIN
 	QSettings settings ("HKEY_CLASSES_ROOT", QSettings::NativeFormat);
 
 	settings.setValue (".dbf/.", "QDBFRedactor.file");
 	settings.setValue ("QDBFRedactor.file/.", tr("File of database"));
 	settings.setValue ("QDBFRedactor.file/shell/open/command/.",
 					   "\"" + QDir::toNativeSeparators (QCoreApplication::applicationFilePath()) + "\"" + " \"%1\"");
+#endif
 	updateCurrentAssociation ();
 }
 
 void GlobalPreferences::updateCurrentAssociation ()
 {
+#ifdef Q_WS_WIN
 	QSettings settings ("HKEY_CLASSES_ROOT", QSettings::NativeFormat);
 
 	const QString &cur = settings.value (".dbf/.", "").toString();
 
 	m_currentAssociation = settings.value (cur + "/shell/open/command/.", "").toString();
+#endif
 	currentAssociation->setText(currentAssociation->fontMetrics().elidedText(m_currentAssociation, Qt::ElideMiddle, currentAssociation->width()));
 	currentAssociation->setToolTip(m_currentAssociation);
 }
