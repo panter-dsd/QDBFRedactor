@@ -593,27 +593,55 @@
 <context>
     <name>GlobalPreferences</name>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="80"/>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="76"/>
+        <source>Association</source>
+        <translation>Ассоциация</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="77"/>
+        <source>Current association</source>
+        <translation>Текущая ассоциация</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="78"/>
+        <source>Make association</source>
+        <translation>Сделать ассоциацию</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/globalpreferences.cpp" line="128"/>
+        <source>File of database</source>
+        <translation>Файл базы данных</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/globalpreferences.h" line="56"/>
+        <source>Global/System</source>
+        <translation>Основные/Системные</translation>
+    </message>
+</context>
+<context>
+    <name>LanguagePreferences</name>
+    <message>
+        <location filename="../../src/preferences/languagepreferences.cpp" line="80"/>
         <source>Translates</source>
         <translation>Переводы</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="82"/>
+        <location filename="../../src/preferences/languagepreferences.cpp" line="82"/>
         <source>Path to translations</source>
         <translation>Каталог с переводами</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="155"/>
+        <location filename="../../src/preferences/languagepreferences.cpp" line="155"/>
         <source>English</source>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="164"/>
+        <location filename="../../src/preferences/languagepreferences.cpp" line="164"/>
         <source>Translations path</source>
         <translation>Каталог с переводами</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/globalpreferences.h" line="57"/>
+        <location filename="../../src/preferences/languagepreferences.h" line="57"/>
         <source>Global/Language</source>
         <translation>Основные/Язык</translation>
     </message>
@@ -621,12 +649,12 @@
 <context>
     <name>PreferencesDialog</name>
     <message>
-        <location filename="../../src/preferences/preferencesdialog.cpp" line="90"/>
+        <location filename="../../src/preferences/preferencesdialog.cpp" line="95"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/preferencesdialog.cpp" line="92"/>
+        <location filename="../../src/preferences/preferencesdialog.cpp" line="97"/>
         <source>Default</source>
         <translation>Исходные</translation>
     </message>
@@ -737,7 +765,7 @@
 <context>
     <name>Translate</name>
     <message>
-        <location filename="../../src/preferences/globalpreferences.cpp" line="148"/>
+        <location filename="../../src/preferences/languagepreferences.cpp" line="148"/>
         <source>English</source>
         <translation>Русский</translation>
     </message>
