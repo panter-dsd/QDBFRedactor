@@ -44,6 +44,7 @@ private:
 
 	QGroupBox *runGroup;
 	QCheckBox *onlyOneCopy;
+	QCheckBox *restoreWindowParams;
 
 	QString m_currentAssociation;
 

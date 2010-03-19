@@ -62,6 +62,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 		: QMainWindow(parent, f), currentPage(0), progressBar(0)
 {
 	setAcceptDrops(true);
+	resize (800, 600);
 
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
@@ -355,14 +356,16 @@ void DBFRedactorMainWindow::loadSettings()
 {
 	QSettings settings;
 
-	settings.beginGroup("MainWindow");
-	move(settings.value("pos", QPoint(0, 0)).toPoint());
-	resize(settings.value("size", QSize(640, 480)).toSize());
-	bool isMaximized = settings.value("IsMaximized", false).toBool();
-	if (isMaximized)
-		setWindowState(Qt::WindowMaximized);
-	restoreState(settings.value("State", "").toByteArray());
-	settings.endGroup();
+	if (settings.value("Global/RestoreWindowParams", true).toBool()) {
+		settings.beginGroup("MainWindow");
+		move(settings.value("pos", QPoint(0, 0)).toPoint());
+		resize(settings.value("size", QSize(640, 480)).toSize());
+		bool isMaximized = settings.value("IsMaximized", false).toBool();
+		if (isMaximized)
+			setWindowState(Qt::WindowMaximized);
+		restoreState(settings.value("State", "").toByteArray());
+		settings.endGroup();
+	}
 }
 
 void DBFRedactorMainWindow::saveSettings()

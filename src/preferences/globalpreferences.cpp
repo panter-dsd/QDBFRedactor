@@ -67,8 +67,12 @@ GlobalPreferences::GlobalPreferences(QWidget *parent)
 	onlyOneCopy = new QCheckBox (this);
 	connect (onlyOneCopy, SIGNAL(stateChanged(int)), this, SIGNAL(modified()));
 
+	restoreWindowParams = new QCheckBox (this);
+	connect (restoreWindowParams, SIGNAL(stateChanged(int)), this, SIGNAL(modified()));
+
 	QVBoxLayout *runLayout = new QVBoxLayout ();
 	runLayout->addWidget(onlyOneCopy);
+	runLayout->addWidget(restoreWindowParams);
 	runGroup->setLayout(runLayout);
 
 	QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -90,6 +94,7 @@ void GlobalPreferences::retranslateStrings()
 
 	runGroup->setTitle(tr ("Run"));
 	onlyOneCopy->setText(tr ("Allow only one copy"));
+	restoreWindowParams->setText (tr ("Restore window position and size"));
 }
 
 void GlobalPreferences::saveSettings()
@@ -98,6 +103,7 @@ void GlobalPreferences::saveSettings()
 
 	settings.beginGroup("Global");
 	settings.setValue("OnlyOneCopy", onlyOneCopy->isChecked());
+	settings.setValue("RestoreWindowParams", restoreWindowParams->isChecked());
 	settings.endGroup();
 	settings.sync();
 }
@@ -108,6 +114,7 @@ void GlobalPreferences::loadSettings()
 
 	settings.beginGroup("Global");
 	onlyOneCopy->setChecked(settings.value("OnlyOneCopy", true).toBool());
+	restoreWindowParams->setChecked(settings.value("RestoreWindowParams", true).toBool());
 
 	settings.endGroup();
 }
