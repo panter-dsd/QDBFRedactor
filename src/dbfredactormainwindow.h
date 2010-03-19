@@ -86,6 +86,9 @@ private:
 	QAction *actionAddExcludeFilter;
 	QAction *actionRemoveFilter;
 
+	QAction *actionHide;
+	QAction *actionShow;
+
 	QSystemTrayIcon *trayIcon;
 
 public:
@@ -138,6 +141,7 @@ private Q_SLOTS:
 	void about();
 	void reloadSettings ();
 	void trayClicked(QSystemTrayIcon::ActivationReason reason);
+	void updateHideShowActions ();
 
 public Q_SLOTS:
 	void handleMessage(const QString& message)

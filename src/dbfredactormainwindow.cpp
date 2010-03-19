@@ -64,6 +64,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	setAcceptDrops(true);
 	resize (800, 600);
 
+	trayIcon = new QSystemTrayIcon(this);
+	trayIcon->setIcon(QApplication::windowIcon());
+	connect(trayIcon, SIGNAL(activated (QSystemTrayIcon::ActivationReason)),
+					this, SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
+
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
 	tabBar->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -216,6 +221,15 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionAboutQt->setIcon(QIcon(":/share/images/aboutQt.png"));
 	connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
+	actionHide = new QAction (this);
+	connect(actionHide, SIGNAL(triggered()), this, SLOT(hide()));
+
+	actionShow = new QAction (this);
+	connect(actionShow, SIGNAL(triggered()), this, SLOT(show()));
+
+	connect(actionHide, SIGNAL(triggered()), this, SLOT(updateHideShowActions ()));
+	connect(actionShow, SIGNAL(triggered()), this, SLOT(updateHideShowActions ()));
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -248,6 +262,12 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 
 	menuBar->addMenu(helpMenu);
 
+//Tray menu
+	QMenu *trayIconMenu = new QMenu(this);
+	trayIconMenu->addAction(actionHide);
+	trayIconMenu->addAction(actionShow);
+	trayIcon->setContextMenu(trayIconMenu);
+
 //ToolBars
 	fileToolBar = new QToolBar(this);
 	fileToolBar->setObjectName("file_toolbar");
@@ -258,11 +278,6 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileToolBar->addSeparator();
 	fileToolBar->addAction(actionExit);
 	addToolBar(fileToolBar);
-
-	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(QApplication::windowIcon());
-	connect(trayIcon, SIGNAL(activated (QSystemTrayIcon::ActivationReason)),
-					this, SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
 
 	loadSettings();
 	updateActions();
@@ -348,6 +363,9 @@ void DBFRedactorMainWindow::retranslateStrings()
 	actionAbout->setText(tr("About..."));
 
 	actionAboutQt->setText(tr("About Qt"));
+
+	actionHide->setText(tr ("Hide"));
+	actionShow->setText(tr ("Show"));
 
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
@@ -839,9 +857,23 @@ bool DBFRedactorMainWindow::event(QEvent *ev)
 		if (settings.value("Global/MoveToTrayWhenClose", true).toBool()) {
 			hide ();
 			trayIcon->show();
+			actionShow->setEnabled(true);
+			actionHide->setEnabled(false);
 			ev->ignore();
 			return true;
 		}
+	}
+
+	if (ev->type() == QEvent::Show) {
+		QSettings settings;
+		if (!settings.value("Global/TrayAlwaysShow", true).toBool())
+			trayIcon->hide();
+		actionShow->setEnabled(false);
+		actionHide->setEnabled(true);
+	}
+
+	if (ev->type() == QEvent::Hide) {
+
 	}
 
 	return QMainWindow::event(ev);
@@ -1190,19 +1222,26 @@ void DBFRedactorMainWindow::about()
 
 void DBFRedactorMainWindow::trayClicked(QSystemTrayIcon::ActivationReason reason)
 {
-	QSettings settings;
 	switch (reason) {
 		case QSystemTrayIcon::Trigger:
 			if (isHidden()) {
 				show();
 				activateWindow();
-				if (!settings.value("Global/TrayAlwaysShow", true).toBool())
-					trayIcon->hide();
+				actionShow->setEnabled(false);
+				actionHide->setEnabled(true);
 			} else {
 				hide();
+				actionShow->setEnabled(true);
+				actionHide->setEnabled(false);
 			}
 			break;
 		default:
 			break;
 	}
+}
+
+void DBFRedactorMainWindow::updateHideShowActions ()
+{
+	actionHide->setEnabled(!isHidden());
+	actionShow->setEnabled(isHidden());
 }
