@@ -95,6 +95,7 @@ AboutDialog::AboutDialog(QWidget *parent, Qt::WFlags f)
 	licenseView = new QTextEdit(this);
 	licenseView->setReadOnly(true);
 	licenseView->setWordWrapMode(QTextOption::NoWrap);
+	licenseView->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	licenseView->setPalette(palette);
 
 	tabWidget->addTab(licenseView, tr("License"));
@@ -109,7 +110,6 @@ AboutDialog::AboutDialog(QWidget *parent, Qt::WFlags f)
 
 void AboutDialog::setLicenseText(const QString& text)
 {
-	licenseView->clear();
 	licenseView->setText(text);
 }
 
@@ -123,7 +123,6 @@ void AboutDialog::printCopyright()
 						 + "<p>"
 						 + "<b>" + tr("License") + "</b>: %4";
 
-	copyrightView->clear();
 	copyrightView->setText(text.arg(m_author).arg(m_mail).arg(m_phone).arg(m_license));
 }
 

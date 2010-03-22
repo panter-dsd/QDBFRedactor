@@ -59,7 +59,6 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 			return redactor->isDeleted(index.row());
 		}
 
-
 	return QVariant();
 }
 

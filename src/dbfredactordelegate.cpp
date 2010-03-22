@@ -34,7 +34,7 @@
 DBFRedactorDelegate::DBFRedactorDelegate(DBFRedactor *redactor, QObject * parent)
 	: QItemDelegate(parent), m_redactor(redactor)
 {
-
+	m_settings.beginGroup("Display");
 }
 
 QRect DBFRedactorDelegate::checkRect
@@ -44,9 +44,9 @@ QRect DBFRedactorDelegate::checkRect
 	QStyleOptionButton opt;
 	opt.QStyleOption::operator=(option);
 	opt.rect = bounding;
-	QRect rect = qApp->style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
-	int deltaX = (bounding.width() - rect.width()) / 2;
-	int deltaY = (bounding.height() - rect.height()) / 2;
+	const QRect& rect = qApp->style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
+	const int deltaX = (bounding.width() - rect.width()) / 2;
+	const int deltaY = (bounding.height() - rect.height()) / 2;
 	return QRect(bounding.left() + deltaX, bounding.top() + deltaY, rect.width(), rect.height());
 }
 
@@ -55,7 +55,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 	QStyleOptionViewItem m_option(option);
 
 	if (index.data(Qt::UserRole).toBool()) {
-		m_option.palette.setBrush(QPalette::Background, Qt::darkGray);
+		m_option.palette.setBrush(QPalette::Background, m_settings.value("Deleted_Color", Qt::darkGray).value<QColor>());
 		painter->fillRect(option.rect, m_option.palette.background());
 	}
 
@@ -74,33 +74,33 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 			break;
 		}
 		case DBFRedactor::TYPE_DATE:
-			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Display/Date_Alignment", 0).toInt());
-			m_option.palette.setColor(QPalette::Text, m_settings.value("Display/Date_Color", option.palette.color(QPalette::Text)).value<QColor>());
-			m_option.font = m_settings.value("Display/Date_Font", option.font).value<QFont> ();
+			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Date_Alignment", 0).toInt());
+			m_option.palette.setColor(QPalette::Text, m_settings.value("Date_Color", option.palette.color(QPalette::Text)).value<QColor>());
+			m_option.font = m_settings.value("Date_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toDate().toString(Qt::SystemLocaleShortDate);
 			break;
 		case DBFRedactor::TYPE_FLOAT:
-			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Display/Float_Alignment", 0).toInt());
-			m_option.palette.setColor(QPalette::Text, m_settings.value("Display/Float_Color", option.palette.color(QPalette::Text)).value<QColor>());
-			m_option.font = m_settings.value("Display/Float_Font", option.font).value<QFont> ();
+			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Float_Alignment", 0).toInt());
+			m_option.palette.setColor(QPalette::Text, m_settings.value("Float_Color", option.palette.color(QPalette::Text)).value<QColor>());
+			m_option.font = m_settings.value("Float_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
 		case DBFRedactor::TYPE_NUMERIC:
-			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Display/Numeric_Alignment", 0).toInt());
-			m_option.palette.setColor(QPalette::Text, m_settings.value("Display/Numeric_Color", option.palette.color(QPalette::Text)).value<QColor>());
-			m_option.font = m_settings.value("Display/Numeric_Font", option.font).value<QFont> ();
+			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Numeric_Alignment", 0).toInt());
+			m_option.palette.setColor(QPalette::Text, m_settings.value("Numeric_Color", option.palette.color(QPalette::Text)).value<QColor>());
+			m_option.font = m_settings.value("Numeric_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
 		case DBFRedactor::TYPE_CHAR:
-			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Display/String_Alignment", 0).toInt());
-			m_option.palette.setColor(QPalette::Text, m_settings.value("Display/String_Color", option.palette.color(QPalette::Text)).value<QColor>());
-			m_option.font = m_settings.value("Display/String_Font", option.font).value<QFont> ();
+			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("String_Alignment", 0).toInt());
+			m_option.palette.setColor(QPalette::Text, m_settings.value("String_Color", option.palette.color(QPalette::Text)).value<QColor>());
+			m_option.font = m_settings.value("String_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
 		case DBFRedactor::TYPE_MEMO:
-			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Display/Memo_Alignment", 0).toInt());
-			m_option.palette.setColor(QPalette::Text, m_settings.value("Display/Memo_Color", option.palette.color(QPalette::Text)).value<QColor>());
-			m_option.font = m_settings.value("Display/Memo_Font", option.font).value<QFont> ();
+			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Memo_Alignment", 0).toInt());
+			m_option.palette.setColor(QPalette::Text, m_settings.value("Memo_Color", option.palette.color(QPalette::Text)).value<QColor>());
+			m_option.font = m_settings.value("Memo_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
 		default:
@@ -118,7 +118,7 @@ bool DBFRedactorDelegate::editorEvent (QEvent* ev, QAbstractItemModel* model,con
 	if(!ev || ! model)
 		return false;
 
-	Qt::ItemFlags flags = model->flags(index);
+	const Qt::ItemFlags flags = model->flags(index);
 	if (!(option.state & QStyle::State_Enabled) || !(flags & Qt::ItemIsEnabled))
 		return false;
 
@@ -144,7 +144,7 @@ bool DBFRedactorDelegate::editorEvent (QEvent* ev, QAbstractItemModel* model,con
 		default:
 			return false;
 	}
-	Qt::CheckState value = index.data(Qt::CheckStateRole).toInt() == Qt::Checked ? Qt::Unchecked : Qt::Checked;
+	const Qt::CheckState &value = index.data(Qt::CheckStateRole).toInt() == Qt::Checked ? Qt::Unchecked : Qt::Checked;
 	return model->setData(index, value, Qt::EditRole);
 }
 

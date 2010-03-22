@@ -425,14 +425,15 @@ void DBFRedactorMainWindow::saveSettings()
 void DBFRedactorMainWindow::open()
 {
 	QSettings settings;
+	settings.beginGroup("Global");
 	const QStringList& fileNames = QFileDialog::getOpenFileNames(this,
 															tr("Open files"),
-															settings.value("Global/OpenPath", QDir::homePath()).toString(),
+															settings.value("OpenPath", QDir::homePath()).toString(),
 															tr("DBase files (*.dbf);;All files(*)"));
 	if (fileNames.isEmpty())
 		return;
 
-	settings.setValue("Global/OpenPath", QFileInfo(fileNames.first()).absolutePath());
+	settings.setValue("OpenPath", QFileInfo(fileNames.first()).absolutePath());
 
 	openFiles(fileNames);
 }
@@ -458,14 +459,14 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 					break;
 				}
 			}
-			continue;
-		}
-		DBFRedactorPage *page = new DBFRedactorPage(fileName, this);
+		} else {
+			DBFRedactorPage *page = new DBFRedactorPage(fileName, this);
 
-		pages.insert(fileName, page);
-		index = tabBar->addTab(QFileInfo(fileName).fileName());
-		tabBar->setTabData(index, fileName);
-		tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
+			pages.insert(fileName, page);
+			index = tabBar->addTab(QFileInfo(fileName).fileName());
+			tabBar->setTabData(index, fileName);
+			tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
+		}
 	}
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
@@ -499,11 +500,8 @@ void DBFRedactorMainWindow::tabChanged(int index)
 	view->verticalScrollBar()->setValue(page->pos().y());
 	view->setItemDelegate(page->delegate());
 
-	{
-		int i = 0;
-		foreach(int size, page->columnSizes())
-			view->setColumnWidth(i++, size);
-	}
+	for (int i = 0; i < page->columnSizes().size(); i++)
+		view->setColumnWidth(i, page->columnSizes().at(i));
 
 	connect(page->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
 			this, SLOT(selectionChanged()));
@@ -542,11 +540,7 @@ void DBFRedactorMainWindow::updateActions()
 	acionExportToCsv->setEnabled(currentPage);
 	functionComboBox->setVisible(currentPage);
 	actionSetEditMode->setEnabled(currentPage);
-	if (currentPage)
-		actionSetEditMode->setChecked(!currentPage->dbfModel()->isReadOnly());
 	actionSave->setEnabled(currentPage);
-	if (currentPage)
-		actionSave->setEnabled(currentPage->redactor()->modified());
 	actionAddRecord->setEnabled(actionSetEditMode->isChecked());
 	actionRemoveRecord->setEnabled(actionSetEditMode->isChecked());
 	actionRecoverRecord->setEnabled(actionSetEditMode->isChecked());
@@ -556,8 +550,12 @@ void DBFRedactorMainWindow::updateActions()
 	codecsMenu->setEnabled(currentPage);
 
 	actionCopy->setEnabled(currentPage);
-	if (currentPage)
+
+	if (currentPage) {
+		actionSetEditMode->setChecked(!currentPage->dbfModel()->isReadOnly());
+		actionSave->setEnabled(currentPage->redactor()->modified());
 		actionCopy->setEnabled(currentPage->model()->rowCount() > 0);
+	}
 }
 
 void DBFRedactorMainWindow::refreshModel()
@@ -754,14 +752,14 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 		if (view->isRowHidden(i))
 			continue;
 
-		QString tempStrting;
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
 			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
-		tempStrting += "<TR ALIGN=LEFT>";
+
+		QString tempStrting = "<TR ALIGN=LEFT>";
 		for (int j = 0; j < view->model()->columnCount(); j++) {
-			QVariant value = view->model()->index(i, j).data(Qt::DisplayRole);
+			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
 			QString stringValue;
 
 			switch(currentPage->redactor()->field(view->model()->index(i, j).column()).type) {
@@ -790,14 +788,15 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 void DBFRedactorMainWindow::exportToHtml()
 {
 	QSettings settings;
+	settings.beginGroup("Global");
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
+														   settings.value("ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
 														   tr("HTML files (*.html)"));
 	if (fileName.isEmpty())
 		return;
 
-	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
+	settings.setValue("ExportPath", QFileInfo(fileName).absolutePath());
 
 	const QStringList& l(prepareHtml());
 
@@ -816,7 +815,7 @@ void DBFRedactorMainWindow::exportToHtml()
 	QTextStream stream(&file);
 	stream.setCodec("UTF-8");
 
-	for (int i = 0; i < l.size(); i++) {
+	for (int i = 0, size = l.size(); i < size; i++) {
 		if (i / ProcessEventsPeriod * ProcessEventsPeriod == i) {
 			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
@@ -874,24 +873,21 @@ bool DBFRedactorMainWindow::event(QEvent *ev)
 		actionHide->setEnabled(true);
 	}
 
-	if (ev->type() == QEvent::Hide) {
-
-	}
-
 	return QMainWindow::event(ev);
 }
 
 void DBFRedactorMainWindow::exportToXml()
 {
 	QSettings settings;
+	settings.beginGroup("Global");
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
+														   settings.value("ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
 														   tr("XML files (*.xml)"));
 	if (fileName.isEmpty())
 		return;
 
-	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
+	settings.setValue("ExportPath", QFileInfo(fileName).absolutePath());
 
 	progressBar = new QProgressBar(this);
 	progressBar->setFormat(tr("Saving. %p% to finish."));
@@ -910,7 +906,7 @@ void DBFRedactorMainWindow::exportToXml()
 	stream.writeStartDocument();
 	stream.writeStartElement("ROWDATA");
 
-	for (int i = 0; i < view->model()->rowCount(); i++) {
+	for (int i = 0, rowCount = view->model()->rowCount(); i < rowCount; i++) {
 		if (view->isRowHidden(i))
 			continue;
 
@@ -920,7 +916,7 @@ void DBFRedactorMainWindow::exportToXml()
 			progressBar->setValue(i);
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
-		for (int j = 0; j < view->model()->columnCount(); j++) {
+		for (int j = 0, columnCount = view->model()->columnCount(); j < columnCount; j++) {
 			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
 			stream.writeTextElement(view->model()->headerData(j, Qt::Horizontal, Qt::EditRole).toString(),
 									value.toString());
@@ -940,14 +936,15 @@ void DBFRedactorMainWindow::exportToXml()
 void DBFRedactorMainWindow::exportToCsv()
 {
 	QSettings settings;
+	settings.beginGroup("Global");
 	const QString& fileName = QFileDialog::getSaveFileName(this,
 														   tr("Save"),
-														   settings.value("Global/ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
+														   settings.value("ExportPath", "'").toString() + "/" + currentPage->redactor()->tableName(),
 														   tr("CSV files (*.csv)"));
 	if (fileName.isEmpty())
 		return;
 
-	settings.setValue("Global/ExportPath", QFileInfo(fileName).absolutePath());
+	settings.setValue("ExportPath", QFileInfo(fileName).absolutePath());
 
 	progressBar = new QProgressBar(this);
 	progressBar->setFormat(tr("Saving. %p% to finish."));
@@ -964,14 +961,13 @@ void DBFRedactorMainWindow::exportToCsv()
 	QTextStream stream(&file);
 	stream.setCodec("UTF-8");
 
-
 	QStringList tempStringList;
-	for (int j = 0; j < view->model()->columnCount(); j++)
+	for (int j = 0, columnCount = view->model()->columnCount(); j < columnCount; j++)
 		tempStringList << "\"" + view->model()->headerData(j, Qt::Horizontal, Qt::EditRole).toString() + "\"";
 
 	stream << tempStringList.join("|") << endl;
 
-	for (int i = 0; i < view->model()->rowCount(); i++) {
+	for (int i = 0, rowCount = view->model()->rowCount(); i < rowCount; i++) {
 		if (view->isRowHidden(i))
 			continue;
 
@@ -980,8 +976,9 @@ void DBFRedactorMainWindow::exportToCsv()
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
 		tempStringList.clear();
-		for (int j = 0; j < view->model()->columnCount(); j++) {
+		for (int j = 0, columnCount = view->model()->columnCount(); j < columnCount; j++) {
 			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
+
 			switch (currentPage->redactor()->field(j).type) {
 				case DBFRedactor::TYPE_CHAR:
 					tempStringList << "\"" + value.toString() + "\"";
@@ -1044,7 +1041,7 @@ void DBFRedactorMainWindow::changeSort()
 {
 	QHash<int, QString> captions;
 
-	for (int i = 0; i < currentPage->model()->columnCount(); i++)
+	for (int i = 0, columnCount = currentPage->model()->columnCount(); i < columnCount; i++)
 		captions.insert(i, currentPage->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString());
 
 	SortDialog dialog(captions, this);
@@ -1058,7 +1055,7 @@ void DBFRedactorMainWindow::changeFilter()
 {
 	QHash<int, QString> captions;
 
-	for (int i = 0; i < currentPage->model()->columnCount(); i++)
+	for (int i = 0, columnCount = currentPage->model()->columnCount(); i < columnCount; i++)
 		captions.insert(i, currentPage->model()->headerData(i, Qt::Horizontal, Qt::EditRole).toString());
 
 	FilterDialog dialog(captions, this);

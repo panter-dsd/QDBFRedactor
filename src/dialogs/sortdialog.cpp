@@ -38,7 +38,6 @@
 SortDialog::SortDialog(QHash<int, QString> captions, QWidget *parent, Qt::WindowFlags f)
 	:QDialog(parent, f), m_captions(captions)
 {
-
 	columnsLabel = new QLabel(this);
 	columnsLabel->setAlignment(Qt::AlignCenter);
 
@@ -194,7 +193,7 @@ void SortDialog::updateLists()
 	sortedColumnsList->clear();
 	columnsList->clear();
 
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		const int key = m_sortedColumns.at(i).first;
 		QString value = l.value(key) + " ";
 		value += m_sortedColumns.at(i).second == Qt::AscendingOrder ? QString(0x2193) : QString(0x2191);
@@ -220,9 +219,9 @@ void SortDialog::changeSortOrder()
 		return;
 
 	const QModelIndex& index = sortedColumnsList->currentIndex();
-	int key =index.data(Qt::UserRole).toInt();
+	const int key =index.data(Qt::UserRole).toInt();
 
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == key) {
 			m_sortedColumns[i].second = m_sortedColumns[i].second == Qt::AscendingOrder
 										? Qt::DescendingOrder
@@ -236,7 +235,7 @@ void SortDialog::changeSortOrder()
 
 void SortDialog::addAll()
 {
-	for (int i = 0; i < columnsList->count(); i++) {
+	for (int i = 0, columnCount = columnsList->count(); i < columnCount; i++) {
 		QPair<int, Qt::SortOrder> pair;
 		pair.first = columnsList->item(i)->data(Qt::UserRole).toInt();
 		pair.second = Qt::AscendingOrder;
@@ -268,9 +267,9 @@ void SortDialog::remove()
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;
 
-	int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
+	const int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
 
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == key) {
 			m_sortedColumns.removeAt(i);
 			updateLists();
@@ -284,10 +283,10 @@ void SortDialog::moveUp()
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;
 
-	int currentRow = sortedColumnsList->currentRow();
-	int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
+	const int currentRow = sortedColumnsList->currentRow();
+	const int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
 
-	for (int i = 1; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == key) {
 			m_sortedColumns.move(i, i - 1);
 			updateLists();
@@ -302,10 +301,10 @@ void SortDialog::moveDown()
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;
 
-	int currentRow = sortedColumnsList->currentRow();
-	int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
+	const int currentRow = sortedColumnsList->currentRow();
+	const int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
 
-	for (int i = 0; i < m_sortedColumns.size() - 1; i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size - 1; i++) {
 		if (m_sortedColumns.at(i).first == key) {
 			m_sortedColumns.move(i, i + 1);
 			updateLists();
@@ -320,9 +319,9 @@ void SortDialog::moveTop()
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;
 
-	int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
+	const int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
 
-	for (int i = 1; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == key) {
 			m_sortedColumns.move(i, 0);
 			updateLists();
@@ -337,9 +336,9 @@ void SortDialog::moveBottom()
 	if (!sortedColumnsList->currentIndex().isValid())
 		return;
 
-	int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
+	const int key = sortedColumnsList->currentIndex().data(Qt::UserRole).toInt();
 
-	for (int i = 0; i < m_sortedColumns.size() - 1; i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size - 1; i++) {
 		if (m_sortedColumns.at(i).first == key) {
 			m_sortedColumns.move(i, m_sortedColumns.size() - 1);
 			updateLists();

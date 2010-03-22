@@ -37,7 +37,7 @@ QVariant DBFRedactorSortFilterProxyModel::headerData ( int section, Qt::Orientat
 {
 	if(role == Qt::DisplayRole) {
 		if(orientation == Qt::Horizontal) {
-			for (int i = 0; i < m_sortedColumns.size(); i++) {
+			for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 				if (m_sortedColumns.at(i).first == section) {
 					QString sortIndicator = m_sortedColumns.at(i).second == Qt::AscendingOrder ? QString(0x2193) : QString(0x2191);
 					if (i > 0)
@@ -62,7 +62,7 @@ void DBFRedactorSortFilterProxyModel::addSortedColumn(int column, Qt::SortOrder 
 
 void DBFRedactorSortFilterProxyModel::removeSortedColumn(int column)
 {
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == column) {
 			m_sortedColumns.removeAt(i);
 			sort();
@@ -73,7 +73,7 @@ void DBFRedactorSortFilterProxyModel::removeSortedColumn(int column)
 
 void DBFRedactorSortFilterProxyModel::changeSortedColumn(int column, Qt::SortOrder order)
 {
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == column) {
 			m_sortOrder = order;
 			m_sortedColumns[i].second = order;
@@ -91,7 +91,7 @@ void DBFRedactorSortFilterProxyModel::clearSort()
 
 void DBFRedactorSortFilterProxyModel::sort()
 {
-	int column = m_sortedColumns.isEmpty() ? -1 : 0;
+	const int column = m_sortedColumns.isEmpty() ? -1 : 0;
 	QSortFilterProxyModel::sort(column, Qt::AscendingOrder);
 }
 
@@ -151,7 +151,7 @@ static inline QChar getNextChar(const QString &s, int location)
 
 inline int DBFRedactorSortFilterProxyModel::naturalCompare(const QString& left, const QString& right, Qt::CaseSensitivity cs) const
 {
-	for(int l1 = 0, l2 = 0; l1 <= left.count() && l2 <= right.count(); ++l1, ++l2)
+	for(int l1 = 0, l2 = 0, size1 = left.size(), size2 = right.size(); l1 <= size1 && l2 <= size2; ++l1, ++l2)
 	{
 		// skip spaces, tabs and 0's
 		QChar c1 = getNextChar(left, l1);
@@ -216,7 +216,7 @@ inline int DBFRedactorSortFilterProxyModel::naturalCompare(const QString& left, 
 
 Qt::SortOrder DBFRedactorSortFilterProxyModel::sortOrder(int column) const
 {
-	for (int i = 0; i < m_sortedColumns.size(); i++) {
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
 		if (m_sortedColumns.at(i).first == column) {
 			return m_sortedColumns.at(i).second;
 		}
@@ -225,9 +225,11 @@ Qt::SortOrder DBFRedactorSortFilterProxyModel::sortOrder(int column) const
 
 bool DBFRedactorSortFilterProxyModel::isColumnInSort(int column) const
 {
-	for (int i = 0; i < m_sortedColumns.size(); i++)
-		if (m_sortedColumns.at(i).first == column)
+	for (int i = 0, size = m_sortedColumns.size(); i < size; i++) {
+		if (m_sortedColumns.at(i).first == column) {
 			return true;
+		}
+	}
 
 	return false;
 }
@@ -239,9 +241,9 @@ bool DBFRedactorSortFilterProxyModel::filterAcceptsRow ( int source_row, const Q
 
 	foreach(FilterItem item, m_filter) {
 		bool tempRes = true;
-		if (i == 0)
+		if (i++ == 0)
 			item.filterOperator = AND;
-		i++;
+
 		const QVariant& data = sourceModel()->index(source_row, item.column, source_parent).data(Qt::DisplayRole);
 
 		switch (item.uslovie) {

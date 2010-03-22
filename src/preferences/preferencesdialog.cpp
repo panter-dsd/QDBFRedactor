@@ -49,7 +49,7 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 	connect(preferencesList, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemChanged(QTreeWidgetItem*,int)));
 
 	preferencesWidgets = new QStackedWidget(this);
-	preferencesWidgets->setContentsMargins(0,0,0,0);
+	preferencesWidgets->setContentsMargins(0, 0, 0, 0);
 
 	splitter = new QSplitter(this);
 	splitter->setOrientation(Qt::Horizontal);
@@ -72,7 +72,7 @@ PreferencesDialog::PreferencesDialog(QWidget * parent, Qt::WindowFlags f)
 								   Qt::Horizontal,
 								   this);
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
-	connect(buttons, 	SIGNAL(accepted()), this, SLOT(savePreferencesAndExit()));
+	connect(buttons, 	SIGNAL(accepted()), this, SLOT(saveAndAccept ()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 	connect(buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(savePreferences()));
 	connect(buttons->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SIGNAL(applied()));
@@ -125,6 +125,7 @@ void PreferencesDialog::savePreferences()
 		page->saveSettings();
 	}
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
+	updatePreferencesList();
 }
 
 void PreferencesDialog::setApplyEnabled()
@@ -134,6 +135,17 @@ void PreferencesDialog::setApplyEnabled()
 
 void PreferencesDialog::setDefaults()
 {
+	QMapIterator<int, QWidget*> it(pages);
+
+	while(it.hasNext()) {
+		it.next();
+
+		AbstractPreferencesPage *page = qobject_cast<AbstractPreferencesPage*> (it.value());
+		if (!page)
+			continue;
+		page->setDefaults();
+	}
+	updatePreferencesList();
 }
 
 void PreferencesDialog::loadSettings()
@@ -177,7 +189,7 @@ void PreferencesDialog::updatePreferencesList()
 		if (!page)
 			continue;
 
-		QStringList l = page->preferenceGroup().split("/", QString::KeepEmptyParts);
+		const QStringList& l = page->preferenceGroup().split("/", QString::SkipEmptyParts);
 
 		QList<QTreeWidgetItem *> items;
 		QTreeWidgetItem *parent = 0;
@@ -205,7 +217,7 @@ void PreferencesDialog::updatePreferencesList()
 	preferencesList->expandAll();
 }
 
-void PreferencesDialog::itemChanged(QTreeWidgetItem * item, int column)
+void PreferencesDialog::itemChanged(QTreeWidgetItem * item, int /*column*/)
 {
 	if (!item)
 		return;
@@ -215,10 +227,12 @@ void PreferencesDialog::itemChanged(QTreeWidgetItem * item, int column)
 	while (!ok) {
 		int index = item->data(0, Qt::UserRole).toInt(&ok);
 
-		if (ok)
+		if (ok) {
 			preferencesWidgets->setCurrentIndex(index);
-		else
-			item = item->child(0);
+			break;
+		}
+
+		item = item->child(0);
 		if (!item)
 			break;
 	}

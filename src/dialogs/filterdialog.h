@@ -41,6 +41,18 @@ class FilterDialog : public QDialog
 	Q_OBJECT
 
 private:
+	enum Columns {
+		Operation = 0,
+		Column,
+		Uslovie,
+		Pattern,
+		PatternSyntax,
+		CaseSensitivity,
+
+		ColumnCount
+	};
+
+private:
 	QHash<int, QString> m_captions;
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> m_filter;
 

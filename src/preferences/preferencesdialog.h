@@ -62,7 +62,7 @@ protected:
 
 private Q_SLOTS:
 	void savePreferences();
-	void savePreferencesAndExit()
+	void saveAndAccept()
 	{
 		savePreferences();
 		accept();

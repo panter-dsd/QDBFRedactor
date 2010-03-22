@@ -41,7 +41,7 @@ FilterDialog::FilterDialog(QHash<int, QString> captions, QWidget *parent, Qt::Wi
 	:QDialog(parent, f), m_captions(captions)
 {
 	model = new QStandardItemModel(this);
-	model->setColumnCount(6);
+	model->setColumnCount(ColumnCount);
 
 	filterView = new QTableView(this);
 	filterView->setModel(model);
@@ -103,37 +103,37 @@ void FilterDialog::setFilter(QList<DBFRedactorSortFilterProxyModel::FilterItem> 
 	m_filter = filter;
 
 	model->clear();
-	model->setColumnCount(6);
+	model->setColumnCount(ColumnCount);
 	model->setRowCount(m_filter.size());
 
 	QStandardItem *item;
-	for (int i = 0; i < m_filter.size(); i++) {
+	for (int i = 0, size = m_filter.size(); i < size; i++) {
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).filterOperator), Qt::EditRole);
-		model->setItem(i, 0, item);
+		model->setItem(i, Operation, item);
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).column), Qt::EditRole);
-		model->setItem(i, 1, item);
+		model->setItem(i, Column, item);
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).uslovie), Qt::EditRole);
-		model->setItem(i, 2, item);
+		model->setItem(i, Uslovie, item);
 		item = new QStandardItem();
 		item->setData(m_filter.at(i).regExp.pattern(), Qt::EditRole);
-		model->setItem(i, 3, item);
+		model->setItem(i, Pattern, item);
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).regExp.patternSyntax()), Qt::EditRole);
-		model->setItem(i, 4, item);
+		model->setItem(i, PatternSyntax, item);
 		item = new QStandardItem();
 		item->setData(QString::number(m_filter.at(i).regExp.caseSensitivity()), Qt::EditRole);
-		model->setItem(i, 5, item);
+		model->setItem(i, CaseSensitivity, item);
 	}
 
-	model->setHeaderData(0, Qt::Horizontal, tr("Operation"));
-	model->setHeaderData(1, Qt::Horizontal, tr("Column"));
-	model->setHeaderData(2, Qt::Horizontal, tr("Uslovie"));
-	model->setHeaderData(3, Qt::Horizontal, tr("Pattern"));
-	model->setHeaderData(4, Qt::Horizontal, tr("Pattern syntax"));
-	model->setHeaderData(5, Qt::Horizontal, tr("Case sensitivity"));
+	model->setHeaderData(Operation, Qt::Horizontal, tr("Operation"));
+	model->setHeaderData(Column, Qt::Horizontal, tr("Column"));
+	model->setHeaderData(Uslovie, Qt::Horizontal, tr("Uslovie"));
+	model->setHeaderData(Pattern, Qt::Horizontal, tr("Pattern"));
+	model->setHeaderData(PatternSyntax, Qt::Horizontal, tr("Pattern syntax"));
+	model->setHeaderData(CaseSensitivity, Qt::Horizontal, tr("Case sensitivity"));
 }
 
 void FilterDialog::add()
@@ -172,14 +172,14 @@ void FilterDialog::remove()
 QList<DBFRedactorSortFilterProxyModel::FilterItem> FilterDialog::filter() const
 {
 	QList<DBFRedactorSortFilterProxyModel::FilterItem> l;
-	for (int i = 0; i < model->rowCount(); i++) {
+	for (int i = 0, rowCount = model->rowCount(); i < rowCount; i++) {
 		DBFRedactorSortFilterProxyModel::FilterItem item;
-		item.filterOperator = static_cast<DBFRedactorSortFilterProxyModel::FilterOperator> (model->item(i, 0)->data(Qt::EditRole).toInt());
-		item.column = model->item(i, 1)->data(Qt::EditRole).toInt();
-		item.uslovie = static_cast<DBFRedactorSortFilterProxyModel::FilterUslovie> (model->item(i, 2)->data(Qt::EditRole).toInt());
-		item.regExp.setPattern(model->item(i, 3)->data(Qt::EditRole).toString());
-		item.regExp.setPatternSyntax(static_cast<QRegExp::PatternSyntax> (model->item(i, 4)->data(Qt::EditRole).toInt()));
-		item.regExp.setCaseSensitivity(static_cast<Qt::CaseSensitivity> (model->item(i, 5)->data(Qt::EditRole).toInt()));
+		item.filterOperator = static_cast<DBFRedactorSortFilterProxyModel::FilterOperator> (model->item(i, Operation)->data(Qt::EditRole).toInt());
+		item.column = model->item(i, Column)->data(Qt::EditRole).toInt();
+		item.uslovie = static_cast<DBFRedactorSortFilterProxyModel::FilterUslovie> (model->item(i, Uslovie)->data(Qt::EditRole).toInt());
+		item.regExp.setPattern(model->item(i, Pattern)->data(Qt::EditRole).toString());
+		item.regExp.setPatternSyntax(static_cast<QRegExp::PatternSyntax> (model->item(i, PatternSyntax)->data(Qt::EditRole).toInt()));
+		item.regExp.setCaseSensitivity(static_cast<Qt::CaseSensitivity> (model->item(i, CaseSensitivity)->data(Qt::EditRole).toInt()));
 		l << item;
 	}
 	return l;
@@ -191,7 +191,7 @@ void FilterDialog::loadSettings()
 
 	settings.beginGroup("FilterDialog");
 	resize(settings.value("Size", QSize(700, 300)).toSize());
-	move(settings.value("Pos", QPoint()).toPoint());
+	move(settings.value("Pos", pos ()).toPoint());
 	settings.endGroup();
 }
 
