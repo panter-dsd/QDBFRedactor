@@ -316,94 +316,94 @@
         <translation>Ошибка сохранения</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="607"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="642"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="672"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="608"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="643"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="673"/>
         <source>Calculating. %p% to finish.</source>
         <translation>Подсчет. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="702"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="703"/>
         <source>Coping to clipboard. %p% to finish.</source>
         <translation>Копирование в буффер обмена. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="758"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="759"/>
         <source>Preparing. %p% to finish.</source>
         <translation>Подготовка. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="782"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="783"/>
         <source>Yes</source>
         <translation>Да</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="782"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="783"/>
         <source>No</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="805"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="896"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="953"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="806"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="897"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="954"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="807"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="808"/>
         <source>HTML files (*.html)</source>
         <translation>HTML файлы (*.html)</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="816"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="905"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="962"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="817"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="906"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="963"/>
         <source>Saving. %p% to finish.</source>
         <translation>Сохранение. %p% до завершения.</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="823"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="912"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="969"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="824"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="913"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="970"/>
         <source>Error save to file.
 %1</source>
         <translation>Ошибка сохранения в файл.
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="841"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="945"/>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="1015"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="842"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="946"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1016"/>
         <source>Export finished</source>
         <translation>Экспорт завершен</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="898"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="899"/>
         <source>XML files (*.xml)</source>
         <translation>XML файлы (*.xml)</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="955"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="956"/>
         <source>CSV files (*.csv)</source>
         <translation>CSV файлы (*.csv)</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="1193"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1194"/>
         <source>Are you shure remove %1 records?</source>
         <translation>Вы действительно хотите удалить %1 записей?</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="1208"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1209"/>
         <source>Are you shure recover %1 records?</source>
         <translation>Вы действительно хотите восстановить %1 записей?</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="1218"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1219"/>
         <source>PanteR</source>
         <translation>Пантер</translation>
     </message>
     <message>
-        <location filename="../../src/dbfredactormainwindow.cpp" line="1230"/>
+        <location filename="../../src/dbfredactormainwindow.cpp" line="1231"/>
         <source>Color and Font buttons</source>
         <translation>Кнопки настройки цвета и шрифта</translation>
     </message>
@@ -411,86 +411,87 @@
 <context>
     <name>DisplayPreferences</name>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="196"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="211"/>
         <source>Cell type</source>
         <translation>Тип ячейки</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="201"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="216"/>
         <source>String</source>
         <translation>Строка</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="202"/>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="206"/>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="210"/>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="214"/>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="218"/>
-        <source>Color</source>
-        <translation>Цвет</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="194"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="209"/>
         <source>Cells view preference</source>
         <translation>Настройка вида ячеек</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="197"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="212"/>
         <source>Alignment</source>
         <translation>Выравнивание</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="198"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="213"/>
         <source>Text color</source>
         <translation>Цвет текста</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="199"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="214"/>
         <source>Text font</source>
         <translation>Шрифт текста</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="205"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="218"/>
         <source>Numeric</source>
         <translation>Число</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="209"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="220"/>
         <source>Memo</source>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="213"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="222"/>
         <source>Date</source>
         <translation>Дата</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="217"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="224"/>
         <source>Float</source>
         <translation>Число с плавающей запятой</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="222"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="227"/>
         <source>Align left</source>
         <translation>По левому краю</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="223"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="228"/>
         <source>Align center</source>
         <translation>По центру</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="224"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="229"/>
         <source>Align right</source>
         <translation>По правому краю</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.cpp" line="225"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="230"/>
         <source>Align justify</source>
         <translation>По ширине</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/displaypreferences.h" line="93"/>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="233"/>
+        <source>Table colors</source>
+        <translation>Цвета в таблице</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.cpp" line="235"/>
+        <source>Removed rows color</source>
+        <translation>Цвет удаленных строк</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/displaypreferences.h" line="98"/>
         <source>Display/Table</source>
         <translation>Вид/Таблица</translation>
     </message>

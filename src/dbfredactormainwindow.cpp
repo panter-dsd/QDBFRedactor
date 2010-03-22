@@ -72,6 +72,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	tabBar = new QTabBar(this);
 	tabBar->setTabsClosable(true);
 	tabBar->setContextMenuPolicy(Qt::ActionsContextMenu);
+	tabBar->setFocusPolicy(Qt::NoFocus);
 	connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(tabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
@@ -484,6 +485,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 	tabBar->setCurrentIndex(index);
 	tabChanged(index);
 	updateActions();
+	view->setFocus();
 }
 
 void DBFRedactorMainWindow::tabChanged(int index)
