@@ -55,7 +55,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 	QStyleOptionViewItem m_option(option);
 
 	if (index.data(Qt::UserRole).toBool()) {
-		m_option.palette.setBrush(QPalette::Background, m_settings.value("Deleted_Color", Qt::darkGray).value<QColor>());
+		m_option.palette.setBrush(QPalette::Background, m_settings.value("Removed_Color", Qt::darkGray).value<QColor>());
 		painter->fillRect(option.rect, m_option.palette.background());
 	}
 
@@ -123,16 +123,15 @@ bool DBFRedactorDelegate::editorEvent (QEvent* ev, QAbstractItemModel* model,con
 		return false;
 
 	switch(ev->type()) {
-		case QEvent::MouseButtonRelease:
-		case QEvent::MouseButtonDblClick: {
+		case QEvent::MouseButtonRelease: {
 			QRect rect(checkRect(option, option.rect));
 			QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(ev);
 			if (mouseEvent->button() != Qt::LeftButton || !rect.contains(mouseEvent->pos()))
-				return false;
-
-			if(ev->type() == QEvent::MouseButtonDblClick)
 				return true;
 			break;
+		}
+		case QEvent::MouseButtonDblClick: {
+			return true;
 		}
 		case QEvent::KeyPress: {
 			QKeyEvent* keyEvent = static_cast<QKeyEvent*>(ev);
