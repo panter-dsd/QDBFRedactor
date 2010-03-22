@@ -158,23 +158,23 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 	colorLayout->addWidget(cellFont, 0, 3);
 	colorLayout->addWidget(stringColorLabel, 1, 0);
 	colorLayout->addWidget(stringAligmentEdit, 1, 1);
-	colorLayout->addWidget(stringColorButton, 1, 2, Qt::AlignHCenter);
+	colorLayout->addWidget(stringColorButton, 1, 2);
 	colorLayout->addWidget(stringFontButton, 1, 3);
 	colorLayout->addWidget(numericColorLabel, 2, 0);
 	colorLayout->addWidget(numericAligmentEdit, 2, 1);
-	colorLayout->addWidget(numericColorButton, 2, 2, Qt::AlignHCenter);
+	colorLayout->addWidget(numericColorButton, 2, 2);
 	colorLayout->addWidget(numericFontButton, 2, 3);
 	colorLayout->addWidget(memoColorLabel, 3, 0);
 	colorLayout->addWidget(memoAligmentEdit, 3, 1);
-	colorLayout->addWidget(memoColorButton, 3, 2, Qt::AlignHCenter);
+	colorLayout->addWidget(memoColorButton, 3, 2);
 	colorLayout->addWidget(memoFontButton, 3, 3);
 	colorLayout->addWidget(dateColorLabel, 4, 0);
 	colorLayout->addWidget(dateAligmentEdit, 4, 1);
-	colorLayout->addWidget(dateColorButton, 4, 2, Qt::AlignHCenter);
+	colorLayout->addWidget(dateColorButton, 4, 2);
 	colorLayout->addWidget(dateFontButton, 4, 3);
 	colorLayout->addWidget(floatColorLabel, 5, 0);
 	colorLayout->addWidget(floatAligmentEdit, 5, 1);
-	colorLayout->addWidget(floatColorButton, 5, 2, Qt::AlignHCenter);
+	colorLayout->addWidget(floatColorButton, 5, 2);
 	colorLayout->addWidget(floatFontButton, 5, 3);
 
 	delegatePreferencesGroup->setLayout(colorLayout);
@@ -199,24 +199,14 @@ void DisplayPreferences::retranslateStrings()
 	cellFont->setText(tr("Text font"));
 
 	stringColorLabel->setText(tr("String"));
-	stringColorButton->setText(tr("Color"));
-//	stringFontButton->setText(tr("Font"));
 
 	numericColorLabel->setText(tr("Numeric"));
-	numericColorButton->setText(tr("Color"));
-//	numericFontButton->setText(tr("Font"));
 
 	memoColorLabel->setText(tr("Memo"));
-	memoColorButton->setText(tr("Color"));
-//	memoFontButton->setText(tr("Font"));
 
 	dateColorLabel->setText(tr("Date"));
-	dateColorButton->setText(tr("Color"));
-//	dateFontButton->setText(tr("Font"));
 
 	floatColorLabel->setText(tr("Float"));
-	floatColorButton->setText(tr("Color"));
-//	floatFontButton->setText(tr("Font"));
 
 	foreach(QComboBox *comboBox, delegatePreferencesGroup->findChildren<QComboBox*> ()) {
 		comboBox->setItemText(0, tr("Align left"));
