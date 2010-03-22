@@ -460,24 +460,25 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 {
 	int index = 0;
 	foreach(const QString& fileName, fileList) {
-		if (!QFile::exists(fileName))
+		QFileInfo fi (fileName);
+		if (!fi.exists())
 			continue;
 
-		if (pages.contains(fileName)) {
+		if (pages.contains(fi.absoluteFilePath())) {
 			for (int i = 0; i < tabBar->count(); i++) {
-				if (tabBar->tabData(i).toString() == fileName) {
+				if (tabBar->tabData(i).toString() == fi.absoluteFilePath()) {
 					index = i;
 					break;
 				}
 			}
 		} else {
-			DBFRedactorPage *page = new DBFRedactorPage(fileName, this);
+			DBFRedactorPage *page = new DBFRedactorPage(fi.absoluteFilePath(), this);
 
-			pages.insert(fileName, page);
-			index = tabBar->addTab(QFileInfo(fileName).fileName());
-			tabBar->setTabData(index, fileName);
-			tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
-			addToHistory(fileName);
+			pages.insert(fi.absoluteFilePath(), page);
+			index = tabBar->addTab(fi.fileName());
+			tabBar->setTabData(index, fi.absoluteFilePath());
+			tabBar->setTabToolTip(index, QDir::toNativeSeparators(fi.absoluteFilePath()));
+			addToHistory(fi.absoluteFilePath());
 		}
 	}
 	tabBar->setCurrentIndex(index);
@@ -1259,7 +1260,8 @@ void DBFRedactorMainWindow::updateHideShowActions ()
 
 void DBFRedactorMainWindow::addToHistory (const QString& fileName)
 {
-	if (int index = m_history.indexOf(fileName) >= 0) {
+	const int index = m_history.indexOf(fileName);
+	if (index >= 0) {
 		m_history.removeAt(index);
 	}
 
