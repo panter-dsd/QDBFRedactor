@@ -373,7 +373,7 @@ void DBFRedactorMainWindow::retranslateStrings()
 	actionHide->setText(tr ("Hide"));
 	actionShow->setText(tr ("Show"));
 
-	historyMenu->setTitle(tr ("Recent files"));
+	historyMenu->setTitle(tr ("Recently opened files"));
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
 	codecsMenu->setTitle(tr("&Codecs"));
