@@ -267,17 +267,17 @@ void DisplayPreferences::loadSettings()
 
 	settings.beginGroup("Display");
 	stringAligmentEdit->setCurrentIndex(stringAligmentEdit->findData(settings.value("String_Alignment", Qt::AlignLeft).toInt()));
-	numericAligmentEdit->setCurrentIndex(numericAligmentEdit->findData(settings.value("Numeric_Alignment", Qt::AlignLeft).toInt()));
+	numericAligmentEdit->setCurrentIndex(numericAligmentEdit->findData(settings.value("Numeric_Alignment", Qt::AlignRight).toInt()));
 	memoAligmentEdit->setCurrentIndex(memoAligmentEdit->findData(settings.value("Memo_Alignment", Qt::AlignLeft).toInt()));
-	dateAligmentEdit->setCurrentIndex(dateAligmentEdit->findData(settings.value("Date_Alignment", Qt::AlignLeft).toInt()));
-	floatAligmentEdit->setCurrentIndex(floatAligmentEdit->findData(settings.value("Float_Alignment", Qt::AlignLeft).toInt()));
+	dateAligmentEdit->setCurrentIndex(dateAligmentEdit->findData(settings.value("Date_Alignment", Qt::AlignHCenter).toInt()));
+	floatAligmentEdit->setCurrentIndex(floatAligmentEdit->findData(settings.value("Float_Alignment", Qt::AlignRight).toInt()));
 
 	QPalette m_palette;
 	stringColorButton->setColor(settings.value("String_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	numericColorButton->setColor(settings.value("Numeric_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
+	numericColorButton->setColor(settings.value("Numeric_Color", Qt::darkBlue).value<QColor>());
 	memoColorButton->setColor(settings.value("Memo_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	dateColorButton->setColor(settings.value("Date_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
-	floatColorButton->setColor(settings.value("Float_Color", m_palette.color(QPalette::ButtonText)).value<QColor>());
+	dateColorButton->setColor(settings.value("Date_Color", Qt::darkYellow).value<QColor>());
+	floatColorButton->setColor(settings.value("Float_Color", Qt::darkBlue).value<QColor>());
 
 	stringFontButton->setFont(settings.value("String_Font", font()).value<QFont>());
 	numericFontButton->setFont(settings.value("Numeric_Font", font()).value<QFont>());
