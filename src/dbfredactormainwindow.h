@@ -58,6 +58,7 @@ private:
 	QMenu *exportMenu;
 	QMenu *codecsMenu;
 	QMenu *helpMenu;
+	QMenu *historyMenu;
 
 	QToolBar *fileToolBar;
 
@@ -91,6 +92,8 @@ private:
 
 	QSystemTrayIcon *trayIcon;
 
+	QStringList m_history;
+
 public:
 	DBFRedactorMainWindow(QWidget* parent = 0, Qt::WFlags f = 0);
 	~DBFRedactorMainWindow();
@@ -109,6 +112,8 @@ private:
 	QStringList codecsList();
 	void createCodecsMenu();
 	void setCurentCodec();
+	void addToHistory (const QString& fileName);
+	void updateHistoryMenu ();
 
 protected:
 	bool event(QEvent *ev);
@@ -142,6 +147,7 @@ private Q_SLOTS:
 	void reloadSettings ();
 	void trayClicked(QSystemTrayIcon::ActivationReason reason);
 	void updateHideShowActions ();
+	void openHistory ();
 
 public Q_SLOTS:
 	void handleMessage(const QString& message)

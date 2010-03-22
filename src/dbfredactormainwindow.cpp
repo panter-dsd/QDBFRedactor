@@ -234,11 +234,15 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
 
+	historyMenu = new QMenu (this);
+
 	fileMenu = new QMenu(menuBar);
 	fileMenu->addAction(actionOpen);
 	fileMenu->addAction(actionSave);
 	fileMenu->addAction(actionClose);
 	fileMenu->addAction(actionSetEditMode);
+	fileMenu->addSeparator();
+	fileMenu->addMenu(historyMenu);
 	fileMenu->addSeparator();
 	fileMenu->addAction(actionPreferences);
 	fileMenu->addSeparator();
@@ -369,6 +373,7 @@ void DBFRedactorMainWindow::retranslateStrings()
 	actionHide->setText(tr ("Hide"));
 	actionShow->setText(tr ("Show"));
 
+	historyMenu->setTitle(tr ("Recent files"));
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
 	codecsMenu->setTitle(tr("&Codecs"));
@@ -391,6 +396,9 @@ void DBFRedactorMainWindow::loadSettings()
 		restoreState(settings.value("State", "").toByteArray());
 		settings.endGroup();
 	}
+
+	m_history = settings.value("Global/History", QStringList()).toStringList();
+	updateHistoryMenu ();
 
 	reloadSettings ();
 }
@@ -418,6 +426,9 @@ void DBFRedactorMainWindow::saveSettings()
 	} else
 		settings.setValue("IsMaximized", true);
 	settings.setValue("State", saveState());
+	settings.endGroup();
+
+	settings.setValue("Global/History", m_history);
 
 	settings.sync();
 }
@@ -466,6 +477,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 			index = tabBar->addTab(QFileInfo(fileName).fileName());
 			tabBar->setTabData(index, fileName);
 			tabBar->setTabToolTip(index, QDir::toNativeSeparators(fileName));
+			addToHistory(fileName);
 		}
 	}
 	tabBar->setCurrentIndex(index);
@@ -1243,4 +1255,43 @@ void DBFRedactorMainWindow::updateHideShowActions ()
 {
 	actionHide->setEnabled(!isHidden());
 	actionShow->setEnabled(isHidden());
+}
+
+void DBFRedactorMainWindow::addToHistory (const QString& fileName)
+{
+	if (int index = m_history.indexOf(fileName) >= 0) {
+		m_history.removeAt(index);
+	}
+
+	m_history.insert(0, fileName);
+
+	while (m_history.size() > 30)
+		m_history.removeLast();
+
+	updateHistoryMenu ();
+}
+
+void DBFRedactorMainWindow::updateHistoryMenu ()
+{
+	qDeleteAll (historyMenu->actions());
+	historyMenu->clear();
+
+	QAction *action;
+	foreach (const QString& fileName, m_history) {
+		action = new QAction (this);
+		action->setText(QDir::toNativeSeparators(fileName));
+		action->setObjectName(fileName);
+		connect (action, SIGNAL(triggered()), this, SLOT(openHistory()));
+		historyMenu->addAction(action);
+	}
+}
+
+void DBFRedactorMainWindow::openHistory ()
+{
+	QAction *action = qobject_cast <QAction*> (sender ());
+
+	if (!action)
+		return;
+
+	openFiles(QStringList(action->objectName()));
 }
