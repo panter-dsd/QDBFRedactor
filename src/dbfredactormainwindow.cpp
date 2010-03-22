@@ -266,6 +266,8 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	QMenu *trayIconMenu = new QMenu(this);
 	trayIconMenu->addAction(actionHide);
 	trayIconMenu->addAction(actionShow);
+	trayIconMenu->addSeparator();
+	trayIconMenu->addAction(actionExit);
 	trayIcon->setContextMenu(trayIconMenu);
 
 //ToolBars

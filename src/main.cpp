@@ -60,7 +60,6 @@ int main(int argc, char ** argv)
 		}
 	}
 
-
 	{
 		QSettings settings;
 		const QString& translationPath = settings.value("Global/Translation", "").toString();
