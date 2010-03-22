@@ -179,10 +179,25 @@ DisplayPreferences::DisplayPreferences(QWidget *parent)
 
 	delegatePreferencesGroup->setLayout(colorLayout);
 
+	tableColorsGroup = new QGroupBox (this);
+
+	removedRowsColorLabel = new QLabel (this);
+
+	removedRowsColorEdit = new QtColorButton (this);
+	removedRowsColorEdit->setAutoRaise(true);
+	connect(removedRowsColorEdit, SIGNAL(colorChanged(const QColor &)), this, SIGNAL(modified()));
+
+	QGridLayout *tableColorsLayout = new QGridLayout ();
+	tableColorsLayout->addWidget(removedRowsColorLabel, 0, 0);
+	tableColorsLayout->addWidget(removedRowsColorEdit, 0, 1);
+
+	tableColorsGroup->setLayout(tableColorsLayout);
+
 	QVBoxLayout *mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(delegatePreferencesGroup);
+	mainLayout->addWidget(tableColorsGroup);
 	mainLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
-	mainLayout->setContentsMargins(0,0,0,0);
+	mainLayout->setContentsMargins(0, 0, 0, 0);
 	setLayout(mainLayout);
 
 	retranslateStrings();
@@ -214,6 +229,10 @@ void DisplayPreferences::retranslateStrings()
 		comboBox->setItemText(2, tr("Align right"));
 		comboBox->setItemText(3, tr("Align justify"));
 	}
+
+	tableColorsGroup->setTitle(tr ("Table colors"));
+
+	removedRowsColorLabel->setText(tr ("Removed rows color"));
 }
 
 bool DisplayPreferences::event(QEvent *ev)
@@ -248,6 +267,8 @@ void DisplayPreferences::saveSettings()
 	settings.setValue("Date_Font", dateFontButton->font());
 	settings.setValue("Float_Font", floatFontButton->font());
 
+	settings.setValue("Removed_Color", removedRowsColorEdit->color());
+
 	settings.endGroup();
 }
 
@@ -274,6 +295,8 @@ void DisplayPreferences::loadSettings()
 	memoFontButton->setFont(settings.value("Memo_Font", font()).value<QFont>());
 	dateFontButton->setFont(settings.value("Date_Font", font()).value<QFont>());
 	floatFontButton->setFont(settings.value("Float_Font", font()).value<QFont>());
+
+	removedRowsColorEdit->setColor(settings.value("Removed_Color", Qt::darkGray).value<QColor>());
 
 	settings.endGroup();
 }

@@ -80,6 +80,11 @@ private:
 	QtColorButton *floatColorButton;
 	QtFontButton *floatFontButton;
 
+	QGroupBox *tableColorsGroup;
+
+	QLabel *removedRowsColorLabel;
+	QtColorButton *removedRowsColorEdit;
+
 public:
 	DisplayPreferences(QWidget *parent = 0);
 	virtual ~DisplayPreferences()
