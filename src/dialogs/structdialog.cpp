@@ -29,6 +29,7 @@
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QLayout>
 #include <QtGui/QtEvents>
+#include <QtGui/QHeaderView>
 
 #include "structdialog.h"
 #include "dbfredactor.h"
@@ -39,6 +40,8 @@ StructDialog::StructDialog(DBFRedactor *reader, QWidget *parent, Qt::WindowFlags
 	:QDialog(parent, f), m_redactor(reader)
 {
 	table = new QTableWidget (this);
+	table->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+	table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
 	QDialogButtonBox *buttons = new QDialogButtonBox (QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
 													  Qt::Horizontal,
@@ -60,6 +63,12 @@ StructDialog::StructDialog(DBFRedactor *reader, QWidget *parent, Qt::WindowFlags
 
 void StructDialog::retranslateStrings()
 {
+	setWindowTitle(tr ("Structure"));
+
+	table->setHorizontalHeaderLabels(QStringList () << tr ("Field name")
+									  << tr ("Field type")
+									   << tr ("Field size")
+									   << tr ("Decimal"));
 }
 
 void StructDialog::loadSettings()
@@ -96,6 +105,7 @@ void StructDialog::readStruct ()
 	table->clear();
 	table->setColumnCount(Count);
 	table->setRowCount(m_redactor->columnsCount());
+	retranslateStrings ();
 
 	QTableWidgetItem *item;
 
