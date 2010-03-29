@@ -392,7 +392,7 @@ void DBFRedactorMainWindow::retranslateStrings()
 
 	actionPrintPreview->setText(tr ("Preview"));
 
-	actionShowStruct->setText(tr ("Struct"));
+	actionShowStruct->setText(tr ("Structure"));
 
 	historyMenu->setTitle(tr ("Recently opened files"));
 	fileMenu->setTitle(tr("&File"));
@@ -494,6 +494,12 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 			}
 		} else {
 			DBFRedactorPage *page = new DBFRedactorPage(fi.absoluteFilePath(), this);
+
+			if (page->dbfModel()->lastError()) {
+				QMessageBox::critical(this, fi.fileName(), page->dbfModel()->errorString());
+				delete page;
+				continue;
+			}
 
 			pages.insert(fi.absoluteFilePath(), page);
 			index = tabBar->addTab(fi.fileName());

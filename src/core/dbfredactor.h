@@ -88,6 +88,14 @@ public:
 	};
 	Q_DECLARE_FLAGS(DBFOpenMode, DBFOpenModeFlag);
 
+	enum ErrorCode {
+		NoError = 0,
+		ErrorOpen,
+		ErrorReading,
+		ErrorWriting,
+		FileNotCorrect
+	};
+
 private:
 	Header header;
 	QString m_fileName;
@@ -101,6 +109,7 @@ private:
 	DBFOpenMode m_openMode;
 	bool m_buffering;
 	bool m_modified;
+	ErrorCode m_lastError;
 
 public:
 	DBFRedactor();
@@ -173,6 +182,13 @@ public:
 
 	static QStringList typeCaptions ()
 	{return QStringList() << "C" << "N" << "L" << "M" << "D" << "F";}
+
+	ErrorCode lastError () const
+	{ return m_lastError;}
+
+	QString errorString (ErrorCode errorCode) const;
+	QString errorString () const
+	{ return errorString (m_lastError);}
 
 private:
 	void writeHeader();

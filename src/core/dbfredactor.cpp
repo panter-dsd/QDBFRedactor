@@ -28,14 +28,14 @@
 #define READING_RECORDS_COUNT 40960
 
 DBFRedactor::DBFRedactor()
-	:m_fileName(0), m_openMode(No), m_buffering(true)
+	:m_fileName(0), m_openMode(No), m_buffering(true), m_lastError(NoError)
 {
 	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
 }
 
 DBFRedactor::DBFRedactor(const QString& fileName)
-	: m_fileName(fileName), m_openMode(No), m_buffering(true)
+	: m_fileName(fileName), m_openMode(No), m_buffering(true), m_lastError(NoError)
 {
 	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
@@ -67,6 +67,8 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	if (m_fileName.isEmpty())
 		return false;
 
+	m_lastError = NoError;
+
 	m_openMode = OpenMode;
 	m_tableName = QFileInfo(m_fileName).baseName();
 	m_file.setFileName(m_fileName);
@@ -79,13 +81,17 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 		openMode = QIODevice::ReadWrite;
 
 	if (!m_file.open(openMode)) {
-		qDebug("Error open file");
+		m_lastError = ErrorOpen;
 		return false;
 	}
 
 	char *c = new char[33];
 	char *cTmp = c;
-	m_file.read(c, 32);
+	if (m_file.read(c, 32) != 32) {
+		m_lastError = ErrorReading;
+		m_file.close();
+		return false;
+	}
 
 #warning "Type is not true."
 	if (c[0] & 0x3)
@@ -99,7 +105,17 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	header.recordLenght = *(qint16*)cTmp;
 	header.isIndex = (c[28] == 1);
 
-	m_file.read(c, 32);
+	if ((qint64)header.firstRecordPos + (qint64)header.recordsCount * (qint64)header.recordLenght > m_file.size()) {
+		m_lastError = FileNotCorrect;
+		m_file.close();
+		return false;
+	}
+
+	if (m_file.read(c, 32) != 32) {
+		m_lastError = ErrorReading;
+		m_file.close();
+		return false;
+	}
 	do {
 		Field field;
 		m_buf.clear();
@@ -122,9 +138,13 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 			case 'F':
 				field.type = TYPE_FLOAT;
 				break;
-			case 'C': default:
+			case 'C':
 				field.type = TYPE_CHAR;
 				break;
+			default:
+				m_lastError = FileNotCorrect;
+				m_file.close();
+				return false;
 		}
 
 		field.pos = header.fieldsList.isEmpty() ? 1 : header.fieldsList.last().pos + header.fieldsList.last().firstLenght;
@@ -135,7 +155,11 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 			field.type=TYPE_FLOAT;
 
 		header.fieldsList << field;
-		m_file.read(c, 32);
+		if (m_file.read(c, 32) != 32) {
+			m_lastError = ErrorReading;
+			m_file.close();
+			return false;
+		}
 	} while (c[0] != 0xD);
 	delete [] c;
 	m_file.seek(header.firstRecordPos);
@@ -473,4 +497,22 @@ bool DBFRedactor::save()
 	m_modified = false;
 
 	return true;
+}
+
+QString DBFRedactor::errorString (ErrorCode errorCode) const
+{
+	switch (errorCode) {
+		case NoError:
+			return "";
+		case ErrorOpen:
+			return QObject::tr("Open file error");
+		case ErrorReading:
+			return QObject::tr("Reading file error");
+		case ErrorWriting:
+			return QObject::tr("Writing file error");
+		case FileNotCorrect:
+			return QObject::tr("File not correct");
+		default:
+			return QObject::tr("Unknow error");
+	}
 }

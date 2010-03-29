@@ -99,6 +99,11 @@ public:
 	{return redactor->openMode() & DBFRedactor::Read;}
 	void setReadOnly(bool b);
 
+	DBFRedactor::ErrorCode lastError () const
+	{ return redactor->lastError();}
+	QString errorString () const
+	{ return redactor->errorString();}
+
 };
 
 #endif //DBFREDACTORMODEL_H
