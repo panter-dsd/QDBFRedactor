@@ -81,6 +81,7 @@ private:
 	QAction *actionRecoverRecord;
 	QAction *actionAbout;
 	QAction *actionAboutQt;
+	QAction *actionPrintPreview;
 
 	QAction *actionChangeFilter;
 	QAction *actionAddIncludeFilter;
@@ -148,6 +149,8 @@ private Q_SLOTS:
 	void trayClicked(QSystemTrayIcon::ActivationReason reason);
 	void updateHideShowActions ();
 	void openHistory ();
+	void preview ();
+	void printPreview(QPrinter *printer);
 
 public Q_SLOTS:
 	void handleMessage(const QString& message)

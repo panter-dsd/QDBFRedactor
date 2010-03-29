@@ -46,6 +46,10 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
+#include <QtGui/QPrintPreviewDialog>
+#include <QtGui/QTextEdit>
+#include <QtGui/QPrinter>
+#include <QtGui/QPainter>
 
 #include <QtXml/QXmlStreamWriter>
 
@@ -231,6 +235,9 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	connect(actionHide, SIGNAL(triggered()), this, SLOT(updateHideShowActions ()));
 	connect(actionShow, SIGNAL(triggered()), this, SLOT(updateHideShowActions ()));
 
+	actionPrintPreview = new QAction (this);
+	actionPrintPreview->setIcon(QIcon(":/share/images/preview.png"));
+	connect(actionPrintPreview, SIGNAL(triggered()), this, SLOT(preview()));
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -246,6 +253,8 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileMenu->addMenu(historyMenu);
 	fileMenu->addSeparator();
 	fileMenu->addAction(actionPreferences);
+	fileMenu->addSeparator();
+	fileMenu->addAction(actionPrintPreview);
 	fileMenu->addSeparator();
 	fileMenu->addAction(actionExit);
 
@@ -374,6 +383,7 @@ void DBFRedactorMainWindow::retranslateStrings()
 	actionHide->setText(tr ("Hide"));
 	actionShow->setText(tr ("Show"));
 
+	actionPrintPreview->setText(tr ("Preview"));
 	historyMenu->setTitle(tr ("Recently opened files"));
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
@@ -1299,3 +1309,25 @@ void DBFRedactorMainWindow::openHistory ()
 
 	openFiles(QStringList(action->objectName()));
 }
+void DBFRedactorMainWindow::preview()
+{
+#ifndef QT_NO_PRINTER
+	QPrinter printer(QPrinter::HighResolution);
+	printer.setPageMargins(20, 20, 20, 20, QPrinter::Millimeter);
+	QPrintPreviewDialog preview(&printer, this);
+	connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPreview(QPrinter*)));
+	preview.exec();
+#endif
+}
+
+void DBFRedactorMainWindow::printPreview(QPrinter *printer)
+{
+#ifdef QT_NO_PRINTER
+	Q_UNUSED(printer);
+#else
+	QTextEdit edit (this);
+	edit.setHtml(prepareHtml ().join("\n"));
+	edit.print(printer);
+#endif
+}
+
