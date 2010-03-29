@@ -82,6 +82,7 @@ private:
 	QAction *actionAbout;
 	QAction *actionAboutQt;
 	QAction *actionPrintPreview;
+	QAction *actionShowStruct;
 
 	QAction *actionChangeFilter;
 	QAction *actionAddIncludeFilter;
@@ -151,6 +152,7 @@ private Q_SLOTS:
 	void openHistory ();
 	void preview ();
 	void printPreview(QPrinter *printer);
+	void showStruct ();
 
 public Q_SLOTS:
 	void handleMessage(const QString& message)

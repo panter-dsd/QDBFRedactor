@@ -62,12 +62,14 @@ set (dialogs_SRC
 src/dialogs/sortdialog.cpp
 src/dialogs/filterdialog.cpp
 src/dialogs/aboutdialog.cpp
+src/dialogs/structdialog.cpp
 )
 
 set (dialogs_HEADERS
 src/dialogs/sortdialog.h
 src/dialogs/filterdialog.h
 src/dialogs/aboutdialog.h
+src/dialogs/structdialog.h
 )
 
 ################################################################

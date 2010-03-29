@@ -59,6 +59,7 @@
 #include "filterdialog.h"
 #include "preferencesdialog.h"
 #include "aboutdialog.h"
+#include "structdialog.h"
 
 #define ProcessEventsPeriod 500
 
@@ -238,6 +239,11 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	actionPrintPreview = new QAction (this);
 	actionPrintPreview->setIcon(QIcon(":/share/images/preview.png"));
 	connect(actionPrintPreview, SIGNAL(triggered()), this, SLOT(preview()));
+
+	actionShowStruct = new QAction (this);
+	actionShowStruct->setIcon(QIcon(":/share/images/showstruct.png"));
+	connect(actionShowStruct, SIGNAL(triggered()), this, SLOT(showStruct()));
+
 //Menus
 	QMenuBar *menuBar = new QMenuBar(this);
 	setMenuBar(menuBar);
@@ -249,6 +255,7 @@ DBFRedactorMainWindow::DBFRedactorMainWindow(QWidget* parent, Qt::WFlags f)
 	fileMenu->addAction(actionSave);
 	fileMenu->addAction(actionClose);
 	fileMenu->addAction(actionSetEditMode);
+	fileMenu->addAction(actionShowStruct);
 	fileMenu->addSeparator();
 	fileMenu->addMenu(historyMenu);
 	fileMenu->addSeparator();
@@ -384,6 +391,9 @@ void DBFRedactorMainWindow::retranslateStrings()
 	actionShow->setText(tr ("Show"));
 
 	actionPrintPreview->setText(tr ("Preview"));
+
+	actionShowStruct->setText(tr ("Struct"));
+
 	historyMenu->setTitle(tr ("Recently opened files"));
 	fileMenu->setTitle(tr("&File"));
 	exportMenu->setTitle(tr("&Export"));
@@ -1309,6 +1319,7 @@ void DBFRedactorMainWindow::openHistory ()
 
 	openFiles(QStringList(action->objectName()));
 }
+
 void DBFRedactorMainWindow::preview()
 {
 #ifndef QT_NO_PRINTER
@@ -1331,3 +1342,8 @@ void DBFRedactorMainWindow::printPreview(QPrinter *printer)
 #endif
 }
 
+void DBFRedactorMainWindow::showStruct ()
+{
+	StructDialog d (currentPage->redactor(), this);
+	d.exec();
+}

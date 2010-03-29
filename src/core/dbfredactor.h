@@ -58,15 +58,15 @@ public:
 	struct Field
 	{
 		QString name;
-		char type;
-		long pos;
-		char firstLenght;
-		char secondLenght;
+		quint8 type;
+		quint16 pos;
+		quint8 firstLenght;
+		quint8 secondLenght;
 	};
 
 	struct Header
 	{
-		int fileType;
+		quint8 fileType;
 		QDate lastUpdated;
 		qint32 recordsCount;
 		qint16 firstRecordPos;
@@ -111,7 +111,11 @@ public:
 	bool open(DBFOpenMode OpenMode);
 	void close();
 
+	QList<DBFRedactor::Field> fields () const
+	{ return header.fieldsList;}
+
 	DBFRedactor::Field field(int number) const;
+
 	QByteArray strRecord(int row);
 	DBFRedactor::Record record(int number);
 
