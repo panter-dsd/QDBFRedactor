@@ -43,8 +43,8 @@ public:
 		TYPE_LOGICAL,
 		TYPE_MEMO,
 		TYPE_DATE,
-		TYPE_FLOAT,
-		TYPE_P};
+		TYPE_FLOAT
+	};
 
 	enum FileType{
 		Fox3,
@@ -95,7 +95,7 @@ private:
 	QByteArray m_buf;
 	QHash<int, QByteArray> m_cache;
 	QList<QPair<int, QByteArray> > m_changedData;
-	QTextCodec	 *m_codec;
+	QTextCodec *m_codec;
 	QString m_tableName;
 	int lastRecord;
 	DBFOpenMode m_openMode;
@@ -127,7 +127,6 @@ public:
 	QString tableName() const
 	{return m_tableName;}
 
-	static bool compareRecord(const Record& first, const Record& second);
 	bool isOpen() const;
 	int deletedCount();
 
@@ -147,11 +146,11 @@ public:
 
 	bool isDeleted(int row);
 
-	DBFOpenMode openMode()
+	DBFOpenMode openMode() const
 	{return m_openMode;}
 	void setOpenMode(DBFOpenMode openMode);
 
-	QTextCodec* textCodec()
+	QTextCodec* textCodec() const
 	{return m_codec;}
 	void setTextCodec(QTextCodec *textCodec)
 	{
@@ -165,12 +164,15 @@ public:
 
 	void recoverRecord(int row);
 
-	bool isChanged(int row);
+	bool isChanged(int row) const;
 
 	bool save();
 
 	bool modified() const
 	{return m_modified;}
+
+	static QStringList typeCaptions ()
+	{return QStringList() << "C" << "N" << "L" << "M" << "D" << "F";}
 
 private:
 	void writeHeader();

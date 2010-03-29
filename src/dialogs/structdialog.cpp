@@ -34,8 +34,6 @@
 #include "structdialog.h"
 #include "dbfredactor.h"
 
-const QStringList typesList = QString("C,N,L,M,D,F").split(",");
-
 StructDialog::StructDialog(DBFRedactor *reader, QWidget *parent, Qt::WindowFlags f)
 	:QDialog(parent, f), m_redactor(reader)
 {
@@ -113,7 +111,7 @@ void StructDialog::readStruct ()
 	foreach (const DBFRedactor::Field& field, m_redactor->fields ()) {
 		item = new QTableWidgetItem (field.name);
 		table->setItem(row, Name, item);
-		item = new QTableWidgetItem (typesList.at(field.type));
+		item = new QTableWidgetItem (DBFRedactor::typeCaptions().at(field.type));
 		table->setItem(row, Type, item);
 		item = new QTableWidgetItem (QString::number(field.firstLenght));
 		table->setItem(row, FirstLenght, item);

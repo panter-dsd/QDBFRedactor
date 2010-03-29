@@ -122,9 +122,6 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 			case 'F':
 				field.type = TYPE_FLOAT;
 				break;
-			case 'P':
-				field.type = TYPE_P;
-				break;
 			case 'C': default:
 				field.type = TYPE_CHAR;
 				break;
@@ -326,20 +323,6 @@ DBFRedactor::Record DBFRedactor::record(int number)
 	return record;
 }
 
-bool DBFRedactor::compareRecord(const Record& first, const Record& second)
-{
-	if (first.isDeleted != second.isDeleted)
-		return false;
-
-	if (first.value.size() != second.value.size())
-		return false;
-
-	for (int i = 0; i < first.value.size(); i++)
-		if (first.value.at(i) != second.value.at(i))
-			return false;
-	return true;
-}
-
 bool DBFRedactor::isOpen() const
 {
 	return m_file.isOpen();
@@ -454,7 +437,7 @@ void DBFRedactor::writeHeader()
 	delete [] c;
 }
 
-bool DBFRedactor::isChanged(int row)
+bool DBFRedactor::isChanged(int row) const
 {
 	for (int i = 0; i < m_changedData.size(); i++) {
 		if (m_changedData.at(i).first == row)
