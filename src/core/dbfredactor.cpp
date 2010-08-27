@@ -28,14 +28,14 @@
 #define READING_RECORDS_COUNT 40960
 
 DBFRedactor::DBFRedactor()
-	:m_fileName(0), m_openMode(No), m_buffering(true), m_lastError(NoError)
+	: m_fileName(0), m_codec (0), m_openMode(No), m_buffering(true), m_lastError(NoError)
 {
 	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
 }
 
 DBFRedactor::DBFRedactor(const QString& fileName)
-	: m_fileName(fileName), m_openMode(No), m_buffering(true), m_lastError(NoError)
+	: m_fileName(fileName), m_codec (0), m_openMode(No), m_buffering(true), m_lastError(NoError)
 {
 	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
@@ -61,11 +61,15 @@ bool DBFRedactor::open(DBFOpenMode OpenMode)
 
 bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 {
-	if (!fileName.isEmpty())
-		m_fileName = fileName;
+	if (isOpen ()) {
+		close ();
+	}
 
-	if (m_fileName.isEmpty())
+	m_fileName = fileName;
+
+	if (m_fileName.isEmpty()) {
 		return false;
+	}
 
 	m_lastError = NoError;
 
@@ -151,8 +155,6 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 
 		field.firstLenght = c[16];
 		field.secondLenght = c[17];
-		if ((field.type == TYPE_NUMERIC) && (field.firstLenght > 18))
-			field.type=TYPE_FLOAT;
 
 		header.fieldsList << field;
 		if (m_file.read(c, 32) != 32) {
@@ -181,14 +183,19 @@ QByteArray DBFRedactor::strRecord(int row)
 		return false;
 
 //Search in changedData
-	for (int i = m_changedData.size() - 1; i >= 0; i--) {
-		if (m_changedData.at(i).first == row)
-			return m_changedData.at(i).second;
+	if (!m_changedData.isEmpty ()) {
+		for (QList <QPair<int, QByteArray> >::const_iterator end = m_changedData.end () - 1, begin = m_changedData.begin () - 1; 
+			 end != begin; --end) {
+			if (end->first == row) {
+				return end->second;
+			}
+		}
 	}
 
 	if (!m_cache.contains(row)) {//If not in cache
-		if (!m_buffering)
+		if (!m_buffering) {
 			m_cache.clear();
+		}
 		qint64 filePos = 0;
 		if (row >= lastRecord) {
 			filePos = header.firstRecordPos + header.recordLenght * row;
@@ -230,7 +237,7 @@ QVariant DBFRedactor::data(int row, int column)
 			if (!tempString.isEmpty()) {
 				int i = tempString.length();
 				while ((--i >= 0) && tempString[i].isSpace()) {;}
-				tempString.remove(i + 1, tempString.length());
+				tempString.remove(i + 1, tempString.length());			
 			}
 			return tempString;
 			break;
@@ -280,7 +287,6 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 			tmpBuf.setNum(data.toDouble(), 'f', header.fieldsList.at(column).secondLenght);
 			break;
 		case TYPE_MEMO:
-			tmpBuf = m_codec->fromUnicode(data.toString());
 			break;
 	}
 	m_buf = strRecord(row);
@@ -312,15 +318,15 @@ DBFRedactor::Record DBFRedactor::record(int number)
 		return Record();
 
 	Record record;
-	QString recordString = m_codec->toUnicode(strRecord(number));
+	const QString& recordString = m_codec->toUnicode(strRecord(number));
 	QString tempString;
-	for (int i = 0; i < header.fieldsList.count(); i++) {
+	for (int i = 0, count = header.fieldsList.count(); i < count; i++) {
 		tempString = recordString.mid(header.fieldsList.at(i).pos, header.fieldsList.at(i).firstLenght);
 		//Delete last spaces
 		if (!tempString.isEmpty()) {
 			int i = tempString.length();
 			while ((--i >= 0) && tempString[i].isSpace()) {;}
-			tempString.remove(i + 1, tempString.length());
+			tempString.remove(i + 1, tempString.length());			
 		}
 
 		switch (header.fieldsList.at(i).type) {
@@ -356,9 +362,11 @@ bool DBFRedactor::isOpen() const
 int DBFRedactor::deletedCount()
 {
 	long deletedCount = 0;
-	for (int i = 0; i < header.recordsCount; i++)
-		if (strRecord(i).at(i) == 0x2A)
+	for (int i = 0; i < header.recordsCount; i++) {
+		if (strRecord(i).at(i) == 0x2A) {
 			deletedCount++;
+		}
+	}
 	return deletedCount;
 }
 
@@ -397,7 +405,6 @@ void DBFRedactor::addRecord()
 	QPair<int, QByteArray> pair;
 	pair.first = header.recordsCount++;
 	m_buf.clear();
-	m_buf.resize(header.recordLenght);
 	m_buf.fill(0x20, header.recordLenght);
 	pair.second = m_buf;
 	m_changedData.append(pair);
@@ -464,6 +471,7 @@ void DBFRedactor::writeHeader()
 	*(qint16*)tmp = header.firstRecordPos;
 	tmp += 2;
 	*(qint16*)tmp = header.recordLenght;
+
 	m_file.seek(0);
 	m_file.write(c, 32);
 	delete [] c;
@@ -471,10 +479,15 @@ void DBFRedactor::writeHeader()
 
 bool DBFRedactor::isChanged(int row) const
 {
-	for (int i = 0; i < m_changedData.size(); i++) {
-		if (m_changedData.at(i).first == row)
-			return true;
+	if (!m_changedData.isEmpty ()) {
+		for (QList <QPair<int, QByteArray> >::const_iterator end = m_changedData.end () - 1, begin = m_changedData.begin () - 1; 
+			 end != begin; --end) {
+			if (end->first == row) {
+				return true;
+			}
+		}
 	}
+
 	return false;
 }
 
@@ -485,10 +498,13 @@ bool DBFRedactor::save()
 
 	QMap<int, QByteArray> writeData;
 
-	for (int i = m_changedData.size() - 1; i >=0; i-- ) {
-		if (writeData.contains(m_changedData.at(i).first))
-			continue;
-		writeData.insert(m_changedData.at(i).first, m_changedData.at(i).second);
+	if (!m_changedData.isEmpty ()) {
+		for (QList <QPair<int, QByteArray> >::const_iterator end = m_changedData.end () - 1, begin = m_changedData.begin () - 1; 
+			 end != begin; --end) {
+			if (!writeData.contains(end->first)) {
+				writeData.insert(end->first, end->second);
+			}
+		}
 	}
 
 	QMapIterator<int, QByteArray> it(writeData);

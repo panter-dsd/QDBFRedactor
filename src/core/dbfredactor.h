@@ -28,6 +28,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QDate>
 #include <QtCore/QList>
+#include <QtCore/QVector>
 #include <QtCore/QFile>
 #include <QtCore/QTextCodec>
 #include <QtCore/QFileInfo>
@@ -72,7 +73,7 @@ public:
 		qint16 firstRecordPos;
 		qint16 recordLenght;
 		bool isIndex;
-		QList<Field> fieldsList;
+		QVector <Field> fieldsList;
 	};
 
 	struct Record
@@ -120,7 +121,7 @@ public:
 	bool open(DBFOpenMode OpenMode);
 	void close();
 
-	QList<DBFRedactor::Field> fields () const
+	QVector<DBFRedactor::Field> fields () const
 	{ return header.fieldsList;}
 
 	DBFRedactor::Field field(int number) const;
