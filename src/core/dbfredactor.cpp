@@ -264,7 +264,8 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 			tmpBuf = m_codec->fromUnicode(data.toString());
 			break;
 		case TYPE_NUMERIC:
-			tmpBuf = m_codec->fromUnicode(QString::number(data.toString().left(header.fieldsList.at(column).firstLenght).toDouble()));
+			tmpBuf = m_codec->fromUnicode(QString::number(data.toString().left (header.fieldsList.at(column).firstLenght).toDouble()));
+			tmpBuf = tmpBuf.rightJustified (header.fieldsList.at(column).firstLenght, 0x20);
 			/*
 			  if data = 999.99 and firstLenght = 4 write not 999., write 999
 			  */
