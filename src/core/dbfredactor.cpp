@@ -442,9 +442,16 @@ void DBFRedactor::writeHeader()
 	if (m_openMode != Write)
 		return;
 
+	m_file.seek(0);
+
 	char *c = new char[33];
-	for (int i = 0; i < 32; i++)
-		c[i] = 0;
+
+	if (m_file.read(c, 32) != 32) {
+		m_lastError = ErrorReading;
+		m_file.close();
+		return;
+	}
+
 	char *tmp = c;
 
 	c[0] = 0x3;
