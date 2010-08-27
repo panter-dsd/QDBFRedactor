@@ -496,7 +496,7 @@ void DBFRedactorMainWindow::openFiles(const QStringList& fileList)
 			DBFRedactorPage *page = new DBFRedactorPage(fi.absoluteFilePath(), this);
 
 			if (page->dbfModel()->lastError()) {
-				QMessageBox::critical(this, fi.fileName(), page->dbfModel()->errorString());
+				QMessageBox::critical (this, fi.fileName(), page->dbfModel()->errorString());
 				delete page;
 				continue;
 			}

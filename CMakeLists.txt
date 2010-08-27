@@ -1,8 +1,8 @@
 project(QDBFRedactor)
 cmake_minimum_required( VERSION 2.6 )
 
-#SET (CMAKE_BUILD_TYPE Release)
-SET (CMAKE_BUILD_TYPE Debug)
+SET (CMAKE_BUILD_TYPE Release)
+#SET (CMAKE_BUILD_TYPE Debug)
 
 INCLUDE(FindQt4)
 find_package( Qt4 REQUIRED )
@@ -146,10 +146,21 @@ set( RESOURCES resource.qrc )
 
 qt4_add_resources( QRC_SOURCES ${RESOURCES} )
 
+if(MINGW)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qdbfredactor_rc.o
+  COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR}
+  -i${CMAKE_CURRENT_SOURCE_DIR}/qdbfredactor.rc
+   -o ${CMAKE_CURRENT_BINARY_DIR}/qdbfredactor_rc.o)
+	SET(qdbfredactor_RC ${qdbfredactor_RC} ${CMAKE_CURRENT_BINARY_DIR}/qdbfredactor_rc.o)
+else(MINGW)
+	SET(qdbfredactor_RC ${qdbfredactor_RC} qdbfredactor.rc)
+endif(MINGW)
+
+
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-	add_executable( QDBFRedactor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+	add_executable( QDBFRedactor ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${qdbfredactor_RC})
 else()
-	add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES})
+	add_executable( QDBFRedactor WIN32 ${SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${qdbfredactor_RC})
 endif()
 
 target_link_libraries( QDBFRedactor ${QT_LIBRARIES} )
