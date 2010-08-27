@@ -79,7 +79,7 @@ public:
 		{
 			clear ();
 			if (data) {
-				m_data = new char (strlen (data));
+				m_data = new char [strlen (data)];
 				strcpy (m_data, data);
 			}
 		}
@@ -160,6 +160,7 @@ public:
 		{
 			if (this != &f) {
 				setData (f.m_data);
+				m_codec = f.m_codec;
 			}
 			return *this;
 		}
@@ -222,7 +223,7 @@ public:
 		{
 			clear ();
 			if (data) {
-				m_data = new char (strlen (data));
+				m_data = new char [strlen (data)];
 				strcpy (m_data, data);
 			}
 		}
@@ -324,6 +325,11 @@ public:
 			return pos;
 		}
 
+	int fieldsCount () const
+		{
+			return m_fieldsList.size ();
+		}
+
 	void clear ()
 		{
 			if (m_data) {
@@ -350,6 +356,91 @@ private:
 	QVector <DBFField> m_fieldsList;
 };
 
+class DBFRecord
+{
+
+public:
+	DBFRecord (DBFHeader *header, const char* data) : m_header (header), m_data (0), m_codec (0)
+		{
+			m_codec = QTextCodec::codecForName("IBM866");			
+			setData (data);
+		}
+
+	DBFRecord (const DBFRecord& record)
+		{
+			*this = record;
+		}
+
+	~DBFRecord ()
+		{
+			clear ();
+		}
+
+	DBFRecord& operator= (const DBFRecord& r)
+		{
+			if (this != &r) {
+				m_header = r.m_header;
+				setData (r.m_data);
+				m_codec = r.m_codec;
+			}
+		}
+
+	bool operator== (const DBFRecord& r)
+		{
+			return strcmp (m_data, r.m_data) == 0;
+		}
+
+	const char* data () const
+		{
+			return m_data;
+		}
+
+	void setData (const char* data)
+		{
+			clear ();
+			if (data) {
+				m_data = new char [strlen (data)];
+				strcpy (m_data, data);
+			}
+		}
+
+	void setTextCodec (QTextCodec *codec)
+		{
+			m_codec = codec;
+		}
+
+	void clear ()
+		{
+			if (m_data) {
+				delete [] m_data;
+				m_data = 0;
+			}
+		}
+
+	QString value (int fieldIndex)
+		{
+			if (fieldIndex > m_header->fieldsCount ()) {
+				return 0;
+			}
+
+			DBFField field = m_header->field (fieldIndex);
+
+			char *c = m_data + m_header->fieldPos (fieldIndex);
+
+			char *tmp = new char [field.firstLenght ()];
+			strncpy (tmp, c, field.firstLenght ());
+
+			QString value (tmp);
+			delete [] tmp;
+			
+			return value;
+		}
+
+private:
+	DBFHeader *m_header;
+	char *m_data;
+	QTextCodec *m_codec;
+};
 
 
 class DBFRedactor
