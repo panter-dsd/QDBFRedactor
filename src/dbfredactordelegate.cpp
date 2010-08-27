@@ -64,7 +64,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
 	QString text;
 	switch (m_redactor->field(index.column()).type) {
-		case DBFRedactor::TYPE_LOGICAL: {
+		case DBFField::TYPE_LOGICAL: {
 			QStyleOptionViewItem opt(option);
 			opt.rect = checkRect(option, option.rect);
 			opt.state = opt.state & ~QStyle::State_HasFocus;
@@ -73,31 +73,31 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 			return;
 			break;
 		}
-		case DBFRedactor::TYPE_DATE:
+		case DBFField::TYPE_DATE:
 			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Date_Alignment", Qt::AlignHCenter).toInt());
 			m_option.palette.setColor(QPalette::Text, m_settings.value("Date_Color", Qt::darkYellow).value<QColor>());
 			m_option.font = m_settings.value("Date_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toDate().toString(Qt::SystemLocaleShortDate);
 			break;
-		case DBFRedactor::TYPE_FLOAT:
+		case DBFField::TYPE_FLOAT:
 			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Float_Alignment", Qt::AlignRight).toInt());
 			m_option.palette.setColor(QPalette::Text, m_settings.value("Float_Color", Qt::darkBlue).value<QColor>());
 			m_option.font = m_settings.value("Float_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
-		case DBFRedactor::TYPE_NUMERIC:
+		case DBFField::TYPE_NUMERIC:
 			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Numeric_Alignment", Qt::AlignRight).toInt());
 			m_option.palette.setColor(QPalette::Text, m_settings.value("Numeric_Color", Qt::darkBlue).value<QColor>());
 			m_option.font = m_settings.value("Numeric_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
-		case DBFRedactor::TYPE_CHAR:
+		case DBFField::TYPE_CHAR:
 			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("String_Alignment", Qt::AlignLeft).toInt());
 			m_option.palette.setColor(QPalette::Text, m_settings.value("String_Color", option.palette.color(QPalette::Text)).value<QColor>());
 			m_option.font = m_settings.value("String_Font", option.font).value<QFont> ();
 			text = index.data(Qt::DisplayRole).toString();
 			break;
-		case DBFRedactor::TYPE_MEMO:
+		case DBFField::TYPE_MEMO:
 			m_option.displayAlignment |= static_cast<Qt::AlignmentFlag> (m_settings.value("Memo_Alignment", Qt::AlignLeft).toInt());
 			m_option.palette.setColor(QPalette::Text, m_settings.value("Memo_Color", option.palette.color(QPalette::Text)).value<QColor>());
 			m_option.font = m_settings.value("Memo_Font", option.font).value<QFont> ();
@@ -112,7 +112,7 @@ void DBFRedactorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 }
 bool DBFRedactorDelegate::editorEvent (QEvent* ev, QAbstractItemModel* model,const QStyleOptionViewItem& option, const QModelIndex& index)
 {
-	if (m_redactor->field(index.column()).type != DBFRedactor::TYPE_LOGICAL)
+	if (m_redactor->field(index.column()).type != DBFField::TYPE_LOGICAL)
 		return QItemDelegate::editorEvent(ev, model, option, index);
 
 	if(!ev || ! model)
@@ -156,13 +156,13 @@ QWidget *DBFRedactorDelegate::createEditor ( QWidget * parent, const QStyleOptio
 {
 	const DBFRedactor::Field& field = m_redactor->field(index.column());
 	switch (field.type) {
-		case DBFRedactor::TYPE_DATE: {
+		case DBFField::TYPE_DATE: {
 			QDateEdit *edit = new QDateEdit(parent);
 			edit->setCalendarPopup(true);
 			return edit;
 			break;
 		}
-		case DBFRedactor::TYPE_FLOAT: case DBFRedactor::TYPE_NUMERIC: {
+		case DBFField::TYPE_FLOAT: case DBFField::TYPE_NUMERIC: {
 			QDoubleSpinBox *edit = new QDoubleSpinBox(parent);
 			edit->setDecimals(field.secondLenght);
 			QString tempString;
@@ -185,12 +185,12 @@ QWidget *DBFRedactorDelegate::createEditor ( QWidget * parent, const QStyleOptio
 void DBFRedactorDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
 	switch (m_redactor->field(index.column()).type) {
-		case DBFRedactor::TYPE_DATE: {
+		case DBFField::TYPE_DATE: {
 			QDateEdit *edit = qobject_cast<QDateEdit*> (editor);
 			edit->setDate(index.data(Qt::EditRole).toDate());
 			break;
 		}
-		case DBFRedactor::TYPE_FLOAT: case DBFRedactor::TYPE_NUMERIC: {
+		case DBFField::TYPE_FLOAT: case DBFField::TYPE_NUMERIC: {
 			QDoubleSpinBox *edit = qobject_cast<QDoubleSpinBox*> (editor);
 			edit->setValue(index.data(Qt::EditRole).toDouble());
 			break;
@@ -206,12 +206,12 @@ void DBFRedactorDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
 {
 	QVariant value;
 	switch (m_redactor->field(index.column()).type) {
-		case DBFRedactor::TYPE_DATE: {
+		case DBFField::TYPE_DATE: {
 			QDateEdit *edit = qobject_cast<QDateEdit*> (editor);
 			value = edit->date();
 			break;
 		}
-		case DBFRedactor::TYPE_FLOAT: case DBFRedactor::TYPE_NUMERIC: {
+		case DBFField::TYPE_FLOAT: case DBFField::TYPE_NUMERIC: {
 			QDoubleSpinBox *edit = qobject_cast<QDoubleSpinBox*> (editor);
 			value = edit->value();
 			break;

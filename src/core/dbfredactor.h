@@ -35,10 +35,11 @@
 #include <QtCore/QVariant>
 #include <QtCore/QQueue>
 
-class DBFRedactor
+class DBFField
 {
+
 public:
-	enum FieldType{
+	enum Type {
 		TYPE_CHAR = 0,
 		TYPE_NUMERIC,
 		TYPE_LOGICAL,
@@ -47,14 +48,313 @@ public:
 		TYPE_FLOAT
 	};
 
+public:
+	DBFField () : m_data (0), m_codec (0), m_type (-1), m_firstLenght (-1), m_secondLenght (-1)
+		{
+			m_codec = QTextCodec::codecForName("IBM866");
+		}
+
+	DBFField (const char* data) : m_data (0), m_codec (0), m_type (-1), m_firstLenght (-1), m_secondLenght (-1)
+		{
+			m_codec = QTextCodec::codecForName("IBM866");
+			setData (data);
+		}
+
+	~DBFField ()
+		{
+			if (m_data) {
+				delete [] m_data;
+			}
+		}
+
+	void setTextCodec (QTextCodec *codec)
+		{
+			m_codec = codec;
+
+			m_name.clear ();
+		}
+
+
+	void setData (const char* data)
+		{
+			clear ();
+			if (data) {
+				m_data = new char (strlen (data));
+				strcpy (m_data, data);
+			}
+		}
+
+	const char* data ()
+		{ return m_data;}
+
+	QString name () 
+		{ 
+			if (m_name.isEmpty ()) {
+				int i = 0;
+				for (; i < 10, m_data [i] != 0x0; i++) {}
+				m_name = m_codec->toUnicode(QByteArray (m_data, i));
+			}
+			return m_name;
+		}
+
+	qint8 type ()
+		{
+			if (m_type < 0) {
+				switch (m_data [11]) {
+				case 'N':
+					m_type = TYPE_NUMERIC;
+					break;
+				case 'L':
+					m_type = TYPE_LOGICAL;
+					break;
+				case 'M':
+					m_type = TYPE_MEMO;
+					break;
+				case 'D':
+					m_type = TYPE_DATE;
+					break;
+				case 'F':
+					m_type = TYPE_FLOAT;
+					break;
+				case 'C':
+					m_type = TYPE_CHAR;
+					break;
+				}
+			}
+			return m_type;
+		}
+
+	qint8 firstLenght ()
+		{
+			if (m_firstLenght < 0) {
+				m_firstLenght = m_data [16];
+			}
+			return m_firstLenght;
+		}
+
+	qint8 secondLenght ()
+		{
+			if (m_secondLenght < 0) {
+				m_secondLenght = m_data [17];
+			}
+			return m_secondLenght;
+		}
+
+	void clear ()
+		{
+			if (m_data) {
+				delete [] m_data;
+				m_data = 0;
+			}
+
+			m_name.clear ();
+			m_type = m_firstLenght = m_secondLenght = -1;
+		}
+
+	DBFField (const DBFField& f) : m_data (0), m_codec (0), m_type (-1), m_firstLenght (-1), m_secondLenght (-1)
+		{
+			*this = f;
+		}
+
+	DBFField& operator= (const DBFField& f)
+		{
+			if (this != &f) {
+				setData (f.m_data);
+			}
+			return *this;
+		}
+	
+private:
+	char *m_data;
+	QTextCodec *m_codec;
+	QString m_name;
+	qint8 m_type;
+	qint8 m_firstLenght;
+	qint8 m_secondLenght;
+};
+
+class DBFHeader
+{
+
+public:
 	enum FileType{
-		Fox3,
+		Fox3 = 0,
 		Fox3M,
 		Fox4,
 		Fox,
 		DBase3,
 		DBase4,
-		DBase5};
+		DBase5
+	};
+
+public:
+	DBFHeader () : m_data (0), m_codec (0), m_fileType (-1), m_recordsCount (-1), 
+				   m_firstRecordPos (-1), m_recordLenght (-1)
+		{
+			m_codec = QTextCodec::codecForName("IBM866");
+		}
+	DBFHeader (const char* data) : m_data (0), m_codec (0), m_fileType (-1), m_recordsCount (-1), 
+								   m_firstRecordPos (-1), m_recordLenght (-1)
+		{
+			m_codec = QTextCodec::codecForName("IBM866");
+			setData (data);
+		}
+
+	~DBFHeader ()
+		{
+			if (m_data) {
+				delete [] m_data;
+			}
+		}
+
+	void setTextCodec (QTextCodec *codec)
+		{
+			m_codec = codec;
+
+			if (!m_fieldsList.isEmpty ()) {
+				for (QVector <DBFField>::iterator begin = m_fieldsList.begin (), end = m_fieldsList.end (); begin != end; ++begin) {
+					begin->setTextCodec (m_codec);
+				}
+			}
+		}
+
+	void setData (const char* data)
+		{
+			clear ();
+			if (data) {
+				m_data = new char (strlen (data));
+				strcpy (m_data, data);
+			}
+		}
+
+	const char* data () const
+		{ return m_data;}
+
+	qint8 fileType () //This function is very bad
+		{
+			if (m_fileType < 0) {
+				if (m_data [0] & 0x3)
+					m_fileType = DBase3;
+			}
+			return m_fileType;
+		}
+
+	QDate lastUpdated ()
+		{
+			if (m_lastUpdated.isNull ()) {
+				m_lastUpdated.setDate(2000 + m_data [1], m_data [2], m_data [3]);
+			}
+			return m_lastUpdated;
+		}
+
+	void setLastUpdated (const QDate& date = QDate::currentDate ()) 
+		{
+			m_lastUpdated = date;
+			m_data [1] = m_lastUpdated.year () - 2000;
+			m_data [2] = m_lastUpdated.month ();
+			m_data [3] = m_lastUpdated.day ();
+		}
+
+	qint32 recordsCount ()
+		{
+			if (m_recordsCount < 0) {
+				char *c = m_data + 8;
+				m_recordsCount = *(qint32*) c;
+			}
+			return m_recordsCount;
+		}
+	
+	void setRecordsCount (qint32 count)
+		{
+			m_recordsCount = count;
+			char *c = m_data + 8;
+			*(qint32*) c = m_recordsCount;
+		}
+
+	void addRecordsCount (qint32 count = 1)
+		{
+			setRecordsCount (m_recordsCount + count);
+		}
+
+	qint16 firstRecordPos ()
+		{
+			if (m_firstRecordPos < 0) {
+				char *c = m_data + 12;
+				m_firstRecordPos = *(qint32*) c;
+			}
+			return m_firstRecordPos; 
+		}
+
+	qint16 recordLenght ()
+		{
+			if (m_recordLenght < 0) {
+				char *c = m_data + 14;
+				m_recordLenght = *(qint32*) c;
+			}
+			return m_recordLenght; 
+		}
+
+	bool hasIndex ()
+		{
+			return m_data [28] == 1;
+		}
+
+	void addField (const char* field)
+		{
+			m_fieldsList.push_back (DBFField (field));
+		}
+
+	DBFField field (int index)
+		{
+			return index < m_fieldsList.size () ? m_fieldsList [index] : DBFField ();
+		}
+
+	qint16 fieldPos (int index)
+		{
+			if (index > m_fieldsList.size ()) {
+				return -1;
+			}
+
+			qint16 pos = 1;
+			
+			for (int i = 0; i <= index; i++) {
+				pos += m_fieldsList [i].firstLenght ();
+			}
+
+			return pos;
+		}
+
+	void clear ()
+		{
+			if (m_data) {
+				delete [] m_data;
+				m_data = 0;
+			}
+			
+			m_fileType = m_recordsCount = m_firstRecordPos = m_recordLenght = -1;
+			m_lastUpdated = QDate ();
+			m_fieldsList.clear ();
+		}
+private:
+	DBFHeader (const DBFHeader&);
+	const DBFHeader& operator= (const DBFHeader&);
+
+private:
+	char *m_data;
+	QTextCodec *m_codec;
+	qint8 m_fileType;
+	QDate m_lastUpdated;
+	qint32 m_recordsCount;
+	qint16 m_firstRecordPos;
+	qint16 m_recordLenght;
+	QVector <DBFField> m_fieldsList;
+};
+
+
+
+class DBFRedactor
+{
+public:
 
 	struct Field
 	{

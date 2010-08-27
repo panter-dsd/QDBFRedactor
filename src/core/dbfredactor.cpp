@@ -98,8 +98,8 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	}
 
 #warning "Type is not true."
-	if (c[0] & 0x3)
-		header.fileType = DBase3;
+/*	if (c[0] & 0x3)
+	header.fileType = DBase3;*/
 	header.lastUpdated.setDate(2000 + c[1], c[2], c[3]);
 	cTmp += 4;
 	header.recordsCount = *(qint32*)cTmp;
@@ -128,22 +128,22 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 		field.name = m_codec->toUnicode(m_buf);
 		switch (c[11]) {
 			case 'N':
-				field.type = TYPE_NUMERIC;
+				field.type = DBFField::TYPE_NUMERIC;
 				break;
 			case 'L':
-				field.type = TYPE_LOGICAL;
+				field.type = DBFField::TYPE_LOGICAL;
 				break;
 			case 'M':
-				field.type = TYPE_MEMO;
+				field.type = DBFField::TYPE_MEMO;
 				break;
 			case 'D':
-				field.type = TYPE_DATE;
+				field.type = DBFField::TYPE_DATE;
 				break;
 			case 'F':
-				field.type = TYPE_FLOAT;
+				field.type = DBFField::TYPE_FLOAT;
 				break;
 			case 'C':
-				field.type = TYPE_CHAR;
+				field.type = DBFField::TYPE_CHAR;
 				break;
 			default:
 				m_lastError = FileNotCorrect;
@@ -232,7 +232,7 @@ QVariant DBFRedactor::data(int row, int column)
 	QString tempString = m_codec->toUnicode(strRecord(row).mid(header.fieldsList.at(column).pos, header.fieldsList.at(column).firstLenght));
 
 	switch (header.fieldsList.at(column).type) {
-		case TYPE_CHAR:
+		case DBFField::TYPE_CHAR:
 			//Delete last spaces
 			if (!tempString.isEmpty()) {
 				int i = tempString.length();
@@ -241,19 +241,19 @@ QVariant DBFRedactor::data(int row, int column)
 			}
 			return tempString;
 			break;
-		case TYPE_NUMERIC:
+		case DBFField::TYPE_NUMERIC:
 			return tempString.trimmed();
 			break;
-		case TYPE_LOGICAL:
+		case DBFField::TYPE_LOGICAL:
 			return tempString.trimmed() == "T";
 			break;
-		case TYPE_DATE:
+		case DBFField::TYPE_DATE:
 			return QDate::fromString(tempString.trimmed(), "yyyyMMdd");
 			break;
-		case TYPE_FLOAT:
+		case DBFField::TYPE_FLOAT:
 			return tempString.trimmed().toDouble();
 			break;
-		case TYPE_MEMO:
+		case DBFField::TYPE_MEMO:
 			return QVariant();
 			break;
 	}
@@ -267,26 +267,26 @@ bool DBFRedactor::setData(int row, int column, const QVariant& data)
 
 	QByteArray tmpBuf;
 	switch (header.fieldsList.at(column).type) {
-		case TYPE_CHAR:
+		case DBFField::TYPE_CHAR:
 			tmpBuf = m_codec->fromUnicode(data.toString());
 			break;
-		case TYPE_NUMERIC:
+		case DBFField::TYPE_NUMERIC:
 			tmpBuf = m_codec->fromUnicode(QString::number(data.toString().left (header.fieldsList.at(column).firstLenght).toDouble()));
 			tmpBuf = tmpBuf.rightJustified (header.fieldsList.at(column).firstLenght, 0x20);
 			/*
 			  if data = 999.99 and firstLenght = 4 write not 999., write 999
 			  */
 			break;
-		case TYPE_LOGICAL:
+		case DBFField::TYPE_LOGICAL:
 			tmpBuf = data.toBool() ? "T" : "F";
 			break;
-		case TYPE_DATE:
+		case DBFField::TYPE_DATE:
 			tmpBuf = m_codec->fromUnicode(data.toDate().toString("yyyyMMdd"));
 			break;
-		case TYPE_FLOAT:
+		case DBFField::TYPE_FLOAT:
 			tmpBuf.setNum(data.toDouble(), 'f', header.fieldsList.at(column).secondLenght);
 			break;
-		case TYPE_MEMO:
+		case DBFField::TYPE_MEMO:
 			break;
 	}
 	m_buf = strRecord(row);
@@ -330,22 +330,22 @@ DBFRedactor::Record DBFRedactor::record(int number)
 		}
 
 		switch (header.fieldsList.at(i).type) {
-			case TYPE_CHAR:
+			case DBFField::TYPE_CHAR:
 				record.value.append(tempString);
 				break;
-			case TYPE_NUMERIC:
+			case DBFField::TYPE_NUMERIC:
 				record.value.append(tempString.toDouble());
 				break;
-			case TYPE_LOGICAL:
+			case DBFField::TYPE_LOGICAL:
 				record.value.append(tempString == "T");
 				break;
-			case TYPE_DATE:
+			case DBFField::TYPE_DATE:
 				record.value.append(QDate::fromString(tempString, "yyyyMMdd"));
 				break;
-			case TYPE_FLOAT:
+			case DBFField::TYPE_FLOAT:
 				record.value.append(tempString.toDouble());
 				break;
-			case TYPE_MEMO:
+			case DBFField::TYPE_MEMO:
 				record.value.append(QVariant());
 				break;
 		}

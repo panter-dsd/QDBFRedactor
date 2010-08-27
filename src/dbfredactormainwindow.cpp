@@ -747,10 +747,10 @@ void DBFRedactorMainWindow::copyToClipboard()
 		if (!text.value(index.row()).isEmpty())
 			text[index.row()] += "\t";
 		switch(currentPage->redactor()->field(index.column()).type) {
-			case DBFRedactor::TYPE_DATE:
+			case DBFField::TYPE_DATE:
 				text[index.row()] += index.data(Qt::DisplayRole).toDate().toString(Qt::SystemLocaleShortDate);
 				break;
-			case DBFRedactor::TYPE_CHAR:
+			case DBFField::TYPE_CHAR:
 				text[index.row()] += "\"" + index.data(Qt::DisplayRole).toString() + "\"";
 				break;
 			default:
@@ -804,10 +804,10 @@ QStringList DBFRedactorMainWindow::prepareHtml()
 			QString stringValue;
 
 			switch(currentPage->redactor()->field(view->model()->index(i, j).column()).type) {
-				case DBFRedactor::TYPE_DATE:
+				case DBFField::TYPE_DATE:
 					stringValue = value.toDate().toString(Qt::SystemLocaleShortDate);
 					break;
-				case DBFRedactor::TYPE_LOGICAL:
+				case DBFField::TYPE_LOGICAL:
 					stringValue = value.toBool() ? tr("Yes") : tr("No");
 					break;
 				default:
@@ -1021,16 +1021,16 @@ void DBFRedactorMainWindow::exportToCsv()
 			const QVariant& value = view->model()->index(i, j).data(Qt::DisplayRole);
 
 			switch (currentPage->redactor()->field(j).type) {
-				case DBFRedactor::TYPE_CHAR:
+				case DBFField::TYPE_CHAR:
 					tempStringList << "\"" + value.toString() + "\"";
 					break;
-				case DBFRedactor::TYPE_LOGICAL:
+				case DBFField::TYPE_LOGICAL:
 					tempStringList << value.toString();
 					break;
-				case DBFRedactor::TYPE_DATE:
+				case DBFField::TYPE_DATE:
 					tempStringList << value.toDate().toString(Qt::SystemLocaleShortDate);
 					break;
-				default :
+				default:
 					tempStringList << value.toString();
 			}
 		}

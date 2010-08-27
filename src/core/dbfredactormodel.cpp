@@ -52,7 +52,7 @@ QVariant DBFRedactorModel::data(const QModelIndex &index, int role) const
 			return value;
 			break;
 		case Qt::CheckStateRole:
-			if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
+			if (redactor->field(index.column()).type == DBFField::TYPE_LOGICAL)
 				return value.toBool() ? Qt::Checked : Qt::Unchecked;
 			break;
 		case Qt::UserRole:
@@ -73,7 +73,7 @@ bool DBFRedactorModel::setData ( const QModelIndex & index, const QVariant & val
 Qt::ItemFlags DBFRedactorModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags flags = index.isValid() ? Qt::ItemIsSelectable | Qt::ItemIsEnabled : Qt::NoItemFlags;
-	if (redactor->field(index.column()).type == DBFRedactor::TYPE_LOGICAL)
+	if (redactor->field(index.column()).type == DBFField::TYPE_LOGICAL)
 		flags |= Qt::ItemIsUserCheckable;
 
 	if (!isReadOnly())
