@@ -22,61 +22,73 @@
 * Contact:		panter.dsd@gmail.com
 *******************************************************************/
 
-#ifndef DBFFIELD_H
-#define DBFFIELD_H
+#include <cstring>
+#include <iostream>
 
-#include "dbfredactorcore.h"
-#include <string>
-#include <vector>
+#include "dbfrecord.h"
 
 namespace DBFRedactorCore {
 
-enum DBFType {
-	Unknow = -1,
-	Char = 0,
-	Numeric,
-	Logical,
-	Date,
-	Float,
-	Memo
-};
+DBFRecord::DBFRecord ()
+	: m_data (0), m_length (-1)
+{
 
-class DBFField {
-public:
-	DBFField ();
-	DBFField (const char *data);
-	DBFField (const DBFField &f);
-
-	DBFField& operator= (const DBFField &f);
-
-	~DBFField ();
-
-	void clear ();
-	bool isEmpty () const;
-	bool isValid () const;
-
-	std::string data () const
-	{return m_data;}
-
-	void setData (const char *data);
-
-	std::string name () const;
-
-	DBFType type () const;
-
-	int8 firstLenght () const;
-	int8 secondLenght () const;
-
-
-private:
-	char *m_data;
-	mutable std::string m_name;
-	mutable DBFType m_type;
-	mutable int8 m_firstLenght;
-	mutable int8 m_secondLenght;
-};
-
-typedef std::vector <DBFField> DBFFieldsList;
 }
 
-#endif //DBFFIELD_H
+DBFRecord::DBFRecord (const char *data, int16 length)
+	: m_data (0), m_length (length)
+{
+	setData (data, length);
+}
+
+DBFRecord::DBFRecord (const DBFRecord &f)
+	: m_data (0), m_length (-1)
+{
+	*this = f;
+}
+
+DBFRecord& DBFRecord::operator= (const DBFRecord &f)
+{
+	if (this != &f) {
+		setData (f.m_data, f.m_length);
+	}
+
+	return *this;
+}
+
+DBFRecord::~DBFRecord ()
+{
+	if (m_data) {
+		delete [] m_data;
+		m_data = 0;
+	}
+}
+
+void DBFRecord::clear ()
+{
+	if (m_data) {
+		delete [] m_data;
+		m_data = 0;
+	}
+	m_length = -1;
+}
+
+bool DBFRecord::isEmpty () const
+{
+	return !m_data;
+}
+
+bool DBFRecord::isValid () const
+{
+	return !isEmpty ();
+}
+
+void DBFRecord::setData (const char *data, int16 length)
+{
+	clear ();
+	m_length = length;
+	m_data = new char [m_length + 1];
+	memcpy (m_data, data, m_length);
+}
+
+}

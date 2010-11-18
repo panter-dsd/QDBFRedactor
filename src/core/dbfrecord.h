@@ -22,61 +22,37 @@
 * Contact:		panter.dsd@gmail.com
 *******************************************************************/
 
-#ifndef DBFFIELD_H
-#define DBFFIELD_H
+#ifndef DBFRECORD_H
+#define DBFRECORD_H
 
 #include "dbfredactorcore.h"
-#include <string>
-#include <vector>
 
 namespace DBFRedactorCore {
 
-enum DBFType {
-	Unknow = -1,
-	Char = 0,
-	Numeric,
-	Logical,
-	Date,
-	Float,
-	Memo
-};
-
-class DBFField {
+class DBFRecord {
 public:
-	DBFField ();
-	DBFField (const char *data);
-	DBFField (const DBFField &f);
+	DBFRecord ();
+	DBFRecord (const char *data, int16 length);
+	DBFRecord (const DBFRecord &f);
 
-	DBFField& operator= (const DBFField &f);
+	DBFRecord& operator= (const DBFRecord &f);
 
-	~DBFField ();
+	~DBFRecord ();
 
 	void clear ();
 	bool isEmpty () const;
 	bool isValid () const;
 
-	std::string data () const
+
+	const char* data () const
 	{return m_data;}
 
-	void setData (const char *data);
-
-	std::string name () const;
-
-	DBFType type () const;
-
-	int8 firstLenght () const;
-	int8 secondLenght () const;
-
+	void setData (const char *data, int16 length);
 
 private:
 	char *m_data;
-	mutable std::string m_name;
-	mutable DBFType m_type;
-	mutable int8 m_firstLenght;
-	mutable int8 m_secondLenght;
+	int16 m_length;
 };
-
-typedef std::vector <DBFField> DBFFieldsList;
 }
 
-#endif //DBFFIELD_H
+#endif //DBFRECORD_H

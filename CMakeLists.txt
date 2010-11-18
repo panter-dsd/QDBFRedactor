@@ -45,6 +45,7 @@ src/translationmanager.h
 set (core_SRC
 src/core/dbffield.cpp
 src/core/dbfheader.cpp
+src/core/dbfrecord.cpp
 #src/core/dbfredactor.cpp
 #src/core/dbfredactormodel.cpp
 #src/core/dbfredactorsortfilterproxymodel.cpp
@@ -54,6 +55,7 @@ set (core_HEADERS
 src/core/dbfredactorcore.h
 src/core/dbffield.h
 src/core/dbfheader.h
+src/core/dbfrecord.h
 #src/core/dbfredactor.h
 #src/core/dbfredactormodel.h
 #src/core/dbfredactorsortfilterproxymodel.h
