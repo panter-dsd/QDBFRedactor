@@ -79,7 +79,7 @@ int main(int argc, char ** argv)
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
 //TEST
-	std::fstream file ("/home/panter/programming/QDBFRedactor/examples/example.dbf", std::fstream::in | std::fstream::binary);
+	std::fstream file ("./../examples/example.dbf", std::fstream::in | std::fstream::binary);
 
 	if (!file.is_open ()) {
 		std::cout << "Error open file";
@@ -88,7 +88,7 @@ int main(int argc, char ** argv)
 		DBFRedactorCore::DBFHeader h;
 		h.load (file);
 		std::cout << h.recordsCount () << std::endl;
-		
+
 	}
 
 	return 0;
