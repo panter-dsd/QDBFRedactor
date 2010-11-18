@@ -48,11 +48,7 @@ class DBFHeader {
 
 public:
 	DBFHeader ();
-	DBFHeader (const DBFHeader &f);
-
 	~DBFHeader ();
-
-	DBFHeader& operator= (const DBFHeader &f);
 
 	bool load (std::iostream &stream);
 	bool save (std::iostream &stream);
@@ -83,6 +79,10 @@ public:
 	int16 fieldPos (const int index) const;
 
 	int8 fieldsCount () const;
+
+private:
+	DBFHeader (const DBFHeader &f);
+	DBFHeader& operator= (const DBFHeader &f);
 
 private:
 	char m_data [33];

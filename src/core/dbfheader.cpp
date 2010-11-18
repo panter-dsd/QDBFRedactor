@@ -38,31 +38,9 @@ DBFHeader::DBFHeader ()
 
 }
 
-DBFHeader::DBFHeader (const DBFHeader &f)
-	: m_fileType (UnknowFile), m_lastUpdated (0), m_recordsCount (-1),
-	  m_firstRecordPos (-1), m_recordLenght (-1)
-{
-	*this = f;
-}
-
 DBFHeader::~DBFHeader ()
 {
 
-}
-
-DBFHeader& DBFHeader::operator= (const DBFHeader &f)
-{
-	if (this != &f) {
-		m_fileType = f.m_fileType;
-		m_lastUpdated = f.m_lastUpdated;
-		m_recordsCount = f.m_recordsCount;
-		m_firstRecordPos = f.m_firstRecordPos;
-		m_recordLenght = f.m_recordLenght;
-		m_fieldsList.clear ();
-		m_fieldsList = f.m_fieldsList;
-	}
-
-	return *this;
 }
 
 bool DBFHeader::load (std::iostream &stream)
