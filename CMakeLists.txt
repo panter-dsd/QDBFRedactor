@@ -1,8 +1,8 @@
 project(QDBFRedactor)
 cmake_minimum_required( VERSION 2.6 )
 
-SET (CMAKE_BUILD_TYPE Release)
-#SET (CMAKE_BUILD_TYPE Debug)
+#SET (CMAKE_BUILD_TYPE Release)
+SET (CMAKE_BUILD_TYPE Debug)
 
 INCLUDE(FindQt4)
 find_package( Qt4 REQUIRED )
@@ -26,16 +26,16 @@ src/3dparty/qtsingleapplication/src
 
 set (src_SRC
 src/main.cpp
-src/dbfredactormainwindow.cpp
-src/dbfredactordelegate.cpp
+#src/dbfredactormainwindow.cpp
+#src/dbfredactordelegate.cpp
 src/translationmanager.cpp
 )
 
 set (src_HEADERS
-src/dbfredactorpage.h
-src/dbfredactormainwindow.h
-src/dbfredactordelegate.h
-src/filterdelegate.h
+#src/dbfredactorpage.h
+#src/dbfredactormainwindow.h
+#src/dbfredactordelegate.h
+#src/filterdelegate.h
 src/translationmanager.h
 )
 
@@ -43,15 +43,19 @@ src/translationmanager.h
 # core
 ################################################################
 set (core_SRC
-src/core/dbfredactor.cpp
-src/core/dbfredactormodel.cpp
-src/core/dbfredactorsortfilterproxymodel.cpp
+src/core/dbffield.cpp
+src/core/dbfheader.cpp
+#src/core/dbfredactor.cpp
+#src/core/dbfredactormodel.cpp
+#src/core/dbfredactorsortfilterproxymodel.cpp
 )
 
 set (core_HEADERS
-src/core/dbfredactor.h
-src/core/dbfredactormodel.h
-src/core/dbfredactorsortfilterproxymodel.h
+src/core/dbffield.h
+src/core/dbfheader.h
+#src/core/dbfredactor.h
+#src/core/dbfredactormodel.h
+#src/core/dbfredactorsortfilterproxymodel.h
 )
 
 ################################################################
@@ -59,48 +63,48 @@ src/core/dbfredactorsortfilterproxymodel.h
 ################################################################
 
 set (dialogs_SRC
-src/dialogs/sortdialog.cpp
-src/dialogs/filterdialog.cpp
-src/dialogs/aboutdialog.cpp
-src/dialogs/structdialog.cpp
+#src/dialogs/sortdialog.cpp
+#src/dialogs/filterdialog.cpp
+#src/dialogs/aboutdialog.cpp
+#src/dialogs/structdialog.cpp
 )
 
 set (dialogs_HEADERS
-src/dialogs/sortdialog.h
-src/dialogs/filterdialog.h
-src/dialogs/aboutdialog.h
-src/dialogs/structdialog.h
+#src/dialogs/sortdialog.h
+#src/dialogs/filterdialog.h
+#src/dialogs/aboutdialog.h
+#src/dialogs/structdialog.h
 )
 
 ################################################################
 # preferences
 ################################################################
 set (preferences_SRC
-src/preferences/preferencesdialog.cpp
-src/preferences/languagepreferences.cpp
-src/preferences/displaypreferences.cpp
-src/preferences/globalpreferences.cpp
+#src/preferences/preferencesdialog.cpp
+#src/preferences/languagepreferences.cpp
+#src/preferences/displaypreferences.cpp
+#src/preferences/globalpreferences.cpp
 )
 
 set (preferences_HEADERS
-src/preferences/preferencesdialog.h
-src/preferences/abstractpreferencespage.h
-src/preferences/languagepreferences.h
-src/preferences/displaypreferences.h
-src/preferences/globalpreferences.h
+#src/preferences/preferencesdialog.h
+#src/preferences/abstractpreferencespage.h
+#src/preferences/languagepreferences.h
+#src/preferences/displaypreferences.h
+#src/preferences/globalpreferences.h
 )
 
 ################################################################
 # widgets
 ################################################################
 set (widgets_SRC
-src/widgets/qtcolorbutton.cpp
-src/widgets/qtfontbutton.cpp
+#src/widgets/qtcolorbutton.cpp
+#src/widgets/qtfontbutton.cpp
 )
 
 set (widgets_HEADERS
-src/widgets/qtcolorbutton.h
-src/widgets/qtfontbutton.h
+#src/widgets/qtcolorbutton.h
+#src/widgets/qtfontbutton.h
 )
 
 ################################################################

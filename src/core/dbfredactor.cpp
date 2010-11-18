@@ -30,14 +30,12 @@
 DBFRedactor::DBFRedactor()
 	: m_fileName(0), m_codec (0), m_openMode(No), m_buffering(true), m_lastError(NoError)
 {
-	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
 }
 
 DBFRedactor::DBFRedactor(const QString& fileName)
 	: m_fileName(fileName), m_codec (0), m_openMode(No), m_buffering(true), m_lastError(NoError)
 {
-	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
 }
 
@@ -48,7 +46,7 @@ DBFRedactor::~DBFRedactor()
 
 void DBFRedactor::close()
 {
-	header.fieldsList.clear();
+	header.clear();
 	m_file.close();
 	m_cache.clear();
 	m_changedData.clear();
@@ -90,26 +88,18 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	}
 
 	char *c = new char[33];
-	char *cTmp = c;
+
 	if (m_file.read(c, 32) != 32) {
 		m_lastError = ErrorReading;
 		m_file.close();
 		return false;
 	}
 
-#warning "Type is not true."
-/*	if (c[0] & 0x3)
-	header.fileType = DBase3;*/
-	header.lastUpdated.setDate(2000 + c[1], c[2], c[3]);
-	cTmp += 4;
-	header.recordsCount = *(qint32*)cTmp;
-	cTmp += 4;
-	header.firstRecordPos = *(qint16*)cTmp;
-	cTmp += 2;
-	header.recordLenght = *(qint16*)cTmp;
-	header.isIndex = (c[28] == 1);
+	header.setData (c);
 
-	if ((qint64)header.firstRecordPos + (qint64)header.recordsCount * (qint64)header.recordLenght > m_file.size()) {
+#warning "Type is not true."
+
+	if ((qint64)header.firstRecordPos () + (qint64)header.recordsCount () * (qint64)header.recordLenght () > m_file.size()) {
 		m_lastError = FileNotCorrect;
 		m_file.close();
 		return false;
@@ -121,50 +111,17 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 		return false;
 	}
 	do {
-		Field field;
-		m_buf.clear();
-		for (int i = 0; i < 10, c[i] != 0x0; i++)
-			m_buf.append(c[i]);
-		field.name = m_codec->toUnicode(m_buf);
-		switch (c[11]) {
-			case 'N':
-				field.type = DBFField::TYPE_NUMERIC;
-				break;
-			case 'L':
-				field.type = DBFField::TYPE_LOGICAL;
-				break;
-			case 'M':
-				field.type = DBFField::TYPE_MEMO;
-				break;
-			case 'D':
-				field.type = DBFField::TYPE_DATE;
-				break;
-			case 'F':
-				field.type = DBFField::TYPE_FLOAT;
-				break;
-			case 'C':
-				field.type = DBFField::TYPE_CHAR;
-				break;
-			default:
-				m_lastError = FileNotCorrect;
-				m_file.close();
-				return false;
-		}
+		header.addField (c);
 
-		field.pos = header.fieldsList.isEmpty() ? 1 : header.fieldsList.last().pos + header.fieldsList.last().firstLenght;
-
-		field.firstLenght = c[16];
-		field.secondLenght = c[17];
-
-		header.fieldsList << field;
 		if (m_file.read(c, 32) != 32) {
 			m_lastError = ErrorReading;
 			m_file.close();
 			return false;
 		}
 	} while (c[0] != 0xD);
+
 	delete [] c;
-	m_file.seek(header.firstRecordPos);
+	m_file.seek(header.firstRecordPos ());
 
 	m_buf.clear();
 	lastRecord = -1;
@@ -172,9 +129,9 @@ bool DBFRedactor::open(DBFOpenMode OpenMode, const QString& fileName)
 	return true;
 }
 
-DBFRedactor::Field DBFRedactor::field(int number) const
+DBFField DBFRedactor::field(int number) const
 {
-	return number < header.fieldsList.count() ? header.fieldsList.at(number) : Field();
+	return header.field (number);
 }
 
 QByteArray DBFRedactor::strRecord(int row)
@@ -229,29 +186,29 @@ QVariant DBFRedactor::data(int row, int column)
 	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount || column < 0 || column >= header.fieldsList.size())
 		return QVariant();
 
-	QString tempString = m_codec->toUnicode(strRecord(row).mid(header.fieldsList.at(column).pos, header.fieldsList.at(column).firstLenght));
+	QString value = record (row).value ();
 
-	switch (header.fieldsList.at(column).type) {
+	switch (header.field (column).type ()) {
 		case DBFField::TYPE_CHAR:
 			//Delete last spaces
-			if (!tempString.isEmpty()) {
-				int i = tempString.length();
-				while ((--i >= 0) && tempString[i].isSpace()) {;}
-				tempString.remove(i + 1, tempString.length());			
+			if (!value.isEmpty()) {
+				int i = value.length();
+				while ((--i >= 0) && value [i].isSpace()) {;}
+				value.remove(i + 1, value.length());			
 			}
-			return tempString;
+			return value;
 			break;
 		case DBFField::TYPE_NUMERIC:
-			return tempString.trimmed();
+			return value.trimmed();
 			break;
 		case DBFField::TYPE_LOGICAL:
-			return tempString.trimmed() == "T";
+			return value.trimmed() == "T";
 			break;
 		case DBFField::TYPE_DATE:
-			return QDate::fromString(tempString.trimmed(), "yyyyMMdd");
+			return QDate::fromString(value.trimmed(), "yyyyMMdd");
 			break;
 		case DBFField::TYPE_FLOAT:
-			return tempString.trimmed().toDouble();
+			return value.trimmed().toDouble();
 			break;
 		case DBFField::TYPE_MEMO:
 			return QVariant();

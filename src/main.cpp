@@ -30,10 +30,19 @@
 #include <QtCore/QDebug>
 
 #include <QtGui/QApplication>
+#include <QtGui/QIcon>
 
-#include "dbfredactormainwindow.h"
+//#include "dbfredactormainwindow.h"
 #include "translationmanager.h"
 #include "qtsingleapplication.h"
+
+//TEST
+#include "dbfheader.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
+//END TEST
+
 
 #define ApplicationVersion "0.0.0.0"
 
@@ -69,7 +78,23 @@ int main(int argc, char ** argv)
 
 	app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
-	DBFRedactorMainWindow win;
+//TEST
+	std::fstream file ("/home/panter/programming/QDBFRedactor/examples/example.dbf", std::fstream::in | std::fstream::binary);
+
+	if (!file.is_open ()) {
+		std::cout << "Error open file";
+		return 1;
+	} else {
+		DBFRedactorCore::DBFHeader h;
+		h.load (file);
+		std::cout << h.recordsCount () << std::endl;
+		
+	}
+
+	return 0;
+//END TEST
+
+/*	DBFRedactorMainWindow win;
 	win.setWindowTitle(app.applicationName()+" "+app.applicationVersion());
 
 	QObject::connect (&app, SIGNAL(messageReceived(QString)), &win, SLOT(handleMessage(QString)));
@@ -81,6 +106,7 @@ int main(int argc, char ** argv)
 		win.openFiles(fileList);
 	}
 	win.show();
+*/
 
 	return app.exec();
 }

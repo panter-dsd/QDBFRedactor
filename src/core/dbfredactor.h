@@ -310,6 +310,11 @@ public:
 			return index < m_fieldsList.size () ? m_fieldsList [index] : DBFField ();
 		}
 
+	QVector <DBFField> fields () const
+		{
+			return m_fieldsList;
+		}
+
 	qint16 fieldPos (int index)
 		{
 			if (index > m_fieldsList.size ()) {
@@ -432,8 +437,13 @@ public:
 
 			QString value (tmp);
 			delete [] tmp;
-			
+
 			return value;
+		}
+
+	void setValue (const QByteArray& value)
+		{
+			
 		}
 
 private:
@@ -445,34 +455,8 @@ private:
 
 class DBFRedactor
 {
+
 public:
-
-	struct Field
-	{
-		QString name;
-		quint8 type;
-		quint16 pos;
-		quint8 firstLenght;
-		quint8 secondLenght;
-	};
-
-	struct Header
-	{
-		quint8 fileType;
-		QDate lastUpdated;
-		qint32 recordsCount;
-		qint16 firstRecordPos;
-		qint16 recordLenght;
-		bool isIndex;
-		QVector <Field> fieldsList;
-	};
-
-	struct Record
-	{
-		bool isDeleted;
-		QList<QVariant> value;
-	};
-
 	enum DBFOpenModeFlag {
 		No,
 		Read,
@@ -489,12 +473,12 @@ public:
 	};
 
 private:
-	Header header;
+	DBFHeader header;
 	QString m_fileName;
 	QFile m_file;
 	QByteArray m_buf;
-	QHash<int, QByteArray> m_cache;
-	QList<QPair<int, QByteArray> > m_changedData;
+	QHash<int, DBFRecord> m_cache;
+	QList<QPair<int, DBFRecord> > m_changedData;
 	QTextCodec *m_codec;
 	QString m_tableName;
 	int lastRecord;
@@ -512,16 +496,16 @@ public:
 	bool open(DBFOpenMode OpenMode);
 	void close();
 
-	QVector<DBFRedactor::Field> fields () const
-	{ return header.fieldsList;}
+	QVector<DBFField> fields () const
+		{ return header.fieldsList ();}
 
-	DBFRedactor::Field field(int number) const;
+	DBFField field(int number) const;
 
 	QByteArray strRecord(int row);
-	DBFRedactor::Record record(int number);
+	DBFRecord record(int number);
 
 	int columnsCount() const
-	{return header.fieldsList.count();}
+	{return header.fieldsCount();}
 
 	int rowsCount() const;
 
@@ -555,8 +539,10 @@ public:
 	{return m_codec;}
 	void setTextCodec(QTextCodec *textCodec)
 	{
-		if (m_codec->name() != textCodec->name())
+		if (m_codec->name() != textCodec->name()) {
 			m_codec = textCodec;
+			header.setTextCodec (m_codec);
+		}
 	}
 
 	void addRecord();
