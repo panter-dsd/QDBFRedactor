@@ -60,8 +60,7 @@ void DBFField::clear ()
 	}
 	m_name.clear ();
 	m_type = Unknow;
-	m_firstLenght = -1;
-	m_secondLenght = -1;
+	m_firstLenght = 	m_secondLenght = -1;
 }
 
 bool DBFField::isEmpty () const
@@ -83,7 +82,7 @@ void DBFField::setData (const char *data)
 
 std::string DBFField::name () const
 {
-	if (m_name.empty ()) {
+	if (m_name.empty () && isValid ()) {
 		int i = 10;
 		for (;i > 0 && m_data [i] == '\0'; --i) {}
 		m_name.assign (m_data, i + 1);
@@ -94,16 +93,14 @@ std::string DBFField::name () const
 
 DBFType DBFField::type () const
 {
-	if (m_type == Unknow) {
-		if (isValid ()) {
-			switch (m_data [11]) {
-			case 'C': m_type = Char; break;
-			case 'N': m_type = Numeric; break;
-			case 'L': m_type = Logical; break;
-			case 'D': m_type = Date; break;
-			case 'F': m_type = Float; break;
-			case 'M': m_type = Memo; break;
-			}
+	if (m_type == Unknow && isValid ()) {
+		switch (m_data [11]) {
+		case 'C': m_type = Char; break;
+		case 'N': m_type = Numeric; break;
+		case 'L': m_type = Logical; break;
+		case 'D': m_type = Date; break;
+		case 'F': m_type = Float; break;
+		case 'M': m_type = Memo; break;
 		}
 	}
 
@@ -112,10 +109,8 @@ DBFType DBFField::type () const
 
 int8 DBFField::firstLenght () const
 {
-	if (m_firstLenght < 0) {
-		if (isValid ()) {
-			m_firstLenght = m_data [16];
-		}
+	if (m_firstLenght < 0 && isValid ()) {
+		m_firstLenght = m_data [16];
 	}
 
 	return m_firstLenght;
@@ -123,10 +118,8 @@ int8 DBFField::firstLenght () const
 
 int8 DBFField::secondLenght () const
 {
-	if (m_secondLenght < 0) {
-		if (isValid ()) {
-			m_secondLenght = m_data [17];
-		}
+	if (m_secondLenght < 0 && isValid ()) {
+		m_secondLenght = m_data [17];
 	}
 
 	return m_secondLenght;
