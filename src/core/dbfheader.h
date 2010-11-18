@@ -25,6 +25,7 @@
 #ifndef DBFHEADER_H
 #define DBFHEADER_H
 
+#include "dbfredactorcore.h"
 #include <ctime>
 #include <iostream>
 #include <vector>

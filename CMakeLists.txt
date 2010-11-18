@@ -51,6 +51,7 @@ src/core/dbfheader.cpp
 )
 
 set (core_HEADERS
+src/core/dbfredactorcore.h
 src/core/dbffield.h
 src/core/dbfheader.h
 #src/core/dbfredactor.h
