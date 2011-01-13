@@ -75,14 +75,14 @@ bool DBFHeader::load (std::iostream &stream)
 		hasIndex_ = data_ [28] == 1;
 	}
 
-	char field [33];
+	DBFFieldDataType fieldData (32, 0);
 
-	stream.read (field, 32);
+	stream.read (&*fieldData.begin (), 32);
 
 	do {
-		fieldsList_.push_back (DBFField (field));
-		stream.read (field, 32);
-	} while (field [0] != 0xd);
+		fieldsList_.push_back (DBFField (fieldData));
+		stream.read (&*fieldData.begin (), 32);
+	} while (fieldData [0] != 0xd);
 
 	for (int i = 0; i < fieldsList_.size (); ++i) {
 		std::cout << fieldsList_ [i].name () << (int)fieldsList_ [i].firstLenght () << std::endl;

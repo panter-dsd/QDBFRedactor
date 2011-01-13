@@ -22,10 +22,12 @@
 * Contact:		panter.dsd@gmail.com
 *******************************************************************/
 
-#include <cstring>
 #include <iostream>
+#include <algorithm>
 
 #include "dbffield.h"
+
+const int nameLength = 10;
 
 namespace DBFRedactorCore {
 
@@ -36,7 +38,7 @@ DBFField::DBFField ()
 
 }
 
-DBFField::DBFField (const char *data)
+DBFField::DBFField (const DBFFieldDataType& data)
 	: data_ (0), type_ (Unknow),
 	  firstLenght_ (-1), secondLenght_ (-1)
 {
@@ -53,63 +55,44 @@ DBFField::DBFField (const DBFField &f)
 DBFField& DBFField::operator= (const DBFField &f)
 {
 	if (this != &f) {
-		if (data_) {
-			delete [] data_;
-			data_ = 0;
-		}
-		data_ = new char [33];
-		memcpy (data_, f.data_, 32);
-		name_ = f.name_;
-		type_ = f.type_;
-		firstLenght_ = f.firstLenght_;
-		secondLenght_ = f.secondLenght_;
+		setData (f.data_);
 	}
 
 	return *this;
 }
 
-DBFField::~DBFField ()
-{
-	if (data_) {
-		delete [] data_;
-		data_ = 0;
-	}
-}
-
 void DBFField::clear ()
 {
-	if (data_) {
-		delete [] data_;
-		data_ = 0;
-	}
+	data_.clear();
 	name_.clear ();
 	type_ = Unknow;
-	firstLenght_ = 	secondLenght_ = -1;
+	firstLenght_ = secondLenght_ = -1;
 }
 
 bool DBFField::isEmpty () const
 {
-	return !data_;
+	return data_.empty ();
 }
 
 bool DBFField::isValid () const
 {
-	return !isEmpty ();
+	return !data_.empty ();
 }
 
-void DBFField::setData (const char *data)
+void DBFField::setData (const DBFFieldDataType& data)
 {
 	clear ();
-	data_ = new char [33];
-	memcpy (data_, data, 32);
+	data_.assign (data.begin (), data.end ());
 }
 
 std::string DBFField::name () const
 {
 	if (name_.empty () && isValid ()) {
-		int i = 10;
-		for (;i > 0 && data_ [i] == '\0'; --i) {}
-		name_.assign (data_, i + 1);
+		const DBFFieldDataType::const_iterator it = std::find (data_.begin (),
+													   data_.begin () + nameLength,
+													   '\0');
+
+		name_.assign (data_.begin (), it);
 	}
 
 	return name_;

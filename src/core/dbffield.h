@@ -25,9 +25,10 @@
 #ifndef DBFFIELD_H
 #define DBFFIELD_H
 
-#include "dbfredactorcore.h"
 #include <string>
 #include <vector>
+
+#include "dbfredactorcore.h"
 
 namespace DBFRedactorCore {
 
@@ -41,24 +42,27 @@ enum DBFType {
 	Memo
 };
 
+typedef std::vector <char> DBFFieldDataType;
+
 class DBFField {
 public:
 	DBFField ();
-	DBFField (const char *data);
+	explicit DBFField (const DBFFieldDataType &data);
 	DBFField (const DBFField &f);
 
 	DBFField& operator= (const DBFField &f);
 
-	~DBFField ();
+	~DBFField ()
+	{}
 
 	void clear ();
 	bool isEmpty () const;
 	bool isValid () const;
 
-	std::string data () const
+	DBFFieldDataType data () const
 	{return data_;}
 
-	void setData (const char *data);
+	void setData (const DBFFieldDataType &data);
 
 	std::string name () const;
 
@@ -67,9 +71,8 @@ public:
 	int8 firstLenght () const;
 	int8 secondLenght () const;
 
-
 private:
-	char *data_;
+	DBFFieldDataType data_;
 	mutable std::string name_;
 	mutable DBFType type_;
 	mutable int8 firstLenght_;

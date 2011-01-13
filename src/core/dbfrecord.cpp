@@ -35,7 +35,7 @@ DBFRecord::DBFRecord ()
 
 }
 
-DBFRecord::DBFRecord (const char *data, int16 length)
+DBFRecord::DBFRecord (const DBFRecordDataType &data, int16 length)
 	: data_ (0), length_ (length)
 {
 	setData (data, length);
@@ -56,39 +56,27 @@ DBFRecord& DBFRecord::operator= (const DBFRecord &f)
 	return *this;
 }
 
-DBFRecord::~DBFRecord ()
-{
-	if (data_) {
-		delete [] data_;
-		data_ = 0;
-	}
-}
-
 void DBFRecord::clear ()
 {
-	if (data_) {
-		delete [] data_;
-		data_ = 0;
-	}
+	data_.clear ();
 	length_ = -1;
 }
 
 bool DBFRecord::isEmpty () const
 {
-	return !data_;
+	return data_.empty ();
 }
 
 bool DBFRecord::isValid () const
 {
-	return !isEmpty ();
+	return !data_.empty ();
 }
 
-void DBFRecord::setData (const char *data, int16 length)
+void DBFRecord::setData (const DBFRecordDataType &data, int16 length)
 {
 	clear ();
 	length_ = length;
-	data_ = new char [length_ + 1];
-	memcpy (data_, data, length_);
+	data_.assign (data.begin (), data.end ());
 }
 
 }

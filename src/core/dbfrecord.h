@@ -25,32 +25,36 @@
 #ifndef DBFRECORD_H
 #define DBFRECORD_H
 
+#include <vector>
+
 #include "dbfredactorcore.h"
 
 namespace DBFRedactorCore {
 
+typedef std::vector <char> DBFRecordDataType;
+
 class DBFRecord {
 public:
 	DBFRecord ();
-	DBFRecord (const char *data, int16 length);
+	DBFRecord (const DBFRecordDataType &data, int16 length);
 	DBFRecord (const DBFRecord &f);
 
 	DBFRecord& operator= (const DBFRecord &f);
 
-	~DBFRecord ();
+	~DBFRecord ()
+	{}
 
 	void clear ();
 	bool isEmpty () const;
 	bool isValid () const;
 
-
-	const char* data () const
+	DBFRecordDataType data () const
 	{return data_;}
 
-	void setData (const char *data, int16 length);
+	void setData (const DBFRecordDataType &data, int16 length);
 
 private:
-	char *data_;
+	DBFRecordDataType data_;
 	int16 length_;
 };
 }
