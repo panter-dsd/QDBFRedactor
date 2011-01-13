@@ -30,19 +30,19 @@
 namespace DBFRedactorCore {
 
 DBFRecord::DBFRecord ()
-	: m_data (0), m_length (-1)
+	: data_ (0), length_ (-1)
 {
 
 }
 
 DBFRecord::DBFRecord (const char *data, int16 length)
-	: m_data (0), m_length (length)
+	: data_ (0), length_ (length)
 {
 	setData (data, length);
 }
 
 DBFRecord::DBFRecord (const DBFRecord &f)
-	: m_data (0), m_length (-1)
+	: data_ (0), length_ (-1)
 {
 	*this = f;
 }
@@ -50,7 +50,7 @@ DBFRecord::DBFRecord (const DBFRecord &f)
 DBFRecord& DBFRecord::operator= (const DBFRecord &f)
 {
 	if (this != &f) {
-		setData (f.m_data, f.m_length);
+		setData (f.data_, f.length_);
 	}
 
 	return *this;
@@ -58,24 +58,24 @@ DBFRecord& DBFRecord::operator= (const DBFRecord &f)
 
 DBFRecord::~DBFRecord ()
 {
-	if (m_data) {
-		delete [] m_data;
-		m_data = 0;
+	if (data_) {
+		delete [] data_;
+		data_ = 0;
 	}
 }
 
 void DBFRecord::clear ()
 {
-	if (m_data) {
-		delete [] m_data;
-		m_data = 0;
+	if (data_) {
+		delete [] data_;
+		data_ = 0;
 	}
-	m_length = -1;
+	length_ = -1;
 }
 
 bool DBFRecord::isEmpty () const
 {
-	return !m_data;
+	return !data_;
 }
 
 bool DBFRecord::isValid () const
@@ -86,9 +86,9 @@ bool DBFRecord::isValid () const
 void DBFRecord::setData (const char *data, int16 length)
 {
 	clear ();
-	m_length = length;
-	m_data = new char [m_length + 1];
-	memcpy (m_data, data, m_length);
+	length_ = length;
+	data_ = new char [length_ + 1];
+	memcpy (data_, data, length_);
 }
 
 }

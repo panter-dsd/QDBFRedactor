@@ -45,13 +45,13 @@ public:
 
 
 	const char* data () const
-	{return m_data;}
+	{return data_;}
 
 	void setData (const char *data, int16 length);
 
 private:
-	char *m_data;
-	int16 m_length;
+	char *data_;
+	int16 length_;
 };
 }
 
