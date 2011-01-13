@@ -85,7 +85,9 @@ bool DBFHeader::load (std::iostream &stream)
 	} while (fieldData [0] != 0xd);
 
 	for (int i = 0; i < fieldsList_.size (); ++i) {
-		std::cout << fieldsList_ [i].name () << (int)fieldsList_ [i].firstLenght () << std::endl;
+		std::cout << fieldsList_ [i].name ()
+		<< static_cast <int> (fieldsList_ [i].firstLenght ())
+		<< std::endl;
 	}
 }
 
@@ -122,7 +124,7 @@ time_t DBFHeader::lastUpdated () const
 	return lastUpdated_;
 }
 
-void DBFHeader::setLastUpdated (const time_t time)
+void DBFHeader::setLastUpdated (const time_t &time)
 {
 
 }
@@ -132,12 +134,12 @@ int32 DBFHeader::recordsCount () const
 	return recordsCount_;
 }
 
-void DBFHeader::setRecordsCount (const long count)
+void DBFHeader::setRecordsCount (long count)
 {
 	recordsCount_ = count;
 }
 
-void DBFHeader::addRecordsCount (const long count)
+void DBFHeader::addRecordsCount (long count)
 {
 	setRecordsCount (recordsCount_ + count);
 }
@@ -157,7 +159,7 @@ bool DBFHeader::hasIndex () const
 	return hasIndex_;
 }
 
-DBFField DBFHeader::field (const int index) const
+DBFField DBFHeader::field (int index) const
 {
 	return index > 0 && index < fieldsList_.size ()
 			? fieldsList_ [index]
@@ -169,7 +171,7 @@ DBFFieldsList DBFHeader::fields () const
 	return fieldsList_;
 }
 
-int16 DBFHeader::fieldPos (const int index) const
+int16 DBFHeader::fieldPos (int index) const
 {
 	if (index < 0 || index > fieldsList_.size () ) {
 		return -1;

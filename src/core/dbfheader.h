@@ -61,11 +61,11 @@ public:
 	FileType fileType () const;
 
 	time_t lastUpdated () const;
-	void setLastUpdated (const time_t time);
+	void setLastUpdated (const time_t& time);
 
 	int32 recordsCount () const;
-	void setRecordsCount (const long count);
-	void addRecordsCount (const long count = 1);
+	void setRecordsCount (long count);
+	void addRecordsCount (long count = 1);
 
 	int16 firstRecordPos () const;
 
@@ -73,11 +73,11 @@ public:
 
 	bool hasIndex () const;
 
-	DBFField field (const int index) const;
+	DBFField field (int index) const;
 
 	DBFFieldsList fields () const;
 
-	int16 fieldPos (const int index) const;
+	int16 fieldPos (int index) const;
 
 	int8 fieldsCount () const;
 
