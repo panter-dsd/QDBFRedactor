@@ -32,8 +32,8 @@
 namespace DBFRedactorCore {
 
 DBFHeader::DBFHeader ()
-	: m_fileType (UnknowFile), m_lastUpdated (0), m_recordsCount (-1),
-	  m_firstRecordPos (-1), m_recordLenght (-1)
+	: fileType_ (UnknowFile), lastUpdated_ (0), recordsCount_ (-1),
+	  firstRecordPos_ (-1), recordLenght_ (-1)
 {
 
 }
@@ -48,31 +48,31 @@ bool DBFHeader::load (std::iostream &stream)
 	clear ();
 
 	stream.seekg (0);
-	stream.read (m_data, 32);
+	stream.read (data_, 32);
 
 	{//File type
-		if (m_data [0] & 0x3) {
-			m_fileType = FoxBase;
+		if (data_ [0] & 0x3) {
+			fileType_ = FoxBase;
 		}
 	}
 
 	{//Records count
-		char* c  = m_data + 4;
-		m_recordsCount = *(int32*) c;
+		char* c  = data_ + 4;
+		recordsCount_ = *(int32*) c;
 	}
 
 	{//First record pos
-		char* c  = m_data + 8;
-		m_firstRecordPos = *(int16*) c;
+		char* c  = data_ + 8;
+		firstRecordPos_ = *(int16*) c;
 	}
 
 	{//Record lenght
-		char* c  = m_data + 10;
-		m_recordLenght = *(int16*) c;
+		char* c  = data_ + 10;
+		recordLenght_ = *(int16*) c;
 	}
 
 	{//Record lenght
-		m_hasIndex = m_data [28] == 1;
+		hasIndex_ = data_ [28] == 1;
 	}
 
 	char field [33];
@@ -80,12 +80,12 @@ bool DBFHeader::load (std::iostream &stream)
 	stream.read (field, 32);
 
 	do {
-		m_fieldsList.push_back (DBFField (field));
+		fieldsList_.push_back (DBFField (field));
 		stream.read (field, 32);
 	} while (field [0] != 0xd);
 
-	for (int i = 0; i < m_fieldsList.size (); ++i) {
-		std::cout << m_fieldsList [i].name () << (int)m_fieldsList [i].firstLenght () << std::endl;
+	for (int i = 0; i < fieldsList_.size (); ++i) {
+		std::cout << fieldsList_ [i].name () << (int)fieldsList_ [i].firstLenght () << std::endl;
 	}
 }
 
@@ -96,15 +96,15 @@ bool DBFHeader::save (std::iostream &stream)
 
 void DBFHeader::clear ()
 {
-	m_fileType = UnknowFile;
-	m_lastUpdated = 0;
-	m_recordsCount = m_firstRecordPos = m_recordLenght = -1;
-	m_fieldsList.clear ();
+	fileType_ = UnknowFile;
+	lastUpdated_ = 0;
+	recordsCount_ = firstRecordPos_ = recordLenght_ = -1;
+	fieldsList_.clear ();
 }
 
 bool DBFHeader::isEmpty () const
 {
-	return m_recordsCount < 0 || m_fieldsList.empty ();
+	return recordsCount_ < 0 || fieldsList_.empty ();
 }
 
 bool DBFHeader::isValid () const
@@ -114,12 +114,12 @@ bool DBFHeader::isValid () const
 
 FileType DBFHeader::fileType () const
 {
-	return m_fileType;
+	return fileType_;
 }
 
 time_t DBFHeader::lastUpdated () const
 {
-	return m_lastUpdated;
+	return lastUpdated_;
 }
 
 void DBFHeader::setLastUpdated (const time_t time)
@@ -129,56 +129,56 @@ void DBFHeader::setLastUpdated (const time_t time)
 
 int32 DBFHeader::recordsCount () const
 {
-	return m_recordsCount;
+	return recordsCount_;
 }
 
 void DBFHeader::setRecordsCount (const long count)
 {
-	m_recordsCount = count;
+	recordsCount_ = count;
 }
 
 void DBFHeader::addRecordsCount (const long count)
 {
-	setRecordsCount (m_recordsCount + count);
+	setRecordsCount (recordsCount_ + count);
 }
 
 int16 DBFHeader::firstRecordPos () const
 {
-	return m_firstRecordPos;
+	return firstRecordPos_;
 }
 
 int16 DBFHeader::recordLenght () const
 {
-	return m_firstRecordPos;
+	return firstRecordPos_;
 }
 
 bool DBFHeader::hasIndex () const
 {
-	return m_hasIndex;
+	return hasIndex_;
 }
 
 DBFField DBFHeader::field (const int index) const
 {
-	return index > 0 && index < m_fieldsList.size ()
-			? m_fieldsList [index]
+	return index > 0 && index < fieldsList_.size ()
+			? fieldsList_ [index]
 			: DBFField ();
 }
 
 DBFFieldsList DBFHeader::fields () const
 {
-	return m_fieldsList;
+	return fieldsList_;
 }
 
 int16 DBFHeader::fieldPos (const int index) const
 {
-	if (index < 0 || index > m_fieldsList.size () ) {
+	if (index < 0 || index > fieldsList_.size () ) {
 		return -1;
 	}
 
 	int16 pos = 1;
 
 	for (int i = 0; i <= index; ++i) {
-		pos += m_fieldsList [i].firstLenght ();
+		pos += fieldsList_ [i].firstLenght ();
 	}
 
 	return pos;
@@ -186,6 +186,6 @@ int16 DBFHeader::fieldPos (const int index) const
 
 int8 DBFHeader::fieldsCount () const
 {
-	return m_fieldsList.size ();
+	return fieldsList_.size ();
 }
 }

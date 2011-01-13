@@ -86,14 +86,14 @@ private:
 	DBFHeader& operator= (const DBFHeader &f);
 
 private:
-	char m_data [33];
-	FileType m_fileType;
-	time_t m_lastUpdated;
-	int32 m_recordsCount;
-	int16 m_firstRecordPos;
-	int16 m_recordLenght;
-	bool m_hasIndex;
-	DBFFieldsList m_fieldsList;
+	char data_ [33];
+	FileType fileType_;
+	time_t lastUpdated_;
+	int32 recordsCount_;
+	int16 firstRecordPos_;
+	int16 recordLenght_;
+	bool hasIndex_;
+	DBFFieldsList fieldsList_;
 };
 }
 
