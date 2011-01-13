@@ -56,7 +56,7 @@ public:
 	bool isValid () const;
 
 	std::string data () const
-	{return m_data;}
+	{return data_;}
 
 	void setData (const char *data);
 
@@ -69,11 +69,11 @@ public:
 
 
 private:
-	char *m_data;
-	mutable std::string m_name;
-	mutable DBFType m_type;
-	mutable int8 m_firstLenght;
-	mutable int8 m_secondLenght;
+	char *data_;
+	mutable std::string name_;
+	mutable DBFType type_;
+	mutable int8 firstLenght_;
+	mutable int8 secondLenght_;
 };
 
 typedef std::vector <DBFField> DBFFieldsList;
