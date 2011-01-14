@@ -32,22 +32,19 @@ const int nameLength = 10;
 namespace DBFRedactorCore {
 
 DBFField::DBFField ()
-	: data_ (0), type_ (Unknow),
-	  firstLenght_ (-1), secondLenght_ (-1)
+	: data_ (0)
 {
 
 }
 
 DBFField::DBFField (const DBFFieldDataType& data)
-	: data_ (0), type_ (Unknow),
-	  firstLenght_ (-1), secondLenght_ (-1)
+	: data_ (0)
 {
 	setData (data);
 }
 
 DBFField::DBFField (const DBFField &f)
-	: data_ (0), type_ (Unknow),
-	  firstLenght_ (-1), secondLenght_ (-1)
+	: data_ (0)
 {
 	*this = f;
 }
@@ -64,9 +61,6 @@ DBFField& DBFField::operator= (const DBFField &f)
 void DBFField::clear ()
 {
 	data_.clear();
-	name_.clear ();
-	type_ = Unknow;
-	firstLenght_ = secondLenght_ = -1;
 }
 
 bool DBFField::isEmpty () const
@@ -87,48 +81,42 @@ void DBFField::setData (const DBFFieldDataType& data)
 
 std::string DBFField::name () const
 {
-	if (name_.empty () && isValid ()) {
-		const DBFFieldDataType::const_iterator it = std::find (data_.begin (),
+	if (!isValid ()) {
+		return std::string ();
+	}
+	
+	const DBFFieldDataType::const_iterator it = std::find (data_.begin (),
 													   data_.begin () + nameLength,
 													   '\0');
 
-		name_.assign (data_.begin (), it);
-	}
-
-	return name_;
+	return std::string (data_.begin (), it);
 }
 
 DBFType DBFField::type () const
 {
-	if (type_ == Unknow && isValid ()) {
-		switch (data_ [11]) {
-		case 'C': type_ = Char; break;
-		case 'N': type_ = Numeric; break;
-		case 'L': type_ = Logical; break;
-		case 'D': type_ = Date; break;
-		case 'F': type_ = Float; break;
-		case 'M': type_ = Memo; break;
-		}
+	if (!isValid ()) {
+		return Unknow;
 	}
-
-	return type_;
+	
+	switch (data_ [11]) {
+		case 'C': return Char; break;
+		case 'N': return Numeric; break;
+		case 'L': return Logical; break;
+		case 'D': return Date; break;
+		case 'F': return Float; break;
+		case 'M': return Memo; break;
+	}
+	
+	return Unknow;
 }
 
 int8 DBFField::firstLenght () const
 {
-	if (firstLenght_ < 0 && isValid ()) {
-		firstLenght_ = data_ [16];
-	}
-
-	return firstLenght_;
+	return isValid () ? data_ [16] : 0;
 }
 
 int8 DBFField::secondLenght () const
 {
-	if (secondLenght_ < 0 && isValid ()) {
-		secondLenght_ = data_ [17];
-	}
-
-	return secondLenght_;
+	return isValid () ? data_ [17] : 0;
 }
 }

@@ -73,10 +73,6 @@ public:
 
 private:
 	DBFFieldDataType data_;
-	mutable std::string name_;
-	mutable DBFType type_;
-	mutable int8 firstLenght_;
-	mutable int8 secondLenght_;
 };
 
 typedef std::vector <DBFField> DBFFieldsList;
