@@ -28,7 +28,7 @@
 #define READING_RECORDS_COUNT 40960
 
 DBFRedactor::DBFRedactor()
-	:m_fileName(0), m_openMode(No), m_buffering(true)
+	:m_openMode(No), m_buffering(true)
 {
 	header.recordsCount = -1;
 	m_codec = QTextCodec::codecForName("IBM866");
@@ -157,7 +157,7 @@ DBFRedactor::Field DBFRedactor::field(int number) const
 QByteArray DBFRedactor::strRecord(int row)
 {
 	if (!m_file.isOpen() || row < 0 || row >= header.recordsCount)
-		return false;
+		return QByteArray ();
 
 //Search in changedData
 	for (int i = m_changedData.size() - 1; i >= 0; i--) {
